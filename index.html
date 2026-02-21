@@ -1,73 +1,123 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Domxenh - Ưu đãi đặc biệt</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Domxenh Store</title>
 
 <style>
-body{
-font-family: Arial;
-margin:0;
-padding:0;
-text-align:center;
-background:#f5f5f5;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
 
-.hero{
-background:#111;
+.header{
+background:#ee4d2d;
 color:white;
-padding:60px 20px;
+padding:15px;
+text-align:center;
+font-size:22px;
+font-weight:bold;
 }
 
-.price{
-color:red;
-font-size:28px;
-font-weight:bold;
+.banner{
+background:linear-gradient(to right,#ff5722,#ff9800);
+color:white;
+padding:50px 20px;
+text-align:center;
+}
+
+.banner h1{
+font-size:32px;
 }
 
 .btn{
 display:inline-block;
-padding:15px 35px;
-background:red;
-color:white;
-font-size:20px;
+padding:12px 25px;
+background:white;
+color:#ee4d2d;
+font-weight:bold;
+margin-top:20px;
 text-decoration:none;
 border-radius:5px;
-margin-top:20px;
 }
 
 .section{
-padding:40px 20px;
+padding:30px 20px;
+}
+
+.products{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:15px;
+}
+
+.card{
 background:white;
-margin:20px;
-border-radius:10px;
+border-radius:8px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+padding:15px;
+text-align:center;
+}
+
+.card img{
+width:100%;
+height:150px;
+object-fit:cover;
+border-radius:5px;
+}
+
+.price{
+color:red;
+font-weight:bold;
+margin-top:10px;
+}
+
+body{
+background:#f5f5f5;
 }
 </style>
-
 </head>
+
 <body>
 
-<div class="hero">
-<h1>SẢN PHẨM HOT NHẤT HÔM NAY 🔥</h1>
+<div class="header">
+DOMXENH OFFICIAL STORE
+</div>
+
+<div class="banner">
+<h1>FLASH SALE HÔM NAY 🔥</h1>
 <p>Giảm giá sốc – Số lượng có hạn</p>
-<p class="price">Chỉ còn 299.000đ</p>
-<a href="#order" class="btn">ĐẶT HÀNG NGAY</a>
+<a href="#products" class="btn">MUA NGAY</a>
 </div>
 
-<div class="section">
-<h2>LỢI ÍCH SẢN PHẨM</h2>
-<p>✔ Giúp bạn tiết kiệm thời gian</p>
-<p>✔ Dễ sử dụng</p>
-<p>✔ Bảo hành 12 tháng</p>
+<div class="section" id="products">
+<h2 style="margin-bottom:20px;">SẢN PHẨM NỔI BẬT</h2>
+
+<div class="products">
+
+<div class="card">
+<img src="https://via.placeholder.com/300">
+<h3>Sản phẩm 1</h3>
+<p class="price">299.000đ</p>
 </div>
 
-<div class="section" id="order">
-<h2>ĐẶT HÀNG NGAY</h2>
-<p>Điền thông tin để được tư vấn</p>
-<input type="text" placeholder="Họ và tên" style="padding:10px;width:80%;margin:10px;"><br>
-<input type="text" placeholder="Số điện thoại" style="padding:10px;width:80%;margin:10px;"><br>
-<button class="btn">GỬI THÔNG TIN</button>
+<div class="card">
+<img src="https://via.placeholder.com/300">
+<h3>Sản phẩm 2</h3>
+<p class="price">199.000đ</p>
+</div>
+
+<div class="card">
+<img src="https://via.placeholder.com/300">
+<h3>Sản phẩm 3</h3>
+<p class="price">149.000đ</p>
+</div>
+
+<div class="card">
+<img src="https://via.placeholder.com/300">
+<h3>Sản phẩm 4</h3>
+<p class="price">399.000đ</p>
+</div>
+
+</div>
 </div>
 
 </body>

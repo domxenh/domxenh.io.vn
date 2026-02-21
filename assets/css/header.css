@@ -1,0 +1,148 @@
+.header{
+  position:fixed;
+  top:0;
+  width:100%;
+  z-index:1000;
+  transition:0.4s ease;
+  background:transparent;
+}
+
+.header.scrolled{
+  background:rgba(255,255,255,0.9);
+  backdrop-filter:blur(10px);
+  box-shadow:0 15px 40px rgba(0,0,0,0.05);
+}
+
+.container{
+  max-width:1300px;
+  margin:auto;
+  padding:0 30px;
+}
+
+.header-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  height:90px;
+  transition:0.3s;
+}
+
+.header.scrolled .header-inner{
+  height:70px;
+}
+
+.logo img{
+  height:60px;
+  transition:0.3s;
+}
+
+.header.scrolled .logo img{
+  height:45px;
+}
+
+/* Desktop Nav */
+.nav{
+  display:flex;
+  gap:60px;
+}
+
+.nav-link{
+  position:relative;
+  font-size:13px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  text-decoration:none;
+  color:#888;
+  transition:0.3s;
+}
+
+.nav-link:hover,
+.nav-link.active{
+  color:#000;
+}
+
+.nav-link::after{
+  content:"";
+  position:absolute;
+  bottom:-8px;
+  left:0;
+  width:0%;
+  height:2px;
+  background:#000;
+  transition:0.4s;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after{
+  width:100%;
+}
+
+/* Hamburger */
+.menu-toggle{
+  display:none;
+  flex-direction:column;
+  gap:6px;
+  cursor:pointer;
+}
+
+.menu-toggle span{
+  width:25px;
+  height:2px;
+  background:#000;
+  transition:0.3s;
+}
+
+.menu-toggle.active span:nth-child(1){
+  transform:rotate(45deg) translate(5px,5px);
+}
+.menu-toggle.active span:nth-child(2){
+  opacity:0;
+}
+.menu-toggle.active span:nth-child(3){
+  transform:rotate(-45deg) translate(6px,-6px);
+}
+
+/* Overlay */
+.menu-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.3);
+  backdrop-filter:blur(4px);
+  opacity:0;
+  visibility:hidden;
+  transition:0.4s;
+  z-index:900;
+}
+
+.menu-overlay.active{
+  opacity:1;
+  visibility:visible;
+}
+
+/* Mobile */
+@media(max-width:900px){
+
+  .nav{
+    position:fixed;
+    top:0;
+    right:-100%;
+    width:280px;
+    height:100vh;
+    background:#fff;
+    flex-direction:column;
+    padding-top:120px;
+    align-items:center;
+    gap:40px;
+    transition:0.4s;
+    box-shadow:-10px 0 40px rgba(0,0,0,0.1);
+    z-index:950;
+  }
+
+  .nav.active{
+    right:0;
+  }
+
+  .menu-toggle{
+    display:flex;
+  }
+}

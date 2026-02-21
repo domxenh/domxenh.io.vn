@@ -1,0 +1,58 @@
+body{
+  margin:0;
+  font-family:'Inter',sans-serif;
+  background:#f8f8f8;
+  padding-top:120px;
+}
+
+/* HERO */
+.hero{
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  background:#111;
+  color:#fff;
+}
+
+.hero h1{
+  font-size:60px;
+  font-weight:600;
+  letter-spacing:3px;
+}
+
+.hero p{
+  margin-top:20px;
+  font-size:18px;
+  opacity:0.8;
+}
+
+/* Sections */
+.section{
+  padding:120px 40px;
+  max-width:1200px;
+  margin:auto;
+}
+
+/* Fade animation */
+.fade{
+  opacity:0;
+  transform:translateY(40px);
+  transition:1s ease;
+}
+
+.fade.show{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* Mobile hero */
+@media(max-width:768px){
+  .hero h1{
+    font-size:34px;
+  }
+  .section{
+    padding:80px 20px;
+  }
+}

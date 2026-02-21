@@ -1,18 +1,74 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Domxenh Landing Page</title>
+<title>Domxenh - Ưu đãi đặc biệt</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+font-family: Arial;
+margin:0;
+padding:0;
+text-align:center;
+background:#f5f5f5;
+}
+
+.hero{
+background:#111;
+color:white;
+padding:60px 20px;
+}
+
+.price{
+color:red;
+font-size:28px;
+font-weight:bold;
+}
+
+.btn{
+display:inline-block;
+padding:15px 35px;
+background:red;
+color:white;
+font-size:20px;
+text-decoration:none;
+border-radius:5px;
+margin-top:20px;
+}
+
+.section{
+padding:40px 20px;
+background:white;
+margin:20px;
+border-radius:10px;
+}
+</style>
+
 </head>
-<body style="font-family:Arial;text-align:center;padding:50px;">
+<body>
 
+<div class="hero">
 <h1>SẢN PHẨM HOT NHẤT HÔM NAY 🔥</h1>
-<p>Ưu đãi đặc biệt – Số lượng có hạn!</p>
+<p>Giảm giá sốc – Số lượng có hạn</p>
+<p class="price">Chỉ còn 299.000đ</p>
+<a href="#order" class="btn">ĐẶT HÀNG NGAY</a>
+</div>
 
-<button style="padding:15px 30px;font-size:18px;background:red;color:white;border:none;">
-ĐẶT HÀNG NGAY
-</button>
+<div class="section">
+<h2>LỢI ÍCH SẢN PHẨM</h2>
+<p>✔ Giúp bạn tiết kiệm thời gian</p>
+<p>✔ Dễ sử dụng</p>
+<p>✔ Bảo hành 12 tháng</p>
+</div>
+
+<div class="section" id="order">
+<h2>ĐẶT HÀNG NGAY</h2>
+<p>Điền thông tin để được tư vấn</p>
+<input type="text" placeholder="Họ và tên" style="padding:10px;width:80%;margin:10px;"><br>
+<input type="text" placeholder="Số điện thoại" style="padding:10px;width:80%;margin:10px;"><br>
+<button class="btn">GỬI THÔNG TIN</button>
+</div>
 
 </body>
 </html>

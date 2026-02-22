@@ -1,59 +1,93 @@
+/* =========================================
+   HEADER LUXURY BALANCED VERSION
+   FILE: assets/css/header.css
+========================================= */
+
 .header{
   position:fixed;
   top:0;
   width:100%;
+  background:#f8f8f8;
   z-index:1000;
   transition:0.4s ease;
-  background:transparent;
 }
 
+/* Scroll effect */
 .header.scrolled{
-  background:rgba(255,255,255,0.9);
-  backdrop-filter:blur(10px);
-  box-shadow:0 15px 40px rgba(0,0,0,0.05);
+  background:rgba(255,255,255,0.95);
+  backdrop-filter:blur(6px);
+  box-shadow:0 6px 25px rgba(0,0,0,0.05);
 }
 
+/* Container */
 .container{
-  max-width:1300px;
+  max-width:1280px;
   margin:auto;
-  padding:0 30px;
+  padding:0 50px;
 }
 
-.header-inner{
-  display:flex;
+/* Grid 3 vùng cân lại */
+.header-grid{
+  display:grid;
+  grid-template-columns: auto 1fr auto;
   align-items:center;
-  justify-content:space-between;
-  height:90px;
-  transition:0.3s;
+  height:85px;
+  transition:0.3s ease;
 }
 
-.header.scrolled .header-inner{
+.header.scrolled .header-grid{
   height:70px;
 }
 
+/* ================= LOGO ================= */
+
 .logo img{
-  height:60px;
-  transition:0.3s;
+  height:55px;
+  transition:0.3s ease;
 }
 
 .header.scrolled .logo img{
   height:45px;
 }
 
-/* Desktop Nav */
+/* ================= BRAND GIỮA ================= */
+
+.brand{
+  text-align:center;
+}
+
+.brand-text{
+  font-family:'Cormorant Garamond', serif;
+  font-size:52px;
+  letter-spacing:10px;
+  font-weight:500;
+  text-transform:uppercase;
+  color:#111;
+  transition:0.3s ease;
+}
+
+/* Khi scroll thu nhỏ brand */
+.header.scrolled .brand-text{
+  font-size:36px;
+  letter-spacing:6px;
+}
+
+/* ================= MENU DESKTOP ================= */
+
 .nav{
   display:flex;
-  gap:60px;
+  gap:40px;
 }
 
 .nav-link{
-  position:relative;
-  font-size:13px;
-  letter-spacing:3px;
+  font-family:'Montserrat', sans-serif;
+  font-size:15px;
+  letter-spacing:2px;
   text-transform:uppercase;
   text-decoration:none;
-  color:#888;
-  transition:0.3s;
+  color:#666;
+  position:relative;
+  transition:0.3s ease;
 }
 
 .nav-link:hover,
@@ -61,15 +95,16 @@
   color:#000;
 }
 
+/* Underline */
 .nav-link::after{
   content:"";
   position:absolute;
-  bottom:-8px;
   left:0;
+  bottom:-6px;
   width:0%;
-  height:2px;
+  height:1px;
   background:#000;
-  transition:0.4s;
+  transition:0.4s ease;
 }
 
 .nav-link:hover::after,
@@ -77,7 +112,8 @@
   width:100%;
 }
 
-/* Hamburger */
+/* ================= HAMBURGER ================= */
+
 .menu-toggle{
   display:none;
   flex-direction:column;
@@ -86,31 +122,21 @@
 }
 
 .menu-toggle span{
-  width:25px;
+  width:26px;
   height:2px;
   background:#000;
-  transition:0.3s;
 }
 
-.menu-toggle.active span:nth-child(1){
-  transform:rotate(45deg) translate(5px,5px);
-}
-.menu-toggle.active span:nth-child(2){
-  opacity:0;
-}
-.menu-toggle.active span:nth-child(3){
-  transform:rotate(-45deg) translate(6px,-6px);
-}
+/* ================= OVERLAY ================= */
 
-/* Overlay */
 .menu-overlay{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,0.3);
-  backdrop-filter:blur(4px);
+  background:rgba(0,0,0,0.4);
+  backdrop-filter:blur(5px);
   opacity:0;
   visibility:hidden;
-  transition:0.4s;
+  transition:0.3s ease;
   z-index:900;
 }
 
@@ -119,8 +145,19 @@
   visibility:visible;
 }
 
-/* Mobile */
-@media(max-width:900px){
+/* ================= MOBILE ================= */
+
+@media(max-width:992px){
+
+  .header-grid{
+    grid-template-columns: auto 1fr auto;
+    height:75px;
+  }
+
+  .brand-text{
+    font-size:26px;
+    letter-spacing:4px;
+  }
 
   .nav{
     position:fixed;
@@ -130,11 +167,10 @@
     height:100vh;
     background:#fff;
     flex-direction:column;
-    padding-top:120px;
+    justify-content:center;
     align-items:center;
-    gap:40px;
-    transition:0.4s;
-    box-shadow:-10px 0 40px rgba(0,0,0,0.1);
+    gap:35px;
+    transition:0.4s ease;
     z-index:950;
   }
 
@@ -142,7 +178,23 @@
     right:0;
   }
 
+  .nav-link{
+    font-size:20px;
+  }
+
   .menu-toggle{
     display:flex;
   }
 }
+<!-- FULLSCREEN MOBILE MENU -->
+<div class="fullscreen-menu">
+
+  <div class="menu-close">✕</div>
+
+  <div class="fullscreen-links">
+    <a href="/trang-chu/index.html" class="fullscreen-link">Trang Chủ</a>
+    <a href="/san-pham/index.html" class="fullscreen-link">Sản Phẩm</a>
+    <a href="/lien-he/index.html" class="fullscreen-link">Liên Hệ</a>
+  </div>
+
+</div>

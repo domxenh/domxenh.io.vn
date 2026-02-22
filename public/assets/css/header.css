@@ -1,190 +1,200 @@
-/* ================= RESET ================= */
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
+/* =========================================
+   HEADER LUXURY BALANCED VERSION
+   FILE: assets/css/header.css
+========================================= */
 
-/* ================= BODY ================= */
-body{
-  font-family:'Inter', sans-serif;
-  background:#f8f6f2;
-  color:#111;
-  padding-top:90px;
-}
-
-/* ================= HEADER ================= */
 .header{
   position:fixed;
   top:0;
-  left:0;
   width:100%;
-  background:#f5f5f5;
-  border-bottom:1px solid rgba(0,0,0,0.05);
+  background:#f8f8f8;
   z-index:1000;
+  transition:0.4s ease;
 }
 
-.header-inner{
-  max-width:1200px;
-  margin:0 auto;
-  height:90px;
+/* Scroll effect */
+.header.scrolled{
+  background:rgba(255,255,255,0.95);
+  backdrop-filter:blur(6px);
+  box-shadow:0 6px 25px rgba(0,0,0,0.05);
+}
 
-  display:flex;
+/* Container */
+.container{
+  max-width:1280px;
+  margin:auto;
+  padding:0 50px;
+}
+
+/* Grid 3 vùng cân lại */
+.header-grid{
+  display:grid;
+  grid-template-columns: auto 1fr auto;
   align-items:center;
-  justify-content:space-between;
-
-  padding:0 20px;
-  position:relative;
+  height:85px;
+  transition:0.3s ease;
 }
 
-/* LOGO */
+.header.scrolled .header-grid{
+  height:70px;
+}
+
+/* ================= LOGO ================= */
+
 .logo img{
-  height:60px;
+  height:55px;
+  transition:0.3s ease;
 }
 
-/* BRAND - CĂN GIỮA TUYỆT ĐỐI */
+.header.scrolled .logo img{
+  height:45px;
+}
+
+/* ================= BRAND GIỮA ================= */
+
 .brand{
-  position:absolute;
-  left:50%;
-  transform:translateX(-50%);
+  text-align:center;
 }
 
 .brand-text{
-  font-family:'Playfair Display', serif;
-  font-size:48px;
-  letter-spacing:8px;
-  font-weight:300;
-  text-decoration:none;
-  color:#000;
+  font-family:'Cormorant Garamond', serif;
+  font-size:52px;
+  letter-spacing:10px;
+  font-weight:500;
+  text-transform:uppercase;
+  color:#111;
+  transition:0.3s ease;
 }
 
-/* NAV DESKTOP */
+/* Khi scroll thu nhỏ brand */
+.header.scrolled .brand-text{
+  font-size:36px;
+  letter-spacing:6px;
+}
+
+/* ================= MENU DESKTOP ================= */
+
 .nav{
   display:flex;
   gap:40px;
-  align-items:center;
 }
 
 .nav-link{
-  text-decoration:none;
-  color:#444;
-  font-size:16px;
+  font-family:'Montserrat', sans-serif;
+  font-size:15px;
   letter-spacing:2px;
+  text-transform:uppercase;
+  text-decoration:none;
+  color:#666;
   position:relative;
+  transition:0.3s ease;
 }
 
-.nav-link.active::after{
+.nav-link:hover,
+.nav-link.active{
+  color:#000;
+}
+
+/* Underline */
+.nav-link::after{
   content:"";
   position:absolute;
-  bottom:-5px;
   left:0;
-  width:100%;
-  height:2px;
+  bottom:-6px;
+  width:0%;
+  height:1px;
   background:#000;
+  transition:0.4s ease;
 }
 
-/* HAMBURGER */
+.nav-link:hover::after,
+.nav-link.active::after{
+  width:100%;
+}
+
+/* ================= HAMBURGER ================= */
+
 .menu-toggle{
   display:none;
   flex-direction:column;
-  gap:5px;
+  gap:6px;
   cursor:pointer;
 }
 
 .menu-toggle span{
-  width:25px;
+  width:26px;
   height:2px;
   background:#000;
 }
 
-.menu-close{
-  display:none;
-}
+/* ================= OVERLAY ================= */
 
 .menu-overlay{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,0.5);
+  background:rgba(0,0,0,0.4);
+  backdrop-filter:blur(5px);
   opacity:0;
-  pointer-events:none;
-  transition:0.3s;
+  visibility:hidden;
+  transition:0.3s ease;
+  z-index:900;
 }
 
-/* ================= HERO ================= */
-.hero{
-  height:80vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-}
-
-.hero-title{
-  font-family:'Playfair Display', serif;
-  font-size:64px;
-  font-weight:300;
-  letter-spacing:6px;
-}
-
-.hero-subtitle{
-  margin-top:15px;
-  font-size:18px;
+.menu-overlay.active{
+  opacity:1;
+  visibility:visible;
 }
 
 /* ================= MOBILE ================= */
-@media(max-width:900px){
 
-  body{
-    padding-top:70px;
-  }
+@media(max-width:992px){
 
-  .header-inner{
-    height:70px;
+  .header-grid{
+    grid-template-columns: auto 1fr auto;
+    height:75px;
   }
 
   .brand-text{
-    font-size:24px;
-    letter-spacing:3px;
+    font-size:26px;
+    letter-spacing:4px;
   }
 
   .nav{
     position:fixed;
     top:0;
     right:-100%;
-    width:260px;
+    width:280px;
     height:100vh;
     background:#fff;
     flex-direction:column;
-    align-items:flex-start;
-    padding:100px 25px;
-    gap:25px;
-    transition:0.3s;
+    justify-content:center;
+    align-items:center;
+    gap:35px;
+    transition:0.4s ease;
+    z-index:950;
   }
 
   .nav.active{
     right:0;
   }
 
+  .nav-link{
+    font-size:20px;
+  }
+
   .menu-toggle{
     display:flex;
   }
-
-  .menu-close{
-    display:block;
-    position:absolute;
-    top:25px;
-    right:25px;
-    font-size:22px;
-    background:none;
-    border:none;
-  }
-
-  .menu-overlay.active{
-    opacity:1;
-    pointer-events:all;
-  }
-
-  .hero-title{
-    font-size:32px;
-  }
 }
+<!-- FULLSCREEN MOBILE MENU -->
+<div class="fullscreen-menu">
+
+  <div class="menu-close">✕</div>
+
+  <div class="fullscreen-links">
+    <a href="/trang-chu/index.html" class="fullscreen-link">Trang Chủ</a>
+    <a href="/san-pham/index.html" class="fullscreen-link">Sản Phẩm</a>
+    <a href="/lien-he/index.html" class="fullscreen-link">Liên Hệ</a>
+  </div>
+
+</div>

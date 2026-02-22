@@ -1,56 +1,35 @@
-/* ================= RESET ================= */
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
+/* ===============================
+   HEADER V8
+=================================*/
 
-/* ================= BODY ================= */
-body{
-  font-family:'Inter', sans-serif;
-  background:#f8f6f2;
-  color:#111;
-  padding-top:90px;
-}
-
-/* ================= HEADER ================= */
 .header{
   position:fixed;
   top:0;
   left:0;
   width:100%;
   background:#f5f5f5;
-  border-bottom:1px solid rgba(0,0,0,0.05);
   z-index:1000;
+  transition:0.3s;
 }
 
-.header-inner{
-  max-width:1200px;
-  margin:0 auto;
-  height:90px;
-
-  display:flex;
+.header-grid{
+  display:grid;
+  grid-template-columns:120px 1fr auto;
   align-items:center;
-  justify-content:space-between;
-
-  padding:0 20px;
-  position:relative;
+  height:90px;
 }
 
-/* LOGO */
+/* Logo */
 .logo img{
   height:60px;
 }
 
-/* BRAND - CĂN GIỮA TUYỆT ĐỐI */
+/* Brand */
 .brand{
-  position:absolute;
-  left:50%;
-  transform:translateX(-50%);
+  text-align:center;
 }
 
 .brand-text{
-  font-family:'Playfair Display', serif;
   font-size:48px;
   letter-spacing:8px;
   font-weight:300;
@@ -58,7 +37,7 @@ body{
   color:#000;
 }
 
-/* NAV DESKTOP */
+/* Nav desktop */
 .nav{
   display:flex;
   gap:40px;
@@ -83,7 +62,7 @@ body{
   background:#000;
 }
 
-/* HAMBURGER */
+/* Hamburger */
 .menu-toggle{
   display:none;
   flex-direction:column;
@@ -97,10 +76,12 @@ body{
   background:#000;
 }
 
+/* Close button */
 .menu-close{
   display:none;
 }
 
+/* Overlay */
 .menu-overlay{
   position:fixed;
   inset:0;
@@ -110,55 +91,35 @@ body{
   transition:0.3s;
 }
 
-/* ================= HERO ================= */
-.hero{
-  height:80vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-}
+/* =================================
+   MOBILE
+=================================*/
 
-.hero-title{
-  font-family:'Playfair Display', serif;
-  font-size:64px;
-  font-weight:300;
-  letter-spacing:6px;
-}
-
-.hero-subtitle{
-  margin-top:15px;
-  font-size:18px;
-}
-
-/* ================= MOBILE ================= */
 @media(max-width:900px){
 
-  body{
-    padding-top:70px;
-  }
-
-  .header-inner{
+  .header-grid{
+    grid-template-columns:80px 1fr 50px;
     height:70px;
   }
 
   .brand-text{
-    font-size:24px;
-    letter-spacing:3px;
+    font-size:26px;
+    letter-spacing:4px;
   }
 
   .nav{
     position:fixed;
     top:0;
     right:-100%;
-    width:260px;
     height:100vh;
+    width:280px;
     background:#fff;
     flex-direction:column;
     align-items:flex-start;
-    padding:100px 25px;
+    padding:100px 30px;
     gap:25px;
-    transition:0.3s;
+    transition:0.4s;
+    box-shadow:-5px 0 15px rgba(0,0,0,0.1);
   }
 
   .nav.active{
@@ -177,6 +138,7 @@ body{
     font-size:22px;
     background:none;
     border:none;
+    cursor:pointer;
   }
 
   .menu-overlay.active{
@@ -184,7 +146,4 @@ body{
     pointer-events:all;
   }
 
-  .hero-title{
-    font-size:32px;
-  }
 }

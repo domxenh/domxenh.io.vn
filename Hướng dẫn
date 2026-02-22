@@ -1,0 +1,15 @@
+git add .
+git commit -m "update"
+git push
+
+---Chat-GPT---
+Đây là file PROJECT_PROGRESS.md Và DEV_Rules của tôi. 
+Hãy đọc và tiếp tục từ bước tiếp theo.
+
+---Chạy NODE---
+node server.js
+
+---Cài nodemon---
+npm install -g nodemon
+---Tự restart khi sửa file sever---
+nodemon server.js

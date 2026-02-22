@@ -1,200 +1,190 @@
-/* =========================================
-   HEADER LUXURY BALANCED VERSION
-   FILE: assets/css/header.css
-========================================= */
+/* ================= RESET ================= */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
 
+/* ================= BODY ================= */
+body{
+  font-family:'Inter', sans-serif;
+  background:#f8f6f2;
+  color:#111;
+  padding-top:90px;
+}
+
+/* ================= HEADER ================= */
 .header{
   position:fixed;
   top:0;
+  left:0;
   width:100%;
-  background:#f8f8f8;
+  background:#f5f5f5;
+  border-bottom:1px solid rgba(0,0,0,0.05);
   z-index:1000;
-  transition:0.4s ease;
 }
 
-/* Scroll effect */
-.header.scrolled{
-  background:rgba(255,255,255,0.95);
-  backdrop-filter:blur(6px);
-  box-shadow:0 6px 25px rgba(0,0,0,0.05);
-}
+.header-inner{
+  max-width:1200px;
+  margin:0 auto;
+  height:90px;
 
-/* Container */
-.container{
-  max-width:1280px;
-  margin:auto;
-  padding:0 50px;
-}
-
-/* Grid 3 vùng cân lại */
-.header-grid{
-  display:grid;
-  grid-template-columns: auto 1fr auto;
+  display:flex;
   align-items:center;
-  height:85px;
-  transition:0.3s ease;
+  justify-content:space-between;
+
+  padding:0 20px;
+  position:relative;
 }
 
-.header.scrolled .header-grid{
-  height:70px;
-}
-
-/* ================= LOGO ================= */
-
+/* LOGO */
 .logo img{
-  height:55px;
-  transition:0.3s ease;
+  height:60px;
 }
 
-.header.scrolled .logo img{
-  height:45px;
-}
-
-/* ================= BRAND GIỮA ================= */
-
+/* BRAND - CĂN GIỮA TUYỆT ĐỐI */
 .brand{
-  text-align:center;
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
 }
 
 .brand-text{
-  font-family:'Cormorant Garamond', serif;
-  font-size:52px;
-  letter-spacing:10px;
-  font-weight:500;
-  text-transform:uppercase;
-  color:#111;
-  transition:0.3s ease;
-}
-
-/* Khi scroll thu nhỏ brand */
-.header.scrolled .brand-text{
-  font-size:36px;
-  letter-spacing:6px;
-}
-
-/* ================= MENU DESKTOP ================= */
-
-.nav{
-  display:flex;
-  gap:40px;
-}
-
-.nav-link{
-  font-family:'Montserrat', sans-serif;
-  font-size:15px;
-  letter-spacing:2px;
-  text-transform:uppercase;
+  font-family:'Playfair Display', serif;
+  font-size:48px;
+  letter-spacing:8px;
+  font-weight:300;
   text-decoration:none;
-  color:#666;
-  position:relative;
-  transition:0.3s ease;
-}
-
-.nav-link:hover,
-.nav-link.active{
   color:#000;
 }
 
-/* Underline */
-.nav-link::after{
+/* NAV DESKTOP */
+.nav{
+  display:flex;
+  gap:40px;
+  align-items:center;
+}
+
+.nav-link{
+  text-decoration:none;
+  color:#444;
+  font-size:16px;
+  letter-spacing:2px;
+  position:relative;
+}
+
+.nav-link.active::after{
   content:"";
   position:absolute;
+  bottom:-5px;
   left:0;
-  bottom:-6px;
-  width:0%;
-  height:1px;
-  background:#000;
-  transition:0.4s ease;
-}
-
-.nav-link:hover::after,
-.nav-link.active::after{
   width:100%;
-}
-
-/* ================= HAMBURGER ================= */
-
-.menu-toggle{
-  display:none;
-  flex-direction:column;
-  gap:6px;
-  cursor:pointer;
-}
-
-.menu-toggle span{
-  width:26px;
   height:2px;
   background:#000;
 }
 
-/* ================= OVERLAY ================= */
+/* HAMBURGER */
+.menu-toggle{
+  display:none;
+  flex-direction:column;
+  gap:5px;
+  cursor:pointer;
+}
+
+.menu-toggle span{
+  width:25px;
+  height:2px;
+  background:#000;
+}
+
+.menu-close{
+  display:none;
+}
 
 .menu-overlay{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,0.4);
-  backdrop-filter:blur(5px);
+  background:rgba(0,0,0,0.5);
   opacity:0;
-  visibility:hidden;
-  transition:0.3s ease;
-  z-index:900;
+  pointer-events:none;
+  transition:0.3s;
 }
 
-.menu-overlay.active{
-  opacity:1;
-  visibility:visible;
+/* ================= HERO ================= */
+.hero{
+  height:80vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+
+.hero-title{
+  font-family:'Playfair Display', serif;
+  font-size:64px;
+  font-weight:300;
+  letter-spacing:6px;
+}
+
+.hero-subtitle{
+  margin-top:15px;
+  font-size:18px;
 }
 
 /* ================= MOBILE ================= */
+@media(max-width:900px){
 
-@media(max-width:992px){
+  body{
+    padding-top:70px;
+  }
 
-  .header-grid{
-    grid-template-columns: auto 1fr auto;
-    height:75px;
+  .header-inner{
+    height:70px;
   }
 
   .brand-text{
-    font-size:26px;
-    letter-spacing:4px;
+    font-size:24px;
+    letter-spacing:3px;
   }
 
   .nav{
     position:fixed;
     top:0;
     right:-100%;
-    width:280px;
+    width:260px;
     height:100vh;
     background:#fff;
     flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    gap:35px;
-    transition:0.4s ease;
-    z-index:950;
+    align-items:flex-start;
+    padding:100px 25px;
+    gap:25px;
+    transition:0.3s;
   }
 
   .nav.active{
     right:0;
   }
 
-  .nav-link{
-    font-size:20px;
-  }
-
   .menu-toggle{
     display:flex;
   }
+
+  .menu-close{
+    display:block;
+    position:absolute;
+    top:25px;
+    right:25px;
+    font-size:22px;
+    background:none;
+    border:none;
+  }
+
+  .menu-overlay.active{
+    opacity:1;
+    pointer-events:all;
+  }
+
+  .hero-title{
+    font-size:32px;
+  }
 }
-<!-- FULLSCREEN MOBILE MENU -->
-<div class="fullscreen-menu">
-
-  <div class="menu-close">✕</div>
-
-  <div class="fullscreen-links">
-    <a href="/trang-chu/index.html" class="fullscreen-link">Trang Chủ</a>
-    <a href="/san-pham/index.html" class="fullscreen-link">Sản Phẩm</a>
-    <a href="/lien-he/index.html" class="fullscreen-link">Liên Hệ</a>
-  </div>
-
-</div>

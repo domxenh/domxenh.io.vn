@@ -1,0 +1,72 @@
+// Code 1
+
+{
+  "compilerOptions": {
+    // Phiên bản JavaScript biên dịch ra
+    "target": "ES2017",
+
+    // Thư viện hỗ trợ
+    "lib": ["dom", "dom.iterable", "esnext"],
+
+    // Cho phép dùng file JS
+    "allowJs": true,
+
+    // Bỏ kiểm tra type trong node_modules
+    "skipLibCheck": true,
+
+    // Bật strict mode TypeScript
+    "strict": true,
+
+    // Không xuất file sau khi build TypeScript
+    "noEmit": true,
+
+    // Hỗ trợ import CommonJS
+    "esModuleInterop": true,
+
+    // Module system
+    "module": "esnext",
+
+    // Cách resolve module (quan trọng cho Next.js)
+    "moduleResolution": "bundler",
+
+    // Cho phép import file JSON
+    "resolveJsonModule": true,
+
+    // Tách module riêng biệt
+    "isolatedModules": true,
+
+    // JSX sử dụng React mới
+    "jsx": "react-jsx",
+
+    // Tăng tốc build
+    "incremental": true,
+
+    // Plugin Next.js
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+
+    // 👇 QUAN TRỌNG: Thêm baseUrl để alias @ hoạt động
+    "baseUrl": ".",
+
+    // Alias @ trỏ về root project
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+
+  "exclude": ["node_modules"]
+}
+
+// End Code 1

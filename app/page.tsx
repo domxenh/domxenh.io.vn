@@ -1,20 +1,36 @@
-import ProductCard from "@/components/ProductCard";
-import { products } from "@/lib/data";
+import { prisma } from "@/lib/prisma"
+import Hero from "@/components/Hero"
+import ProductCard from "@/components/ProductCard"
 
-export default function HomePage() {
+export default async function HomePage() {
+  const products = await prisma.product.findMany({
+    take: 8,
+    orderBy: { createdAt: "desc" }
+  })
+
   return (
-    <div>
-      <section className="my-10">
-        <h1 className="text-3xl font-bold mb-6">
-          Đèn LED Sân Vườn
-        </h1>
+    <div className="pt-32">
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <ProductCard key={product.slug} product={product} />
+      {/* HERO */}
+      <Hero />
+
+      {/* SECTION SẢN PHẨM */}
+      <section className="section-alt">
+        <div className="max-w-7xl mx-auto px-6
+          grid
+          grid-cols-1
+          sm:grid-cols-2
+          lg:grid-cols-3
+          xl:grid-cols-4
+          gap-12">
+
+          {products.map(product => (
+            <ProductCard key={product.id} product={product} />
           ))}
+
         </div>
       </section>
+
     </div>
-  );
+  )
 }

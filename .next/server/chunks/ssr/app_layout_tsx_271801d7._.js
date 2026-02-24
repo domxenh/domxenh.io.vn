@@ -1,3 +1,0 @@
-module.exports=[33290,a=>{"use strict";var b=a.i(7997);function c(){return(0,b.jsx)("header",{className:"p-4 bg-black text-white",children:(0,b.jsx)("h2",{children:"Đèn Hoàng Gia"})})}function d(){return(0,b.jsx)("footer",{className:"p-4 bg-gray-100 text-center",children:"© 2026 Đèn Hoàng Gia"})}function e({children:a}){return(0,b.jsx)("html",{lang:"vi",children:(0,b.jsxs)("body",{children:[(0,b.jsx)(c,{}),(0,b.jsx)("main",{className:"container mx-auto px-4",children:a}),(0,b.jsx)(d,{})]})})}a.s(["default",()=>e,"metadata",0,{title:"Đèn Hoàng Gia - Đèn LED Sân Vườn Chính Hãng",description:"Chuyên cung cấp đèn LED sân vườn, đèn trang trí, đèn nội thất cao cấp."}],33290)}];
-
-//# sourceMappingURL=app_layout_tsx_271801d7._.js.map

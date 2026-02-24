@@ -1,1 +1,648 @@
-[00:00:01.762] Server  LOG     ✓ Ready in 1264ms
+[00:00:01.718] Server  LOG     ✓ Ready in 1275ms
+[00:00:04.772] Server  LOG     prisma:query "SELECT \"public\".\"Product\".\"id\", \"public\".\"Product\".\"name\", \"public\".\"Product\".\"slug\", \"public\".\"Product\".\"price\", \"public\".\"Product\".\"oldPrice\", \"public\".\"Product\".\"description\", \"public\".\"Product\".\"image\", \"public\".\"Product\".\"stock\", \"public\".\"Product\".\"categoryId\", \"public\".\"Product\".\"createdAt\" FROM \"public\".\"Product\" WHERE 1=1 ORDER BY \"public\".\"Product\".\"createdAt\" DESC LIMIT $1 OFFSET $2"
+[00:00:05.111] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:05.341] Browser ERROR   uncaughtError: Error: Hydration failed because the server rendered text didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <section className="max-w-7xl ...">
+      <FadeInSection>
+        <motion.div initial={{opacity:0,y:80}} whileInView={{opacity:1,y:0}} viewport={{once:true}} ...>
+          <div style={{opacity:0, ...}} ref={function useMotionRef.useCallback}>
+            <div className="grid grid-...">
+              <ProductCard product={{id:"949846...", ...}}>
+                <motion.div whileHover={{scale:1.05}} transition={{duration:0.3}}>
+                  <div style={{}} ref={function useMotionRef.useCallback}>
+                    <LinkComponent href="/san-pham/...">
+                      <a ref={function} onClick={function onClick} onMouseEnter={function onMouseEnter} ...>
+                        <div className="bg-white d...">
+                          <img>
+                          <h3>
+                          <p className="mt-4 text-...">
++                           350.000
+-                           350,000
+                            ...
+              ...
+
+[00:00:05.341] Browser WARN    Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly.
+[00:00:40.800] Server  LOG     prisma:query "SELECT 1"
+[00:00:40.846] Server  LOG     prisma:query "SELECT \"public\".\"Product\".\"id\", \"public\".\"Product\".\"name\", \"public\".\"Product\".\"slug\", \"public\".\"Product\".\"price\", \"public\".\"Product\".\"oldPrice\", \"public\".\"Product\".\"description\", \"public\".\"Product\".\"image\", \"public\".\"Product\".\"stock\", \"public\".\"Product\".\"categoryId\", \"public\".\"Product\".\"createdAt\" FROM \"public\".\"Product\" WHERE 1=1 ORDER BY \"public\".\"Product\".\"createdAt\" DESC LIMIT $1 OFFSET $2"
+[00:00:41.007] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:41.160] Browser ERROR   uncaughtError: Error: Hydration failed because the server rendered text didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <section className="max-w-7xl ...">
+      <FadeInSection>
+        <motion.div initial={{opacity:0,y:80}} whileInView={{opacity:1,y:0}} viewport={{once:true}} ...>
+          <div style={{opacity:0, ...}} ref={function useMotionRef.useCallback}>
+            <div className="grid grid-...">
+              <ProductCard product={{id:"949846...", ...}}>
+                <motion.div whileHover={{scale:1.05}} transition={{duration:0.3}}>
+                  <div style={{}} ref={function useMotionRef.useCallback}>
+                    <LinkComponent href="/san-pham/...">
+                      <a ref={function} onClick={function onClick} onMouseEnter={function onMouseEnter} ...>
+                        <div className="bg-white d...">
+                          <img>
+                          <h3>
+                          <p className="mt-4 text-...">
++                           350.000
+-                           350,000
+                            ...
+              ...
+
+[00:00:41.160] Browser WARN    Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly.
+[00:00:42.466] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:43.066] Server  LOG     prisma:query "SELECT \"public\".\"Product\".\"id\", \"public\".\"Product\".\"name\", \"public\".\"Product\".\"slug\", \"public\".\"Product\".\"price\", \"public\".\"Product\".\"oldPrice\", \"public\".\"Product\".\"description\", \"public\".\"Product\".\"image\", \"public\".\"Product\".\"stock\", \"public\".\"Product\".\"categoryId\", \"public\".\"Product\".\"createdAt\" FROM \"public\".\"Product\" LEFT JOIN \"public\".\"Category\" AS \"j1\" ON (\"j1\".\"id\") = (\"public\".\"Product\".\"categoryId\") WHERE (\"j1\".\"slug\" = $1 AND (\"j1\".\"id\" IS NOT NULL)) OFFSET $2"
+[00:00:43.196] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:45.233] Server  LOG     prisma:query "SELECT \"public\".\"Product\".\"id\", \"public\".\"Product\".\"name\", \"public\".\"Product\".\"slug\", \"public\".\"Product\".\"price\", \"public\".\"Product\".\"oldPrice\", \"public\".\"Product\".\"description\", \"public\".\"Product\".\"image\", \"public\".\"Product\".\"stock\", \"public\".\"Product\".\"categoryId\", \"public\".\"Product\".\"createdAt\" FROM \"public\".\"Product\" LEFT JOIN \"public\".\"Category\" AS \"j1\" ON (\"j1\".\"id\") = (\"public\".\"Product\".\"categoryId\") WHERE (\"j1\".\"slug\" = $1 AND (\"j1\".\"id\" IS NOT NULL)) OFFSET $2"
+[00:00:45.417] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:47.228] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:49.200] Server  LOG     prisma:query "SELECT \"public\".\"Product\".\"id\", \"public\".\"Product\".\"name\", \"public\".\"Product\".\"slug\", \"public\".\"Product\".\"price\", \"public\".\"Product\".\"oldPrice\", \"public\".\"Product\".\"description\", \"public\".\"Product\".\"image\", \"public\".\"Product\".\"stock\", \"public\".\"Product\".\"categoryId\", \"public\".\"Product\".\"createdAt\" FROM \"public\".\"Product\" LEFT JOIN \"public\".\"Category\" AS \"j1\" ON (\"j1\".\"id\") = (\"public\".\"Product\".\"categoryId\") WHERE (\"j1\".\"slug\" = $1 AND (\"j1\".\"id\" IS NOT NULL)) OFFSET $2"
+[00:00:49.324] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:49.949] Server  LOG     prisma:query "SELECT \"public\".\"Product\".\"id\", \"public\".\"Product\".\"name\", \"public\".\"Product\".\"slug\", \"public\".\"Product\".\"price\", \"public\".\"Product\".\"oldPrice\", \"public\".\"Product\".\"description\", \"public\".\"Product\".\"image\", \"public\".\"Product\".\"stock\", \"public\".\"Product\".\"categoryId\", \"public\".\"Product\".\"createdAt\" FROM \"public\".\"Product\" LEFT JOIN \"public\".\"Category\" AS \"j1\" ON (\"j1\".\"id\") = (\"public\".\"Product\".\"categoryId\") WHERE (\"j1\".\"slug\" = $1 AND (\"j1\".\"id\" IS NOT NULL)) OFFSET $2"
+[00:00:50.082] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:51.174] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:52.207] Server  LOG     prisma:query "SELECT \"public\".\"Product\".\"id\", \"public\".\"Product\".\"name\", \"public\".\"Product\".\"slug\", \"public\".\"Product\".\"price\", \"public\".\"Product\".\"oldPrice\", \"public\".\"Product\".\"description\", \"public\".\"Product\".\"image\", \"public\".\"Product\".\"stock\", \"public\".\"Product\".\"categoryId\", \"public\".\"Product\".\"createdAt\" FROM \"public\".\"Product\" LEFT JOIN \"public\".\"Category\" AS \"j1\" ON (\"j1\".\"id\") = (\"public\".\"Product\".\"categoryId\") WHERE (\"j1\".\"slug\" = $1 AND (\"j1\".\"id\" IS NOT NULL)) OFFSET $2"
+[00:00:52.326] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:53.997] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:56.267] Server  LOG     prisma:query "SELECT 1"
+[00:00:56.313] Server  LOG     prisma:query "SELECT \"public\".\"Product\".\"id\", \"public\".\"Product\".\"name\", \"public\".\"Product\".\"slug\", \"public\".\"Product\".\"price\", \"public\".\"Product\".\"oldPrice\", \"public\".\"Product\".\"description\", \"public\".\"Product\".\"image\", \"public\".\"Product\".\"stock\", \"public\".\"Product\".\"categoryId\", \"public\".\"Product\".\"createdAt\" FROM \"public\".\"Product\" WHERE 1=1 ORDER BY \"public\".\"Product\".\"createdAt\" DESC LIMIT $1 OFFSET $2"
+[00:00:56.460] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:56.656] Browser ERROR   uncaughtError: Error: Hydration failed because the server rendered text didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <section className="max-w-7xl ...">
+      <FadeInSection>
+        <motion.div initial={{opacity:0,y:80}} whileInView={{opacity:1,y:0}} viewport={{once:true}} ...>
+          <div style={{opacity:0, ...}} ref={function useMotionRef.useCallback}>
+            <div className="grid grid-...">
+              <ProductCard product={{id:"949846...", ...}}>
+                <motion.div whileHover={{scale:1.05}} transition={{duration:0.3}}>
+                  <div style={{}} ref={function useMotionRef.useCallback}>
+                    <LinkComponent href="/san-pham/...">
+                      <a ref={function} onClick={function onClick} onMouseEnter={function onMouseEnter} ...>
+                        <div className="bg-white d...">
+                          <img>
+                          <h3>
+                          <p className="mt-4 text-...">
++                           350.000
+-                           350,000
+                            ...
+              ...
+
+[00:00:56.656] Browser WARN    Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly.
+[00:05:35.272] Server  LOG     ✓ Compiled in 438ms
+[00:06:16.028] Server  LOG     ✓ Compiled in 94ms
+[00:06:16.147] Browser ERROR   ./components/Header.tsx:46:1
+Ecmascript file had an error
+  44 | // end code
+  45 |
+> 46 | "use client"
+     | ^^^^^^^^^^^^
+  47 |
+  48 | /*
+  49 | CODE: Header Apple dark
+
+The "use client" directive must be placed before other expressions. Move it to the top of the file to resolve this issue.
+
+Import trace:
+  Server Component:
+    ./components/Header.tsx
+    ./app/layout.tsx
+[00:06:16.147] Browser ERROR   ./components/Header.tsx:58:25
+Ecmascript file had an error
+  56 | import { useEffect, useState } from "react"
+  57 |
+> 58 | export default function Header() {
+     |                         ^^^^^^
+  59 |   const [scrolled, setScrolled] = useState(false)
+  60 |
+  61 |   useEffect(() => {
+
+the name `Header` is defined multiple times
+
+Import trace:
+  Server Component:
+    ./components/Header.tsx
+    ./app/layout.tsx
+[00:06:16.147] Browser ERROR   ./components/Header.tsx:58:1
+Ecmascript file had an error
+   56 | import { useEffect, useState } from "react"
+   57 |
+>  58 | export default function Header() {
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  59 |   const [scrolled, setScrolled] = useState(false)
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  60 |
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  61 |   useEffect(() => {
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  62 |     const handleScroll = () => {
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  63 |       setScrolled(window.scrollY > 10)
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  64 |     }
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  65 |     window.addEventListener("scroll", handleScroll)
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  66 |     return () => window.removeEventListener("scroll", handleScroll)
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  67 |   }, [])
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  68 |
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  69 |   return (
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  70 |     <header
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  71 |       className={`fixed top-6 left-1/2 -translate-x-1/2 z-50
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  72 |       w-[90%] max-w-6xl px-10 py-5 rounded-full
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  73 |       flex justify-between items-center
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  74 |       transition-all duration-300
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  75 |       ${
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  76 |         scrolled
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  77 |           ? "backdrop-blur-xl bg-white/10 shadow-2xl"
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  78 |           : "bg-white/5"
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  79 |       }`}
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  80 |     >
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  81 |       {/* LOGO */}
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  82 |       <div className="text-2xl font-semibold tracking-tight">
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  83 |         ĐÓM XÊNH
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  84 |       </div>
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  85 |
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  86 |       {/* MENU */}
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  87 |       <nav className="flex gap-10 text-lg font-medium">
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  88 |         {["Trang chủ", "Edison", "Đèn Tròn", "Dây & Bóng"].map(
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  89 |           (item, index) => (
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  90 |             <a
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  91 |               key={index}
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  92 |               href="#"
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  93 |               className="relative group transition-all duration-300 hover:scale-110"
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  94 |             >
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  95 |               {item}
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  96 |
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  97 |               {/* underline animation */}
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  98 |               <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-white transition-all duration-300 group-hover:w-full" />
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  99 |             </a>
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 100 |           )
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 101 |         )}
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 102 |       </nav>
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 103 |     </header>
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 104 |   )
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 105 | }
+      | ^^
+  106 |
+  107 | // end code
+
+the name `default` is exported multiple times
+
+Import trace:
+  Server Component:
+    ./components/Header.tsx
+    ./app/layout.tsx
+[00:06:16.147] Browser ERROR   ./components/Header.tsx:56:10
+Ecmascript file had an error
+  54 | */
+  55 |
+> 56 | import { useEffect, useState } from "react"
+     |          ^^^^^^^^^
+  57 |
+  58 | export default function Header() {
+  59 |   const [scrolled, setScrolled] = useState(false)
+
+the name `useEffect` is defined multiple times
+
+Import trace:
+  Server Component:
+    ./components/Header.tsx
+    ./app/layout.tsx
+[00:06:16.147] Browser ERROR   ./components/Header.tsx:56:21
+Ecmascript file had an error
+  54 | */
+  55 |
+> 56 | import { useEffect, useState } from "react"
+     |                     ^^^^^^^^
+  57 |
+  58 | export default function Header() {
+  59 |   const [scrolled, setScrolled] = useState(false)
+
+the name `useState` is defined multiple times
+
+Import trace:
+  Server Component:
+    ./components/Header.tsx
+    ./app/layout.tsx
+[00:06:20.904] Server  LOG     prisma:query "SELECT \"public\".\"Product\".\"id\", \"public\".\"Product\".\"name\", \"public\".\"Product\".\"slug\", \"public\".\"Product\".\"price\", \"public\".\"Product\".\"oldPrice\", \"public\".\"Product\".\"description\", \"public\".\"Product\".\"image\", \"public\".\"Product\".\"stock\", \"public\".\"Product\".\"categoryId\", \"public\".\"Product\".\"createdAt\" FROM \"public\".\"Product\" WHERE 1=1 ORDER BY \"public\".\"Product\".\"createdAt\" DESC LIMIT $1 OFFSET $2"
+[00:06:20.909] Server  LOG     prisma:query "SELECT \"public\".\"Product\".\"id\", \"public\".\"Product\".\"name\", \"public\".\"Product\".\"slug\", \"public\".\"Product\".\"price\", \"public\".\"Product\".\"oldPrice\", \"public\".\"Product\".\"description\", \"public\".\"Product\".\"image\", \"public\".\"Product\".\"stock\", \"public\".\"Product\".\"categoryId\", \"public\".\"Product\".\"createdAt\" FROM \"public\".\"Product\" WHERE 1=1 ORDER BY \"public\".\"Product\".\"createdAt\" DESC LIMIT $1 OFFSET $2"
+[00:06:20.919] Server  LOG     prisma:query "SELECT \"public\".\"Product\".\"id\", \"public\".\"Product\".\"name\", \"public\".\"Product\".\"slug\", \"public\".\"Product\".\"price\", \"public\".\"Product\".\"oldPrice\", \"public\".\"Product\".\"description\", \"public\".\"Product\".\"image\", \"public\".\"Product\".\"stock\", \"public\".\"Product\".\"categoryId\", \"public\".\"Product\".\"createdAt\" FROM \"public\".\"Product\" WHERE 1=1 ORDER BY \"public\".\"Product\".\"createdAt\" DESC LIMIT $1 OFFSET $2"
+[00:06:21.055] Server  LOG     prisma:query "SELECT \"public\".\"Product\".\"id\", \"public\".\"Product\".\"name\", \"public\".\"Product\".\"slug\", \"public\".\"Product\".\"price\", \"public\".\"Product\".\"oldPrice\", \"public\".\"Product\".\"description\", \"public\".\"Product\".\"image\", \"public\".\"Product\".\"stock\", \"public\".\"Product\".\"categoryId\", \"public\".\"Product\".\"createdAt\" FROM \"public\".\"Product\" WHERE 1=1 ORDER BY \"public\".\"Product\".\"createdAt\" DESC LIMIT $1 OFFSET $2"
+[00:09:42.332] Server  LOG     ✓ Compiled in 100ms
+[00:11:01.391] Server  LOG     ✓ Compiled in 354ms
+[00:13:42.131] Server  LOG     ✓ Compiled in 156ms
+[00:13:53.667] Server  WARN    Error: Route "/san-pham/[slug]" used `params.slug`. `params` is a Promise and must be unwrapped with `await` or `React.use()` before accessing its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+[00:13:54.078] Server  ERROR   ⨯ PrismaClientValidationError: 
+Invalid `{imported module ./lib/prisma.ts}["prisma"].product.findUnique()` invocation in
+E:\web\gifhub\domxenh.io.vn\.next\dev\server\chunks\ssr\[root-of-the-server]__61c274a8._.js:53:155
+
+  50 ;
+  51 ;
+  52 async function ProductDetail({ params }) {
+→ 53     const product = await {imported module ./lib/prisma.ts}["prisma"].product.findUnique({
+           where: {
+             slug: undefined,
+         ?   id?: String,
+         ?   AND?: ProductWhereInput | ProductWhereInput[],
+         ?   OR?: ProductWhereInput[],
+         ?   NOT?: ProductWhereInput | ProductWhereInput[],
+         ?   name?: StringFilter | String,
+         ?   price?: IntFilter | Int,
+         ?   oldPrice?: IntNullableFilter | Int | Null,
+         ?   description?: StringFilter | String,
+         ?   image?: StringFilter | String,
+         ?   stock?: IntFilter | Int,
+         ?   categoryId?: StringFilter | String,
+         ?   createdAt?: DateTimeFilter | DateTime,
+         ?   category?: CategoryRelationFilter | CategoryWhereInput
+           }
+         })
+
+Argument `where` of type ProductWhereUniqueInput needs at least one of `id` or `slug` arguments. Available options are marked with ?.
+[00:13:54.202] Browser ERROR   uncaughtError: PrismaClientValidationError: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].product.findUnique()` invocation in
+E:\web\gifhub\domxenh.io.vn\.next\dev\server\chunks\ssr\[root-of-the-server]__61c274a8._.js:53:155
+
+  50 ;
+  51 ;
+  52 async function ProductDetail({ params }) {
+→ 53     const product = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].product.findUnique({
+           where: {
+             slug: undefined,
+         ?   id?: String,
+         ?   AND?: ProductWhereInput | ProductWhereInput[],
+         ?   OR?: ProductWhereInput[],
+         ?   NOT?: ProductWhereInput | ProductWhereInput[],
+         ?   name?: StringFilter | String,
+         ?   price?: IntFilter | Int,
+         ?   oldPrice?: IntNullableFilter | Int | Null,
+         ?   description?: StringFilter | String,
+         ?   image?: StringFilter | String,
+         ?   stock?: IntFilter | Int,
+         ?   categoryId?: StringFilter | String,
+         ?   createdAt?: DateTimeFilter | DateTime,
+         ?   category?: CategoryRelationFilter | CategoryWhereInput
+           }
+         })
+
+Argument `where` of type ProductWhereUniqueInput needs at least one of `id` or `slug` arguments. Available options are marked with ?.
+[00:14:01.314] Server  LOG     prisma:query "SELECT \"public\".\"Product\".\"id\", \"public\".\"Product\".\"name\", \"public\".\"Product\".\"slug\", \"public\".\"Product\".\"price\", \"public\".\"Product\".\"oldPrice\", \"public\".\"Product\".\"description\", \"public\".\"Product\".\"image\", \"public\".\"Product\".\"stock\", \"public\".\"Product\".\"categoryId\", \"public\".\"Product\".\"createdAt\" FROM \"public\".\"Product\" WHERE 1=1 ORDER BY \"public\".\"Product\".\"createdAt\" DESC LIMIT $1 OFFSET $2"
+[00:14:01.570] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:14:01.730] Browser ERROR   uncaughtError: Error: Hydration failed because the server rendered text didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <section className="max-w-7xl ...">
+      <FadeInSection>
+        <motion.div initial={{opacity:0,y:80}} whileInView={{opacity:1,y:0}} viewport={{once:true}} ...>
+          <div style={{opacity:0, ...}} ref={function useMotionRef.useCallback}>
+            <div className="grid grid-...">
+              <ProductCard product={{id:"949846...", ...}}>
+                <motion.div whileHover={{scale:1.05}} transition={{duration:0.3}}>
+                  <div style={{}} ref={function useMotionRef.useCallback}>
+                    <LinkComponent href="/san-pham/...">
+                      <a ref={function} onClick={function onClick} onMouseEnter={function onMouseEnter} ...>
+                        <div className="bg-white d...">
+                          <img>
+                          <h3>
+                          <p className="mt-4 text-...">
++                           350.000
+-                           350,000
+                            ...
+                        ...
+              ...
+
+[00:20:51.428] Server  LOG     ✓ Compiled in 38ms
+[00:20:51.533] Browser ERROR   ./app/globals.css
+Error evaluating Node.js code
+CssSyntaxError: E:\web\gifhub\domxenh.io.vn\app\globals.css:1:4: Unknown word 1️⃣
+    [at Input.error (turbopack:///[project]/node_modules/postcss/lib/input.js:135:16)]
+    [at Parser.unknownWord (turbopack:///[project]/node_modules/postcss/lib/parser.js:595:22)]
+    [at Parser.decl (turbopack:///[project]/node_modules/postcss/lib/parser.js:236:16)]
+    [at Parser.other (turbopack:///[project]/node_modules/postcss/lib/parser.js:401:18)]
+    [at Parser.parse (turbopack:///[project]/node_modules/postcss/lib/parser.js:472:16)]
+    [at parse (turbopack:///[project]/node_modules/postcss/lib/parse.js:11:12)]
+    [at new LazyResult (turbopack:///[project]/node_modules/postcss/lib/lazy-result.js:165:16)]
+    [at Processor.process (turbopack:///[project]/node_modules/postcss/lib/processor.js:53:14)]
+    [at transform (turbopack:///[turbopack-node]/transforms/postcss.ts:70:51)]
+    [at run (turbopack:///[turbopack-node]/ipc/evaluate.ts:92:29)]
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+[00:21:00.066] Server  LOG     prisma:query "SELECT \"public\".\"Product\".\"id\", \"public\".\"Product\".\"name\", \"public\".\"Product\".\"slug\", \"public\".\"Product\".\"price\", \"public\".\"Product\".\"oldPrice\", \"public\".\"Product\".\"description\", \"public\".\"Product\".\"image\", \"public\".\"Product\".\"stock\", \"public\".\"Product\".\"categoryId\", \"public\".\"Product\".\"createdAt\" FROM \"public\".\"Product\" WHERE 1=1 ORDER BY \"public\".\"Product\".\"createdAt\" DESC LIMIT $1 OFFSET $2"
+[00:21:00.066] Server  LOG     prisma:query "SELECT \"public\".\"Product\".\"id\", \"public\".\"Product\".\"name\", \"public\".\"Product\".\"slug\", \"public\".\"Product\".\"price\", \"public\".\"Product\".\"oldPrice\", \"public\".\"Product\".\"description\", \"public\".\"Product\".\"image\", \"public\".\"Product\".\"stock\", \"public\".\"Product\".\"categoryId\", \"public\".\"Product\".\"createdAt\" FROM \"public\".\"Product\" WHERE 1=1 ORDER BY \"public\".\"Product\".\"createdAt\" DESC LIMIT $1 OFFSET $2"
+[00:21:00.108] Server  LOG     prisma:query "SELECT \"public\".\"Product\".\"id\", \"public\".\"Product\".\"name\", \"public\".\"Product\".\"slug\", \"public\".\"Product\".\"price\", \"public\".\"Product\".\"oldPrice\", \"public\".\"Product\".\"description\", \"public\".\"Product\".\"image\", \"public\".\"Product\".\"stock\", \"public\".\"Product\".\"categoryId\", \"public\".\"Product\".\"createdAt\" FROM \"public\".\"Product\" WHERE 1=1 ORDER BY \"public\".\"Product\".\"createdAt\" DESC LIMIT $1 OFFSET $2"
+[00:21:00.114] Server  LOG     prisma:query "SELECT \"public\".\"Product\".\"id\", \"public\".\"Product\".\"name\", \"public\".\"Product\".\"slug\", \"public\".\"Product\".\"price\", \"public\".\"Product\".\"oldPrice\", \"public\".\"Product\".\"description\", \"public\".\"Product\".\"image\", \"public\".\"Product\".\"stock\", \"public\".\"Product\".\"categoryId\", \"public\".\"Product\".\"createdAt\" FROM \"public\".\"Product\" WHERE 1=1 ORDER BY \"public\".\"Product\".\"createdAt\" DESC LIMIT $1 OFFSET $2"
+[00:21:00.122] Server  LOG     prisma:query "SELECT \"public\".\"Product\".\"id\", \"public\".\"Product\".\"name\", \"public\".\"Product\".\"slug\", \"public\".\"Product\".\"price\", \"public\".\"Product\".\"oldPrice\", \"public\".\"Product\".\"description\", \"public\".\"Product\".\"image\", \"public\".\"Product\".\"stock\", \"public\".\"Product\".\"categoryId\", \"public\".\"Product\".\"createdAt\" FROM \"public\".\"Product\" WHERE 1=1 ORDER BY \"public\".\"Product\".\"createdAt\" DESC LIMIT $1 OFFSET $2"
+[00:21:21.757] Server  LOG     ✓ Compiled in 484ms
+[00:23:25.679] Server  LOG     ✓ Compiled in 113ms
+[00:25:20.973] Server  LOG     ✓ Compiled in 372ms
+[00:25:21.082] Browser ERROR   ./components/ProductCard.tsx:32:14
+Parsing ecmascript source code failed
+  30 |
+  31 |         <div className="product-card text-center">
+> 32 |       </Link>
+     |              ^
+> 33 |     </motion.div>
+     | ^^^^^
+  34 |   )
+  35 | }
+
+Expected '</', got 'jsx text'
+
+Import trace:
+  Server Component:
+    ./components/ProductCard.tsx
+    ./app/page.tsx
+[00:25:47.843] Server  LOG     prisma:query "SELECT 1"
+[00:25:47.875] Server  LOG     prisma:query "SELECT 1"
+[00:25:47.876] Server  LOG     prisma:query "SELECT \"public\".\"Product\".\"id\", \"public\".\"Product\".\"name\", \"public\".\"Product\".\"slug\", \"public\".\"Product\".\"price\", \"public\".\"Product\".\"oldPrice\", \"public\".\"Product\".\"description\", \"public\".\"Product\".\"image\", \"public\".\"Product\".\"stock\", \"public\".\"Product\".\"categoryId\", \"public\".\"Product\".\"createdAt\" FROM \"public\".\"Product\" WHERE 1=1 ORDER BY \"public\".\"Product\".\"createdAt\" DESC LIMIT $1 OFFSET $2"
+[00:25:47.920] Server  LOG     prisma:query "SELECT 1"
+[00:25:47.923] Server  LOG     prisma:query "SELECT \"public\".\"Product\".\"id\", \"public\".\"Product\".\"name\", \"public\".\"Product\".\"slug\", \"public\".\"Product\".\"price\", \"public\".\"Product\".\"oldPrice\", \"public\".\"Product\".\"description\", \"public\".\"Product\".\"image\", \"public\".\"Product\".\"stock\", \"public\".\"Product\".\"categoryId\", \"public\".\"Product\".\"createdAt\" FROM \"public\".\"Product\" WHERE 1=1 ORDER BY \"public\".\"Product\".\"createdAt\" DESC LIMIT $1 OFFSET $2"
+[00:25:47.969] Server  LOG     prisma:query "SELECT \"public\".\"Product\".\"id\", \"public\".\"Product\".\"name\", \"public\".\"Product\".\"slug\", \"public\".\"Product\".\"price\", \"public\".\"Product\".\"oldPrice\", \"public\".\"Product\".\"description\", \"public\".\"Product\".\"image\", \"public\".\"Product\".\"stock\", \"public\".\"Product\".\"categoryId\", \"public\".\"Product\".\"createdAt\" FROM \"public\".\"Product\" WHERE 1=1 ORDER BY \"public\".\"Product\".\"createdAt\" DESC LIMIT $1 OFFSET $2"
+[00:26:23.002] Server  LOG     ✓ Compiled in 102ms
+[00:26:32.784] Server  LOG     ✓ Compiled in 38ms
+[00:26:54.588] Server  WARN    Error: Route "/san-pham/[slug]" used `params.slug`. `params` is a Promise and must be unwrapped with `await` or `React.use()` before accessing its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+[00:26:55.057] Server  ERROR   ⨯ PrismaClientValidationError: 
+Invalid `{imported module ./lib/prisma.ts}["prisma"].product.findUnique()` invocation in
+E:\web\gifhub\domxenh.io.vn\.next\dev\server\chunks\ssr\[root-of-the-server]__61c274a8._.js:53:155
+
+  50 ;
+  51 ;
+  52 async function ProductDetail({ params }) {
+→ 53     const product = await {imported module ./lib/prisma.ts}["prisma"].product.findUnique({
+           where: {
+             slug: undefined,
+         ?   id?: String,
+         ?   AND?: ProductWhereInput | ProductWhereInput[],
+         ?   OR?: ProductWhereInput[],
+         ?   NOT?: ProductWhereInput | ProductWhereInput[],
+         ?   name?: StringFilter | String,
+         ?   price?: IntFilter | Int,
+         ?   oldPrice?: IntNullableFilter | Int | Null,
+         ?   description?: StringFilter | String,
+         ?   image?: StringFilter | String,
+         ?   stock?: IntFilter | Int,
+         ?   categoryId?: StringFilter | String,
+         ?   createdAt?: DateTimeFilter | DateTime,
+         ?   category?: CategoryRelationFilter | CategoryWhereInput
+           }
+         })
+
+Argument `where` of type ProductWhereUniqueInput needs at least one of `id` or `slug` arguments. Available options are marked with ?.
+[00:26:55.185] Browser ERROR   uncaughtError: PrismaClientValidationError: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].product.findUnique()` invocation in
+E:\web\gifhub\domxenh.io.vn\.next\dev\server\chunks\ssr\[root-of-the-server]__61c274a8._.js:53:155
+
+  50 ;
+  51 ;
+  52 async function ProductDetail({ params }) {
+→ 53     const product = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].product.findUnique({
+           where: {
+             slug: undefined,
+         ?   id?: String,
+         ?   AND?: ProductWhereInput | ProductWhereInput[],
+         ?   OR?: ProductWhereInput[],
+         ?   NOT?: ProductWhereInput | ProductWhereInput[],
+         ?   name?: StringFilter | String,
+         ?   price?: IntFilter | Int,
+         ?   oldPrice?: IntNullableFilter | Int | Null,
+         ?   description?: StringFilter | String,
+         ?   image?: StringFilter | String,
+         ?   stock?: IntFilter | Int,
+         ?   categoryId?: StringFilter | String,
+         ?   createdAt?: DateTimeFilter | DateTime,
+         ?   category?: CategoryRelationFilter | CategoryWhereInput
+           }
+         })
+
+Argument `where` of type ProductWhereUniqueInput needs at least one of `id` or `slug` arguments. Available options are marked with ?.
+[00:27:00.085] Server  LOG     prisma:query "SELECT \"public\".\"Product\".\"id\", \"public\".\"Product\".\"name\", \"public\".\"Product\".\"slug\", \"public\".\"Product\".\"price\", \"public\".\"Product\".\"oldPrice\", \"public\".\"Product\".\"description\", \"public\".\"Product\".\"image\", \"public\".\"Product\".\"stock\", \"public\".\"Product\".\"categoryId\", \"public\".\"Product\".\"createdAt\" FROM \"public\".\"Product\" WHERE 1=1 ORDER BY \"public\".\"Product\".\"createdAt\" DESC LIMIT $1 OFFSET $2"
+[00:27:00.302] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:27:00.450] Browser ERROR   uncaughtError: Error: Hydration failed because the server rendered text didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <section className="max-w-7xl ...">
+      <FadeInSection>
+        <motion.div initial={{opacity:0,y:80}} whileInView={{opacity:1,y:0}} viewport={{once:true}} ...>
+          <div style={{opacity:0, ...}} ref={function useMotionRef.useCallback}>
+            <div className="grid grid-...">
+              <ProductCard product={{id:"949846...", ...}}>
+                <motion.div whileHover={{scale:1.05}} transition={{duration:0.3}}>
+                  <div style={{}} ref={function useMotionRef.useCallback}>
+                    <LinkComponent href="/san-pham/...">
+                      <a ref={function} onClick={function onClick} onMouseEnter={function onMouseEnter} ...>
+                        <div className="product-ca...">
+                          <img>
+                          <h3>
+                          <p className="mt-4 price">
++                           350.000
+-                           350,000
+                            ...
+                          ...
+                        ...
+              ...
+
+[00:27:44.466] Server  WARN    Error: Route "/san-pham/[slug]" used `params.slug`. `params` is a Promise and must be unwrapped with `await` or `React.use()` before accessing its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+[00:27:44.857] Server  LOG     prisma:query "SELECT 1"
+[00:27:44.868] Server  ERROR   ⨯ PrismaClientValidationError: 
+Invalid `{imported module ./lib/prisma.ts}["prisma"].product.findUnique()` invocation in
+E:\web\gifhub\domxenh.io.vn\.next\dev\server\chunks\ssr\[root-of-the-server]__61c274a8._.js:53:155
+
+  50 ;
+  51 ;
+  52 async function ProductDetail({ params }) {
+→ 53     const product = await {imported module ./lib/prisma.ts}["prisma"].product.findUnique({
+           where: {
+             slug: undefined,
+         ?   id?: String,
+         ?   AND?: ProductWhereInput | ProductWhereInput[],
+         ?   OR?: ProductWhereInput[],
+         ?   NOT?: ProductWhereInput | ProductWhereInput[],
+         ?   name?: StringFilter | String,
+         ?   price?: IntFilter | Int,
+         ?   oldPrice?: IntNullableFilter | Int | Null,
+         ?   description?: StringFilter | String,
+         ?   image?: StringFilter | String,
+         ?   stock?: IntFilter | Int,
+         ?   categoryId?: StringFilter | String,
+         ?   createdAt?: DateTimeFilter | DateTime,
+         ?   category?: CategoryRelationFilter | CategoryWhereInput
+           }
+         })
+
+Argument `where` of type ProductWhereUniqueInput needs at least one of `id` or `slug` arguments. Available options are marked with ?.
+[00:27:45.000] Browser ERROR   uncaughtError: PrismaClientValidationError: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].product.findUnique()` invocation in
+E:\web\gifhub\domxenh.io.vn\.next\dev\server\chunks\ssr\[root-of-the-server]__61c274a8._.js:53:155
+
+  50 ;
+  51 ;
+  52 async function ProductDetail({ params }) {
+→ 53     const product = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["prisma"].product.findUnique({
+           where: {
+             slug: undefined,
+         ?   id?: String,
+         ?   AND?: ProductWhereInput | ProductWhereInput[],
+         ?   OR?: ProductWhereInput[],
+         ?   NOT?: ProductWhereInput | ProductWhereInput[],
+         ?   name?: StringFilter | String,
+         ?   price?: IntFilter | Int,
+         ?   oldPrice?: IntNullableFilter | Int | Null,
+         ?   description?: StringFilter | String,
+         ?   image?: StringFilter | String,
+         ?   stock?: IntFilter | Int,
+         ?   categoryId?: StringFilter | String,
+         ?   createdAt?: DateTimeFilter | DateTime,
+         ?   category?: CategoryRelationFilter | CategoryWhereInput
+           }
+         })
+
+Argument `where` of type ProductWhereUniqueInput needs at least one of `id` or `slug` arguments. Available options are marked with ?.
+[00:27:47.863] Server  LOG     prisma:query "SELECT \"public\".\"Product\".\"id\", \"public\".\"Product\".\"name\", \"public\".\"Product\".\"slug\", \"public\".\"Product\".\"price\", \"public\".\"Product\".\"oldPrice\", \"public\".\"Product\".\"description\", \"public\".\"Product\".\"image\", \"public\".\"Product\".\"stock\", \"public\".\"Product\".\"categoryId\", \"public\".\"Product\".\"createdAt\" FROM \"public\".\"Product\" WHERE 1=1 ORDER BY \"public\".\"Product\".\"createdAt\" DESC LIMIT $1 OFFSET $2"
+[00:27:48.053] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:27:48.257] Browser ERROR   uncaughtError: Error: Hydration failed because the server rendered text didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <section className="max-w-7xl ...">
+      <FadeInSection>
+        <motion.div initial={{opacity:0,y:80}} whileInView={{opacity:1,y:0}} viewport={{once:true}} ...>
+          <div style={{opacity:0, ...}} ref={function useMotionRef.useCallback}>
+            <div className="grid grid-...">
+              <ProductCard product={{id:"949846...", ...}}>
+                <motion.div whileHover={{scale:1.05}} transition={{duration:0.3}}>
+                  <div style={{}} ref={function useMotionRef.useCallback}>
+                    <LinkComponent href="/san-pham/...">
+                      <a ref={function} onClick={function onClick} onMouseEnter={function onMouseEnter} ...>
+                        <div className="product-ca...">
+                          <img>
+                          <h3>
+                          <p className="mt-4 price">
++                           350.000
+-                           350,000
+                            ...
+                          ...
+                        ...
+              ...
+
+[00:30:28.854] Server  LOG     prisma:query "SELECT 1"
+[00:30:28.899] Server  LOG     prisma:query "SELECT \"public\".\"Product\".\"id\", \"public\".\"Product\".\"name\", \"public\".\"Product\".\"slug\", \"public\".\"Product\".\"price\", \"public\".\"Product\".\"oldPrice\", \"public\".\"Product\".\"description\", \"public\".\"Product\".\"image\", \"public\".\"Product\".\"stock\", \"public\".\"Product\".\"categoryId\", \"public\".\"Product\".\"createdAt\" FROM \"public\".\"Product\" WHERE 1=1 ORDER BY \"public\".\"Product\".\"createdAt\" DESC LIMIT $1 OFFSET $2"
+[00:38:10.717] Server  LOG     ✓ Compiled in 441ms
+[00:38:20.892] Server  LOG     ✓ Compiled in 134ms
+[00:38:21.474] Server  LOG     prisma:query "SELECT \"public\".\"Product\".\"id\", \"public\".\"Product\".\"name\", \"public\".\"Product\".\"slug\", \"public\".\"Product\".\"price\", \"public\".\"Product\".\"oldPrice\", \"public\".\"Product\".\"description\", \"public\".\"Product\".\"image\", \"public\".\"Product\".\"stock\", \"public\".\"Product\".\"categoryId\", \"public\".\"Product\".\"createdAt\" FROM \"public\".\"Product\" WHERE 1=1 ORDER BY \"public\".\"Product\".\"createdAt\" DESC LIMIT $1 OFFSET $2"
+[00:38:33.627] Server  LOG     ✓ Compiled in 112ms
+[00:38:49.563] Server  LOG     ✓ Compiled in 83ms
+[00:38:55.655] Server  LOG     ✓ Compiled in 27ms
+[00:44:25.180] Server  LOG     ✓ Compiled in 186ms
+[00:45:03.368] Server  LOG     ✓ Compiled in 429ms
+[00:45:21.093] Server  LOG     ✓ Compiled in 105ms
+[00:46:24.233] Server  LOG     ✓ Compiled in 127ms
+[00:52:21.331] Server  LOG     ✓ Compiled in 402ms
+[00:52:49.728] Server  LOG     ✓ Compiled in 90ms
+[00:53:09.611] Server  LOG     ✓ Compiled in 60ms
+[00:53:15.547] Server  LOG     ✓ Compiled in 91ms
+[00:55:18.397] Server  LOG     ✓ Compiled in 486ms
+[00:55:46.544] Server  LOG     ✓ Compiled in 115ms
+[00:59:50.130] Server  LOG     ✓ Compiled in 307ms

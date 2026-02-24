@@ -1,29 +1,39 @@
-// Code 3
+"use client"
 
-import Link from "next/link";
-import { Product } from "@/lib/types";
+import Link from "next/link"
+import { motion } from "framer-motion"
 
-// Khai báo type cho props truyền vào component
-type ProductCardProps = {
-  product: Product;
-};
-
-// Component hiển thị một sản phẩm
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product }: any) {
   return (
-    <div className="border p-4 rounded">
-      <h3 className="font-semibold mb-2">
-        {product.name}
-      </h3>
+    <motion.div
+      whileHover={{ scale: 1.02 }}
+      transition={{ duration: 0.3 }}
+    >
+      <Link href={`/san-pham/${product.slug}`}>
+        <div className="product-card text-center">
 
-      <Link
-        href={`/san-pham/${product.slug}`}
-        className="text-blue-600"
-      >
-        Xem chi tiết
+          <img
+            src={product.image}
+            alt={product.name}
+            className="mx-auto h-60 object-contain"
+          />
+
+          <h3 className="mt-6 text-xl heading">
+            {product.name}
+          </h3>
+
+          <p className="mt-4 price">
+            {product.price.toLocaleString()} đ
+          </p>
+
+          <div className="mt-6">
+            <button className="btn-brand">
+              Mua ngay
+            </button>
+          </div>
+
+        </div>
       </Link>
-    </div>
-  );
+    </motion.div>
+  )
 }
-
-// End code 3

@@ -9,7 +9,7 @@ export default async function HomePage() {
   })
 
   return (
-    <div className="pt-32">
+    <div className="mt-32">
 
       {/* HERO */}
       <Hero />
@@ -28,6 +28,11 @@ export default async function HomePage() {
             <ProductCard key={product.id} product={product} />
           ))}
 
+        </div>
+        <div className="relative -mt-10 z-20">
+          <div className="sticky top-24">
+            {/* Component danh sách sản phẩm của anh */}
+          </div>
         </div>
       </section>
 

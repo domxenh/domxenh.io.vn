@@ -3,13 +3,11 @@
 /**
  * components/Header.tsx
  *
- * TÓM TẮT (Header Ver5 – full):
- * - Border base + shimmer + scroll shrink + underline + mobile iOS panel.
- * - Blur backdrop ngoài pill (không sửa layout):
- *   - Ưu tiên dùng ảnh hero qua CSS var: var(--hero-bg)
- *   - Fallback: /images/hero-outdoor.png
- * - Đồng bộ Fireflies với Hero: <Fireflies variant="header" />
- * - Mobile popup: click khoảng trống/backdrop đóng, ESC đóng, khoá scroll nền, exit nhanh.
+ * MOBILE PERF TUNING (không đổi cấu trúc):
+ * - Tắt Fireflies & shimmer trên mobile
+ * - Giảm blur/shadow overlay mobile
+ * - Prefetch=false cho Link (giảm lag do prefetch hàng loạt)
+ * - Transition mobile nhanh hơn
  */
 
 import Link from "next/link"
@@ -27,14 +25,6 @@ import {
 } from "framer-motion"
 import Fireflies from "@/components/Fireflies"
 
-/**
- * MENU
- * - Trang chủ / Sản phẩm / Bảo Hành / Liên Hệ
- *
- * NOTE icon:
- * Repo bạn chắc chắn có /icons/home.png.
- * Các icon còn lại bạn có thể thay lại sau nếu đã tạo file trong public/icons.
- */
 const NAV_ITEMS = [
   { name: "Trang chủ", href: "/", icon: "/icons/home.png" },
   { name: "Sản phẩm", href: "/san-pham-full", icon: "/icons/san-pham-full.png" },
@@ -47,6 +37,16 @@ export default function Header() {
   const reduceMotion = useReducedMotion()
   const { scrollY } = useScroll()
   const [open, setOpen] = useState(false)
+
+  // ✅ MOBILE detect (chỉ để giảm hiệu ứng, không đổi layout)
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)")
+    const apply = () => setIsMobile(mq.matches)
+    apply()
+    mq.addEventListener?.("change", apply)
+    return () => mq.removeEventListener?.("change", apply)
+  }, [])
 
   const activeItem = useMemo(() => {
     return NAV_ITEMS.find((item) => item.href === pathname) || NAV_ITEMS[0]
@@ -63,7 +63,8 @@ export default function Header() {
     mass: 0.7,
   })
 
-  const blurValue = useTransform(scrollYSmooth, [0, 300], [18, 30])
+  // ✅ Giảm blur trên mobile để nhẹ GPU
+  const blurValue = useTransform(scrollYSmooth, [0, 300], [isMobile ? 12 : 18, isMobile ? 20 : 30])
   const bgOpacity = useTransform(scrollYSmooth, [0, 300], [0.18, 0.35])
   const paddingY = useTransform(scrollYSmooth, [0, 300], [14, 8])
   const logoScale = useTransform(scrollYSmooth, [0, 300], [1.1, 0.85])
@@ -73,7 +74,6 @@ export default function Header() {
   const backgroundColor = useMotionTemplate`rgba(20,25,30,${bgOpacity})`
   const navPadding = useMotionTemplate`${paddingY}px`
 
-  // Blur backdrop ngoài pill: fade theo scroll cho nhẹ
   const headerBackdropOpacity = useTransform(scrollYSmooth, [0, 240], [0.6, 0.2])
 
   /**
@@ -103,6 +103,9 @@ export default function Header() {
     return () => window.removeEventListener("keydown", onKeyDown)
   }, [open])
 
+  // ✅ Mobile: giảm motion tổng thể (không đổi cấu trúc)
+  const allowFx = !reduceMotion && !isMobile
+
   return (
     <>
       <motion.div
@@ -112,7 +115,7 @@ export default function Header() {
           backgroundImage: "var(--hero-bg, url('/images/hero-outdoor.png'))",
           backgroundSize: "cover",
           backgroundPosition: "top",
-          filter: "blur(5px)",
+          filter: isMobile ? "blur(3px)" : "blur(5px)",
           opacity: headerBackdropOpacity,
           transform: "scale(1.0)",
           WebkitMaskImage:
@@ -122,7 +125,8 @@ export default function Header() {
         }}
       />
 
-      {!reduceMotion && (
+      {/* ✅ Tắt Fireflies trên mobile để giảm lag */}
+      {allowFx && (
         <div className="fixed top-0 left-0 w-full h-28 md:h-32 z-40 pointer-events-none">
           <Fireflies variant="header" />
         </div>
@@ -150,7 +154,8 @@ export default function Header() {
             }}
           />
 
-          {!reduceMotion && (
+          {/* ✅ Tắt shimmer trên mobile */}
+          {allowFx && (
             <motion.div
               className="pointer-events-none absolute inset-0 rounded-full"
               style={{
@@ -186,7 +191,7 @@ export default function Header() {
             "
           >
             {/* LOGO */}
-            <Link href="/" className="flex items-center gap-4 whitespace-nowrap">
+            <Link href="/" prefetch={false} className="flex items-center gap-4 whitespace-nowrap">
               <motion.div
                 style={{ scale: logoScale }}
                 className="w-12 h-12 flex items-center justify-center shrink-0"
@@ -196,8 +201,7 @@ export default function Header() {
                   alt="Logo"
                   width={48}
                   height={48}
-                  quality={100}
-                  // ✅ [FIX] Bỏ scale phụ gây mờ, làm viền mềm hơn (không thô), giữ glow nhưng sắc hơn
+                  quality={90}
                   className="
                     rounded-full
                     object-cover
@@ -232,6 +236,7 @@ export default function Header() {
                   <Link
                     key={item.href}
                     href={item.href}
+                    prefetch={false}
                     className="relative px-2 whitespace-nowrap"
                   >
                     <span
@@ -319,10 +324,13 @@ export default function Header() {
           <>
             <motion.div
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1, transition: { duration: 0.12 } }}
-              exit={{ opacity: 0, transition: { duration: 0.1 } }}
+              animate={{ opacity: 1, transition: { duration: isMobile ? 0.08 : 0.12 } }}
+              exit={{ opacity: 0, transition: { duration: isMobile ? 0.07 : 0.1 } }}
               onClick={() => setOpen(false)}
-              className="fixed inset-0 z-[998] bg-black/60 backdrop-blur-xl"
+              className={`
+                fixed inset-0 z-[998] bg-black/60
+                ${isMobile ? "backdrop-blur-sm" : "backdrop-blur-xl"}
+              `}
             />
 
             <motion.div
@@ -331,27 +339,28 @@ export default function Header() {
               exit={{
                 y: -180,
                 opacity: 0,
-                transition: { duration: 0.16, ease: [0.2, 0.8, 0.2, 1] },
+                transition: { duration: isMobile ? 0.12 : 0.16, ease: [0.2, 0.8, 0.2, 1] },
               }}
-              transition={{ type: "spring", stiffness: 160, damping: 20 }}
+              transition={
+                isMobile
+                  ? { type: "tween", duration: 0.16, ease: [0.2, 0.8, 0.2, 1] }
+                  : { type: "spring", stiffness: 160, damping: 20 }
+              }
               onClick={() => setOpen(false)}
               className="fixed top-0 left-0 w-full z-[999] pt-28 px-5"
               role="dialog"
               aria-modal="true"
             >
               <div
-                className="
-                  relative
-                  mx-auto
-                  w-full max-w-md
+                className={`
+                  relative mx-auto w-full max-w-md
                   bg-white/10
-                  backdrop-blur-2xl
+                  ${isMobile ? "backdrop-blur-md" : "backdrop-blur-2xl"}
                   rounded-3xl
                   border border-white/20
-                  shadow-[0_40px_100px_rgba(0,0,0,0.8)]
-                  p-6
-                  space-y-6
-                "
+                  ${isMobile ? "shadow-[0_30px_70px_rgba(0,0,0,0.75)]" : "shadow-[0_40px_100px_rgba(0,0,0,0.8)]"}
+                  p-6 space-y-6
+                `}
                 onClick={(e) => e.stopPropagation()}
               >
                 <button
@@ -395,6 +404,7 @@ export default function Header() {
                       <Link
                         key={item.href}
                         href={item.href}
+                        prefetch={false}
                         onClick={() => setOpen(false)}
                         className="flex flex-col items-center space-y-3 group"
                       >

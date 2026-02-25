@@ -712,3 +712,211 @@ Hiện tại bước vào giai đoạn:
 👉 Tối ưu trải nghiệm cao cấp & hoàn thiện product detail
 
 ===End Ver1.2 Stable===
+
+# 📦 PROJECT v1.2: DOMXENH.IO.VN – ĐÓM XÊNH (Next.js + Prisma + Supabase)
+
+> Cập nhật theo tiến trình phiên chat gần nhất:
+> - Trang chủ hiển thị **Danh mục sản phẩm dạng “Folder lớn”** (bên trong là ProductCard nhỏ).
+> - Tab **Sản phẩm** là trang **full catalog** (tách biệt với trang chủ).
+> - Header lên **Ver5** (mượt hơn, mobile panel, backdrop blur đồng bộ Hero, cải thiện logo).
+> - Prisma thêm field **isHot** để gắn badge HOT theo DB.
+> - Fix lỗi dev Postgres prepared statement (PgBouncer + statement_cache_size).
+
+---
+
+## 1) Công nghệ sử dụng
+
+- Next.js 16 (App Router)
+- TypeScript
+- TailwindCSS
+- Framer Motion
+- Prisma ORM
+- Supabase PostgreSQL
+- Vercel (deploy)
+
+---
+
+## 2) Trạng thái hiện tại (đã làm)
+
+### ✅ Backend/DB
+- Prisma + Supabase PostgreSQL kết nối ổn.
+- `Product` có `oldPrice` (giá gạch) và đã thêm `isHot` (HOT badge).
+- Seed dữ liệu theo đúng nhóm sản phẩm (Edison / Bóng tròn / Dây & Bóng lẻ).
+
+### ✅ UI/UX
+- **Header Ver5**:
+  - Scroll shrink mượt (spring smoothing).
+  - Border base + shimmer giữ lại.
+  - Underline active mượt.
+  - Mobile panel (Apple panel style): click khoảng trống đóng, ESC đóng, đóng nhanh hơn, lock scroll khi mở.
+  - Backdrop blur phía sau header (không đụng layout), có thể đồng bộ ảnh từ Hero qua CSS var `--hero-bg`.
+  - **Logo**: giảm blur/mờ, viền mềm hơn (ring mỏng + inset shadow), glow sắc hơn.
+
+- **Hero**:
+  - Dùng ảnh nền `public/images/hero-outdoor.png`.
+  - Blur nhẹ để vẫn nhìn thấy ảnh.
+  - CTA “Khám phá ngay” có hiệu ứng thu hút (pulse + shimmer).
+  - Click CTA scroll xuống section danh mục sản phẩm (`#products`).
+  - “Sáng” & “Xênh” nổi bật hơn (màu/weight/glow).
+  - Yêu cầu thêm: **không xuống dòng khi màn hình hẹp** → dùng `whitespace-nowrap` + `clamp()` (đã triển khai/đang tinh chỉnh).
+
+- **Trang chủ (Home)**:
+  - Hiển thị **3 Folder danh mục lớn**, mỗi folder chứa đúng danh sách sản phẩm nhỏ:
+    1) Bộ dây đèn Edison (3 SP)
+    2) Bộ dây đèn bóng Tròn (4 SP)
+    3) Dây lẻ - Bóng lẻ (2 SP)
+  - Mỗi ProductCard hiển thị: giá, giá gạch (oldPrice), badge HOT/SALE, nút “Chi Tiết”.
+
+- **Trang Sản phẩm (full)**:
+  - Route: `/san-pham-full`
+  - Hiển thị danh sách sản phẩm đầy đủ (catalog grid).
+  - Tách biệt khỏi Home (Home chỉ là curated folder).
+
+---
+
+## 3) Cấu trúc route & component (sau khi refactor)
+
+### Routes
+- `/` : Trang chủ (Hero + HomeProductFolders)
+- `/san-pham-full` : Sản phẩm full catalog
+- `/bao-hanh` : Bảo hành
+- `/lien-he` : Liên hệ
+- `/san-pham/[slug]` : Chi tiết sản phẩm (nếu đang dùng)
+
+### Components quan trọng
+- `components/Header.tsx` : Header Ver5
+- `components/Hero.tsx` : Hero (CTA + typography + ảnh)
+- `components/home/HomeProductFolders.tsx` : 3 folder danh mục lớn (**id="products"**)
+- `components/home/folderConfig.ts` : cấu hình tên folder + danh sách tên sản phẩm
+- `components/catalog/CatalogGrid.tsx` : grid trang `/san-pham-full`
+- `components/ProductCard.tsx` : card dùng chung (home + catalog)
+- `components/Fireflies.tsx` : hiệu ứng đom đóm (đồng bộ hero/header nếu bật)
+
+### Lib
+- `lib/prisma.ts` : Prisma client singleton
+- `lib/products.ts` : query dùng chung (by names / all products)
+- `lib/types.ts` : types dùng chung
+
+---
+
+## 4) Database Schema (Prisma)
+
+### Category
+- id (uuid)
+- name
+- slug (unique)
+- image? (nếu có)
+- createdAt
+
+### Product
+- id (uuid)
+- name
+- slug (unique)
+- price (Int)
+- oldPrice (Int?)  → giá gạch
+- isHot (Boolean @default(false)) → badge HOT theo DB
+- description
+- image
+- stock
+- categoryId (relation)
+- createdAt
+
+---
+
+## 5) Seed dữ liệu chuẩn theo “Folder trên Home”
+
+### Folder 1: Bộ dây đèn Edison (3)
+1. Bộ dây đèn Edison
+2. Bộ dây đèn Edison 1 tóc
+3. Bộ dây đèn Edison 2 tóc
+
+### Folder 2: Bộ dây đèn bóng Tròn (4)
+1. Bộ dây đèn bóng Tròn 3W
+2. Bộ dây đèn bóng Tròn 5W
+3. Bộ dây đèn bóng Tròn 7W
+4. Bộ dây đèn bóng Tròn 9W
+
+### Folder 3: Dây lẻ - Bóng lẻ (2)
+1. Dây lẻ
+2. Bóng lẻ
+
+> Lưu ý: Home match theo **product.name** đúng như folderConfig. Nếu đổi tên trong DB thì folder sẽ báo “chưa có dữ liệu”.
+
+---
+
+## 6) Lệnh quan trọng
+
+### Dev
+```bash
+npm run dev
+7) Fix lỗi Postgres “prepared statement already exists” (Dev)
+
+Nếu gặp lỗi 42P05: prepared statement "s0" already exists khi dev với Supabase/PgBouncer:
+
+Thêm vào DATABASE_URL:
+
+pgbouncer=true
+
+statement_cache_size=0
+
+Ví dụ:
+
+DATABASE_URL="postgresql://...@...:5432/postgres?pgbouncer=true&statement_cache_size=0"
+
+Sau đó:
+
+Stop dev server (Ctrl+C)
+
+Xoá .next
+
+Run lại npm run dev
+
+8) Quy tắc khi chỉnh code (đúng yêu cầu dự án)
+
+Khi gửi code/patch:
+
+Có tóm tắt tiếng Việt ở đầu file
+
+Có comment chỉ rõ chỗ sửa
+
+Gửi file hoàn chỉnh
+
+Cuối file có dòng // end code
+
+9) Dọn project (khuyến nghị)
+
+Xoá file trùng / không dùng:
+
+components/ParallaxSection.tsx (nếu không import)
+
+lib/data.ts (mock cũ, không dùng nếu đã dùng Prisma)
+
+components/catalog/ProductCard.tsx (nếu trùng với components/ProductCard.tsx)
+
+Header.jpg ở root (đã có public/images/Header.jpg)
+
+SVG template không dùng: public/next.svg, public/vercel.svg, ...
+
+Không commit secrets:
+
+.env, .env.local phải nằm trong .gitignore (không đẩy GitHub)
+
+10) Checklist nhanh khi deploy
+
+Build command: prisma generate && next build
+
+Vercel env vars:
+
+DATABASE_URL (đúng format, có pgbouncer=true&statement_cache_size=0 nếu dùng pooler)
+
+Confirm pages:
+
+/ có Hero + Folder sections
+
+/san-pham-full có catalog grid
+
+Header hoạt động mượt, mobile panel đóng nhanh
+
+===End Ver 1.2===
+
+

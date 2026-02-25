@@ -893,7 +893,7 @@ lib/data.ts (mock cũ, không dùng nếu đã dùng Prisma)
 
 components/catalog/ProductCard.tsx (nếu trùng với components/ProductCard.tsx)
 
-Header.jpg ở root (đã có public/images/Header.jpg)
+hero-outdoor.png ở root (đã có public/images/hero-outdoor.png)
 
 SVG template không dùng: public/next.svg, public/vercel.svg, ...
 

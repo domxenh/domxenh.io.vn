@@ -9,7 +9,7 @@ npx prisma db seed
 
             //Update gifhub
 git add .
-git commit -m "Update V1.21"
+git commit -m "Update V1.22"
 git push origin main
 
             //Chat gpt new

@@ -30,3 +30,13 @@ export default function RootLayout({
 }
 
 // end code
+
+// app/layout.tsx
+export const metadata = {
+  openGraph: {
+    images: ["/icon.png"],
+  },
+  twitter: {
+    images: ["/icon.png"],
+  },
+}

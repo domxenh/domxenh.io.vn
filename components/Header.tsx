@@ -109,7 +109,7 @@ export default function Header() {
         aria-hidden
         className="fixed top-0 left-0 w-full h-28 md:h-32 z-40 pointer-events-none"
         style={{
-          backgroundImage: "var(--hero-bg, url('/images/Header.jpg'))",
+          backgroundImage: "var(--hero-bg, url('/images/hero-outdoor.png'))",
           backgroundSize: "cover",
           backgroundPosition: "top",
           filter: "blur(5px)",

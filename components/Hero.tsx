@@ -1,7 +1,7 @@
 /**
  * Tóm tắt (VI):
  * - Hero tĩnh (không scroll animation)
- * - Đồng bộ ảnh nền với Header: dùng /images/Header.jpg
+ * - Đồng bộ ảnh nền với Header: dùng /images/hero-outdoor.png
  * - Set CSS var --hero-bg để header có thể dùng cùng ảnh hero (tạo cảm giác liền mạch)
  * - Mobile tối ưu: chiều cao hero thấp hơn, thêm padding-top để không bị header che,
  *   font/button scale hợp lý, object-position đẹp hơn.
@@ -9,7 +9,7 @@
  *
  * Chỗ cần chỉnh:
  * - TARGET_ID: id section sản phẩm
- * - HERO_BG: ảnh nền hero (đang dùng Header.jpg)
+ * - HERO_BG: ảnh nền hero (đang dùng hero-outdoor.png)
  * - HERO_HEIGHT: chiều cao responsive
  */
 

@@ -105,11 +105,6 @@ export default function Header() {
 
   return (
     <>
-      {/* ==========================================================
-          BACKDROP BLUR ngoài pill header (không sửa layout)
-          - Ưu tiên dùng ảnh hero: var(--hero-bg)
-          - Fallback: Header.jpg
-          ========================================================== */}
       <motion.div
         aria-hidden
         className="fixed top-0 left-0 w-full h-28 md:h-32 z-40 pointer-events-none"
@@ -127,7 +122,6 @@ export default function Header() {
         }}
       />
 
-      {/* Fireflies đồng bộ với Hero (nhẹ hơn nhưng vẫn rõ) */}
       {!reduceMotion && (
         <div className="fixed top-0 left-0 w-full h-28 md:h-32 z-40 pointer-events-none">
           <Fireflies variant="header" />
@@ -136,7 +130,6 @@ export default function Header() {
 
       <header className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-6xl">
         <div className="relative rounded-full">
-          {/* BORDER BASE */}
           <div
             className="pointer-events-none absolute inset-0 rounded-full"
             style={{
@@ -157,7 +150,6 @@ export default function Header() {
             }}
           />
 
-          {/* SHIMMER */}
           {!reduceMotion && (
             <motion.div
               className="pointer-events-none absolute inset-0 rounded-full"
@@ -204,18 +196,18 @@ export default function Header() {
                   alt="Logo"
                   width={48}
                   height={48}
+                  quality={100}
+                  // ✅ [FIX] Bỏ scale phụ gây mờ, làm viền mềm hơn (không thô), giữ glow nhưng sắc hơn
                   className="
                     rounded-full
                     object-cover
-                    ring-1 ring-white/25
-                    shadow-[0_0_35px_rgba(255,214,107,0.75)]
-                    scale-[1.06]
+                    ring-[0.5px] ring-white/18
+                    shadow-[0_0_24px_rgba(255,214,107,0.55),inset_0_0_0_1px_rgba(255,255,255,0.10)]
                   "
                   priority
                 />
               </motion.div>
 
-              {/* Glow chữ */}
               <motion.span
                 style={{ scale: fontScale }}
                 className="relative text-white font-semibold text-3xl tracking-wide"
@@ -289,7 +281,6 @@ export default function Header() {
                   {activeItem.name}
                 </span>
 
-                {/* Apple grid icon */}
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                   <circle cx="5" cy="5" r="2" />
                   <circle cx="12" cy="5" r="2" />
@@ -326,7 +317,6 @@ export default function Header() {
       <AnimatePresence initial={false}>
         {open && (
           <>
-            {/* BACKDROP (click là tắt) */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1, transition: { duration: 0.12 } }}
@@ -335,7 +325,6 @@ export default function Header() {
               className="fixed inset-0 z-[998] bg-black/60 backdrop-blur-xl"
             />
 
-            {/* PANEL WRAPPER (click khoảng trống => tắt) */}
             <motion.div
               initial={{ y: -180, opacity: 0.98 }}
               animate={{ y: 0, opacity: 1 }}
@@ -350,7 +339,6 @@ export default function Header() {
               role="dialog"
               aria-modal="true"
             >
-              {/* CARD */}
               <div
                 className="
                   relative
@@ -366,7 +354,6 @@ export default function Header() {
                 "
                 onClick={(e) => e.stopPropagation()}
               >
-                {/* CLOSE BUTTON */}
                 <button
                   onClick={() => setOpen(false)}
                   className="

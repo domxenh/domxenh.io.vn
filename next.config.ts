@@ -1,5 +1,14 @@
-import type { NextConfig } from "next";
+// next.config.ts
+const nextConfig = {
+  async redirects() {
+    return [
+      {
+        source: "/san-pham",
+        destination: "/san-pham-full",
+        permanent: true,
+      },
+    ]
+  },
+}
 
-const nextConfig: NextConfig = {};
-
-export default nextConfig;
+export default nextConfig

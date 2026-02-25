@@ -1,55 +1,115 @@
 "use client"
 
+/**
+ * components/Header.tsx
+ *
+ * TÓM TẮT (Header Ver5 – tối ưu mượt dựa trên cấu trúc Ver4):
+ * - Giữ kiến trúc cũ: Border base + Shimmer + Scroll shrink + Underline + Mobile Apple panel.
+ * - [V5] Scroll shrink mượt hơn: dùng useSpring để lọc scrollY trước khi transform blur/bg/padding/scale.
+ * - [V5] Underline mượt, tránh giật responsive: tách layoutId desktop, mobile không dùng layoutId.
+ * - [V5] Popup đóng nhanh hơn: exit dùng tween duration ngắn + giảm quãng trượt.
+ * - [V5] Click vào khoảng trống (vùng wrapper panel) sẽ tắt popup.
+ * - [V5] Khoá scroll nền khi mở popup + ESC để đóng + tự đóng khi đổi route.
+ * - [V5] Update menu:
+ *   Trang chủ / Sản phẩm / Bảo Hành / Liên Hệ (+ đổi href tương ứng).
+ */
+
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import {
+  AnimatePresence,
   motion,
-  useScroll,
-  useTransform,
   useMotionTemplate,
-  AnimatePresence
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
 } from "framer-motion"
+
+/**
+ * [V5] Menu mới theo yêu cầu:
+ * - Edison  -> Sản phẩm
+ * - Đèn Tròn -> Bảo Hành
+ * - Dây & Bóng -> Liên Hệ
+ *
+ * NOTE: Icon giữ nguyên file hiện có để không vỡ asset.
+ * Nếu bạn muốn icon đúng nghĩa, đổi lại các path /icons/*.png.
+ */
+const NAV_ITEMS = [
+  { name: "Trang chủ", href: "/", icon: "/icons/home.png" },
+  { name: "Sản phẩm", href: "/san-pham-full", icon: "/icons/san-pham-full.png" },
+  { name: "Bảo Hành", href: "/bao-hanh", icon: "/icons/bao-hanh.png" },
+  { name: "Liên Hệ", href: "/lien-he", icon: "/icons/lien-he.png" },
+]
 
 export default function Header() {
   const pathname = usePathname()
+  const reduceMotion = useReducedMotion()
   const { scrollY } = useScroll()
   const [open, setOpen] = useState(false)
 
-  /* =============================
-     SCROLL SHRINK SYSTEM
-  ============================== */
+  /** [V5] Active item (ưu tiên match chính xác, fallback Trang chủ) */
+  const activeItem = useMemo(() => {
+    return NAV_ITEMS.find((item) => item.href === pathname) || NAV_ITEMS[0]
+  }, [pathname])
 
-  const blurValue = useTransform(scrollY, [0, 300], [18, 30])
-  const bgOpacity = useTransform(scrollY, [0, 300], [0.18, 0.35])
-  const paddingY = useTransform(scrollY, [0, 300], [14, 8])
-  const logoScale = useTransform(scrollY, [0, 300], [1.1, 0.85])
-  const fontScale = useTransform(scrollY, [0, 300], [1, 0.9])
+  /**
+   * =============================
+   * [V5] SCROLL SHRINK SYSTEM (SMOOTH)
+   * =============================
+   */
+  const scrollYSmooth = useSpring(scrollY, {
+    stiffness: 180,
+    damping: 32,
+    mass: 0.7,
+  })
+
+  const blurValue = useTransform(scrollYSmooth, [0, 300], [18, 30])
+  const bgOpacity = useTransform(scrollYSmooth, [0, 300], [0.18, 0.35])
+  const paddingY = useTransform(scrollYSmooth, [0, 300], [14, 8])
+  const logoScale = useTransform(scrollYSmooth, [0, 300], [1.1, 0.85])
+  const fontScale = useTransform(scrollYSmooth, [0, 300], [1, 0.9])
 
   const backdropFilter = useMotionTemplate`blur(${blurValue}px)`
   const backgroundColor = useMotionTemplate`rgba(20,25,30,${bgOpacity})`
   const navPadding = useMotionTemplate`${paddingY}px`
 
-  const menuItems = [
-    { name: "Trang chủ", href: "/" },
-    { name: "Edison", href: "/edison" },
-    { name: "Đèn Tròn", href: "/den-tron" },
-    { name: "Dây & Bóng", href: "/day-bong" },
-  ]
+  /**
+   * =============================
+   * [V5] MOBILE PANEL UX POLISH
+   * =============================
+   */
+  useEffect(() => {
+    setOpen(false)
+  }, [pathname])
 
-  const activeItem =
-    menuItems.find((item) => item.href === pathname) || menuItems[0]
+  useEffect(() => {
+    if (!open) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [open])
+
+  useEffect(() => {
+    if (!open) return
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false)
+    }
+    window.addEventListener("keydown", onKeyDown)
+    return () => window.removeEventListener("keydown", onKeyDown)
+  }, [open])
 
   return (
     <>
       <header className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-6xl">
-
         <div className="relative rounded-full">
-
           {/* BORDER BASE */}
           <div
-            className="absolute inset-0 rounded-full"
+            className="pointer-events-none absolute inset-0 rounded-full"
             style={{
               padding: "1px",
               background: `
@@ -69,28 +129,32 @@ export default function Header() {
           />
 
           {/* SHIMMER */}
-          <motion.div
-            className="absolute inset-0 rounded-full"
-            style={{
-              padding: "1px",
-              background:
-                "linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent)",
-              backgroundSize: "200% 100%",
-              WebkitMask:
-                "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
-              WebkitMaskComposite: "xor",
-              maskComposite: "exclude",
-            }}
-            animate={{ backgroundPosition: ["-200% 0%", "200% 0%"] }}
-            transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-          />
+          {!reduceMotion && (
+            <motion.div
+              className="pointer-events-none absolute inset-0 rounded-full"
+              style={{
+                padding: "1px",
+                background:
+                  "linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent)",
+                backgroundSize: "200% 100%",
+                WebkitMask:
+                  "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+                WebkitMaskComposite: "xor",
+                maskComposite: "exclude",
+                willChange: "background-position",
+              }}
+              animate={{ backgroundPosition: ["-200% 0%", "200% 0%"] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
+            />
+          )}
 
           <motion.nav
             style={{
               backdropFilter,
               backgroundColor,
               paddingTop: navPadding,
-              paddingBottom: navPadding
+              paddingBottom: navPadding,
+              willChange: "backdrop-filter, background-color, padding",
             }}
             className="
               relative
@@ -100,7 +164,6 @@ export default function Header() {
               shadow-[0_30px_90px_rgba(0,0,0,0.8)]
             "
           >
-
             {/* LOGO */}
             <Link href="/" className="flex items-center gap-4 whitespace-nowrap">
               <motion.div
@@ -115,33 +178,35 @@ export default function Header() {
                   className="
                     rounded-full
                     object-cover
-                    border border-white/25
+                    ring-1 ring-white/25
                     shadow-[0_0_35px_rgba(255,214,107,0.75)]
+                    scale-[1.06]
                   "
                   priority
                 />
               </motion.div>
 
+              {/* Glow chữ */}
               <motion.span
                 style={{ scale: fontScale }}
-                className="
-                  text-white
-                  font-semibold
-                  text-3xl
-                  tracking-wide
-                  drop-shadow-[0_0_12px_rgba(255,214,107,0.8)]
-                "
+                className="relative text-white font-semibold text-3xl tracking-wide"
               >
-                ĐÓM XÊNH
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 text-[#FFD66B] opacity-35 blur-md"
+                >
+                  ĐÓM XÊNH
+                </span>
+                <span className="relative drop-shadow-[0_0_14px_rgba(255,214,107,0.85)]">
+                  ĐÓM XÊNH
+                </span>
               </motion.span>
             </Link>
 
             {/* DESKTOP MENU */}
-            <div className="hidden md:flex items-center gap-10 text-xl font-medium">
-
-              {menuItems.map((item) => {
+            <div className="hidden md:flex items-center gap-10 text-[20px] font-semibold">
+              {NAV_ITEMS.map((item) => {
                 const isActive = pathname === item.href
-
                 return (
                   <Link
                     key={item.href}
@@ -163,7 +228,8 @@ export default function Header() {
 
                     {isActive && (
                       <motion.div
-                        layoutId="underline"
+                        layoutId="desktop-underline"
+                        transition={{ type: "spring", stiffness: 520, damping: 40 }}
                         className="
                           absolute left-0 right-0
                           -bottom-3
@@ -173,26 +239,27 @@ export default function Header() {
                           from-transparent
                           via-[#FFD66B]
                           to-transparent
+                          shadow-[0_0_18px_rgba(255,214,107,0.85)]
                         "
                       />
                     )}
                   </Link>
                 )
               })}
-
             </div>
 
             {/* MOBILE BUTTON */}
             <div className="md:hidden relative">
               <button
-                onClick={() => setOpen(!open)}
-                className="relative flex items-center gap-3 text-lg font-medium text-white"
+                onClick={() => setOpen((v) => !v)}
+                aria-expanded={open}
+                aria-haspopup="dialog"
+                className="relative flex items-center gap-3 text-lg font-semibold text-white"
               >
                 <span className="drop-shadow-[0_0_10px_rgba(255,214,107,0.9)]">
                   {activeItem.name}
                 </span>
 
-                {/* Apple grid icon */}
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                   <circle cx="5" cy="5" r="2" />
                   <circle cx="12" cy="5" r="2" />
@@ -205,8 +272,8 @@ export default function Header() {
                   <circle cx="19" cy="19" r="2" />
                 </svg>
 
-                <motion.div
-                  layoutId="underline"
+                <div
+                  aria-hidden
                   className="
                     absolute left-0 right-0
                     -bottom-3
@@ -216,42 +283,44 @@ export default function Header() {
                     from-transparent
                     via-[#FFD66B]
                     to-transparent
+                    shadow-[0_0_18px_rgba(255,214,107,0.85)]
                   "
                 />
               </button>
             </div>
-
           </motion.nav>
         </div>
       </header>
 
-      {/* ===== APPLE PANEL WITH CLOSE + OUTSIDE CLICK ===== */}
-      <AnimatePresence>
+      {/* ===== APPLE PANEL ===== */}
+      <AnimatePresence initial={false}>
         {open && (
           <>
             {/* BACKDROP */}
             <motion.div
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              animate={{ opacity: 1, transition: { duration: 0.12 } }}
+              exit={{ opacity: 0, transition: { duration: 0.1 } }}
               onClick={() => setOpen(false)}
               className="fixed inset-0 z-[998] bg-black/60 backdrop-blur-xl"
             />
 
-            {/* PANEL */}
+            {/* PANEL WRAPPER (click khoảng trống => tắt) */}
             <motion.div
-              initial={{ y: -250 }}
-              animate={{ y: 0 }}
-              exit={{ y: -250 }}
-              transition={{ type: "spring", stiffness: 120, damping: 18 }}
-              className="
-                fixed top-0 left-0
-                w-full
-                z-[999]
-                pt-28
-                px-5
-              "
+              initial={{ y: -180, opacity: 0.98 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{
+                y: -180,
+                opacity: 0,
+                transition: { duration: 0.16, ease: [0.2, 0.8, 0.2, 1] },
+              }}
+              transition={{ type: "spring", stiffness: 160, damping: 20 }}
+              onClick={() => setOpen(false)}
+              className="fixed top-0 left-0 w-full z-[999] pt-28 px-5"
+              role="dialog"
+              aria-modal="true"
             >
+              {/* CARD */}
               <div
                 className="
                   relative
@@ -267,8 +336,7 @@ export default function Header() {
                 "
                 onClick={(e) => e.stopPropagation()}
               >
-
-                {/* CLOSE BUTTON */}
+                {/* CLOSE */}
                 <button
                   onClick={() => setOpen(false)}
                   className="
@@ -284,6 +352,7 @@ export default function Header() {
                     hover:bg-white/20
                     hover:scale-110
                   "
+                  aria-label="Đóng"
                 >
                   <svg
                     width="18"
@@ -300,20 +369,11 @@ export default function Header() {
                   </svg>
                 </button>
 
-                <div className="text-white/80 text-xl font-semibold">
-                  Ứng dụng
-                </div>
+                <div className="text-white/80 text-xl font-semibold">Ứng dụng</div>
 
                 <div className="grid grid-cols-2 gap-8">
-
-                  {[
-                    { name: "Trang chủ", href: "/", icon: "/icons/home.png" },
-                    { name: "Edison", href: "/edison", icon: "/icons/edison.png" },
-                    { name: "Đèn Tròn", href: "/den-tron", icon: "/icons/den-tron.png" },
-                    { name: "Dây & Bóng", href: "/day-bong", icon: "/icons/day-bong.png" },
-                  ].map((item) => {
+                  {NAV_ITEMS.map((item) => {
                     const isActive = pathname === item.href
-
                     return (
                       <Link
                         key={item.href}
@@ -321,14 +381,15 @@ export default function Header() {
                         onClick={() => setOpen(false)}
                         className="flex flex-col items-center space-y-3 group"
                       >
+                        {/* ICON TILE */}
                         <motion.div
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.95 }}
+                          whileHover={reduceMotion ? undefined : { scale: 1.08 }}
+                          whileTap={reduceMotion ? undefined : { scale: 0.96 }}
                           transition={{ type: "spring", stiffness: 300 }}
                           className={`
-                            w-20 h-20
-                            flex items-center justify-center
+                            relative w-20 h-20
                             rounded-3xl
+                            overflow-hidden
                             bg-white/15
                             border border-white/20
                             ${
@@ -338,12 +399,16 @@ export default function Header() {
                             }
                           `}
                         >
+                          {/* NOTE:
+                             - fill + object-cover để phủ kín tile
+                             - scale để “ăn” padding nằm bên trong file icon (nếu icon có khoảng trắng)
+                           */}
                           <Image
                             src={item.icon}
                             alt={item.name}
-                            width={48}
-                            height={48}
-                            className="object-contain"
+                            fill
+                            sizes="80px"
+                            className="object-cover object-center rounded-[inherit] scale-[1.22]"
                           />
                         </motion.div>
 
@@ -362,9 +427,7 @@ export default function Header() {
                       </Link>
                     )
                   })}
-
                 </div>
-
               </div>
             </motion.div>
           </>
@@ -373,3 +436,5 @@ export default function Header() {
     </>
   )
 }
+
+// end code

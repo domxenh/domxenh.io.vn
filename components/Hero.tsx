@@ -1,61 +1,82 @@
 /**
- * HERO CINEMATIC RESTORE + APPLE PRO
+ * Tóm tắt (VI):
+ * - Hero tĩnh (không scroll animation)
+ * - Thêm lớp "đom đóm" (canvas) overlay để tạo cảm giác outdoor luxury
+ * - Nút "Khám phá ngay" scroll mượt xuống section sản phẩm id="products"
+ * - Highlight chữ "Sáng" và "Xênh" màu vàng + glow, bỏ dấu chấm sau "Xênh"
  *
- * - Khôi phục fade + slide animation
- * - Khôi phục glow chữ "Xênh."
- * - Khôi phục button glow
- * - Giữ shrink 90vh → 20vh
- * - Giữ parallax background
- * - Giữ text scale riêng
- * - Giữ border radius khi co
+ * Chỗ cần chỉnh:
+ * - TARGET_ID: id section sản phẩm
+ * - HERO_HEIGHT: chiều cao hero
+ * - Opacity/blur của lớp overlay/đom đóm
  */
 
 "use client"
 
-import { motion, useScroll, useTransform } from "framer-motion"
+import { motion } from "framer-motion"
+import type { ReactNode } from "react"
+import Fireflies from "@/components/Fireflies"
+
+function GlowWord({ children }: { children: ReactNode }) {
+  return (
+    <span className="relative inline-block font-semibold text-[#FFD66B]">
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 blur-md opacity-70 text-[#FFD66B]"
+      >
+        {children}
+      </span>
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 blur-2xl opacity-35 text-[#FFD66B]"
+      >
+        {children}
+      </span>
+      <span className="relative drop-shadow-[0_0_18px_rgba(255,214,107,0.95)]">
+        {children}
+      </span>
+    </span>
+  )
+}
 
 export default function Hero() {
-  const { scrollY } = useScroll()
+  const TARGET_ID = "products"
+  const HERO_HEIGHT = "h-[90vh]"
 
-  // Hero height
-  const height = useTransform(scrollY, [0, 500], ["90vh", "20vh"])
-  const radius = useTransform(scrollY, [0, 500], ["0px", "32px"])
-
-  // Background parallax
-  const bgY = useTransform(scrollY, [0, 500], [0, -120])
-  const bgScale = useTransform(scrollY, [0, 500], [1, 1.1])
-
-  // Text transform riêng
-  const textScale = useTransform(scrollY, [0, 400], [1, 0.75])
-  const textOpacity = useTransform(scrollY, [0, 400], [1, 0])
+  const handleScrollToProducts = () => {
+    const el = document.getElementById(TARGET_ID)
+    if (!el) return
+    el.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
 
   return (
     <motion.section
-      style={{ height, borderRadius: radius }}
-      className="relative w-full overflow-hidden"
+      className={`relative w-full overflow-hidden ${HERO_HEIGHT}`}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
     >
       {/* Background */}
-      <motion.div
-        style={{ y: bgY, scale: bgScale }}
-        className="absolute inset-0"
-      >
+      <div className="absolute inset-0">
         <img
           src="/images/hero-outdoor.png"
           alt="Đèn trang trí ngoài trời"
           className="w-full h-full object-cover"
         />
-      </motion.div>
+      </div>
 
       {/* Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-[#0B1417]" />
 
-      {/* Content */}
-      <motion.div
-        style={{ scale: textScale, opacity: textOpacity }}
-        className="relative z-10 flex h-full flex-col items-center justify-center text-center px-6"
-      >
+      {/* Fireflies layer */}
+      <div className="absolute inset-0">
+        <Fireflies />
+        {/* haze nhẹ để đom đóm hòa vào nền */}
+        <div className="absolute inset-0 backdrop-blur-[0.5px]" />
+      </div>
 
-        {/* Title */}
+      {/* Content */}
+      <div className="relative z-10 flex h-full flex-col items-center justify-center text-center px-6">
         <motion.h1
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -65,26 +86,24 @@ export default function Hero() {
           Đèn Trang Trí Ngoài Trời
         </motion.h1>
 
-        {/* Subtitle */}
         <motion.p
           initial={{ opacity: 0, y: 60 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2 }}
           className="mt-6 text-lg md:text-xl text-[#A8C0C4]"
         >
-          Không những sáng mà còn phải{" "}
-          <span className="text-[#FFD66B] font-semibold drop-shadow-[0_0_15px_rgba(255,214,107,0.9)]">
-            Xênh.
-          </span>
+          Không những <GlowWord>Sáng</GlowWord> mà còn phải{" "}
+          <GlowWord>Xênh</GlowWord>
         </motion.p>
 
-        {/* Button */}
         <motion.button
+          type="button"
           initial={{ opacity: 0, y: 80 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.4 }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.96 }}
+          onClick={handleScrollToProducts}
           className="
             mt-10 px-8 py-4 rounded-full
             bg-gradient-to-r from-[#0F5C63] to-[#0B8A92]
@@ -94,12 +113,9 @@ export default function Hero() {
         >
           Khám phá ngay
         </motion.button>
-
-      </motion.div>
+      </div>
     </motion.section>
   )
 }
 
-/**
- * END HERO CINEMATIC RESTORE
- */
+/** end code */

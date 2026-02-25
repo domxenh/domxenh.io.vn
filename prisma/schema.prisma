@@ -28,6 +28,7 @@ model Product {
   categoryId  String
   category    Category @relation(fields: [categoryId], references: [id])
   createdAt   DateTime @default(now())
+  isHot Boolean @default(false)
 }
 
 model Post {

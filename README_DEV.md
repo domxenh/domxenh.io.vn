@@ -385,212 +385,230 @@ Hiện tại dự án đã sang giai đoạn:
 👉 Tối ưu trải nghiệm & nâng cấp giao diện
 ===End ver1.1===
 
-=====Ver 1.2=====update Header + Hero=====
-🔹 HEADER VER 1 – Glass Basic
-🎨 Giao diện
+📦 PROJECT v1.2: DOMXENH.IO.VN – ĐÓM XÊNH
+1️⃣ STACK CÔNG NGHỆ
 
-backdrop-blur-xl
+Frontend:
 
-bg-white/5
+Next.js 16 (App Router)
 
-border border-white/15
+TypeScript
 
-rounded-full
+Framer Motion (Animation)
 
-Shadow cơ bản
+TailwindCSS
 
-📌 Menu
+Backend:
 
-Hover chuyển trắng
+Supabase PostgreSQL
 
-Không active state
+Prisma ORM 5.22
+
+Deploy:
+
+Vercel (Hobby Plan)
+
+2️⃣ TRẠNG THÁI HỆ THỐNG (HIỆN TẠI)
+
+✔ Supabase kết nối thành công
+✔ Prisma hoạt động ổn định
+✔ DATABASE_URL đúng format postgresql://
+✔ Direct connection mode
+✔ prisma generate trước build
+✔ Vercel auto deploy từ GitHub
+✔ Domain hoạt động ổn định
+✔ Dark luxury theme đã áp dụng
+✔ Header Cinematic Apple Pro (Ver 4)
+✔ Hero Cinematic Apple Pro (Ver 4)
+
+Dự án hiện đang ở giai đoạn:
+
+👉 Tối ưu UI & nâng cấp trải nghiệm cao cấp
+
+3️⃣ DATABASE SCHEMA
+Category
+
+id (uuid)
+
+name
+
+slug (unique)
+
+createdAt
+
+Product
+
+id (uuid)
+
+name
+
+slug (unique)
+
+price (Int)
+
+description
+
+image
+
+stock
+
+categoryId (relation)
+
+createdAt
+
+4️⃣ LỆNH QUAN TRỌNG
+Dev:
+
+npm run dev
+
+Push schema:
+
+npx prisma db push
+
+Seed:
+
+npx prisma db seed
+
+Generate Prisma:
+
+npx prisma generate
+
+Reset cache Next:
+
+Remove-Item -Recurse -Force .next
+
+Production test local:
+
+npm run build
+npm start
+
+5️⃣ GIT WORKFLOW CHUẨN
+
+Mỗi lần update:
+
+npm run dev
+git add .
+git commit -m "update ui section"
+git pull origin main --rebase
+git push origin main
+
+Vercel auto deploy.
+
+Nếu push bị reject:
+
+git pull origin main --rebase
+git push origin main
+
+6️⃣ CẤU TRÚC THƯ MỤC CHÍNH
+
+/app
+/components
+/lib
+/prisma
+├── schema.prisma
+└── seed.ts
+/public
+.env
+
+7️⃣ HEADER – LỊCH SỬ PHÁT TRIỂN
+🔹 VER 1 – Glass Basic
+
+Glass blur
+
+Rounded full
+
+Menu hover trắng
 
 Không animation
 
-❌ Chưa có
+🔹 VER 2 – Premium Glow
 
 Logo image
 
-Glow
-
-Underline
-
-Scroll effect
-
-👉 Đây là bản glass tĩnh ban đầu.
-
-🔹 HEADER VER 2 – Premium Glow
-🟡 Logo
-
-Thêm logo image (40px)
-
-Border trắng mờ
-
 Glow vàng quanh logo
 
-Hover tăng sáng logo
+Hover vàng #FFD66B
 
-📌 Menu
+Active có glow chân chữ
 
-Hover chuyển vàng #FFD66B
+🔹 VER 3 – Animated Interaction
 
-Active có ánh sáng chân chữ
-
-Drop-shadow vàng khi hover
-
-❌ Chưa có
-
-Underline trượt
-
-Scroll blur dynamic
-
-👉 Bản này bắt đầu có luxury vibe.
-
-🔹 HEADER VER 3 – Animated Interaction
-✨ Thêm
-
-layoutId underline trượt giữa tab
-
-useScroll detect scroll
-
-Blur tăng khi scroll
-
-Background opacity thay đổi theo scroll
-
-🛠 Sau đó
-
-Fix lỗi .to is not a function
-
-Dùng useMotionTemplate
-
-👉 Đây là bản có interaction cao cấp.
-
-🔹 HEADER VER 4 – Cinematic Apple Pro
-🟡 Logo
-
-Tăng size lên 48px (+2 cấp)
-
-Border trắng mờ
-
-Glow vàng mạnh
-
-Pulse animation vòng ngoài
-
-Hover tăng glow
-
-📌 Menu
-
-Underline trượt mượt
-
-Hover vàng luxury
-
-Drop-shadow vàng
-
-🌫 Scroll
-
-Blur tăng theo % scroll
-
-Background opacity tăng theo scroll
-
-Shadow sâu outdoor
-
-👉 Đây là bản ổn định cao cấp hiện tại.
-
-              🔹 HEADER VER 5
-
-1️⃣ Logo:
-
-Bo tròn mềm hơn (hiện tại đang hơi cứng)
-
-Viền mịn hơn (bớt thô)
-
-Giảm khoảng trắng trong logo
-
-Logo nhìn to hơn nhưng không phá layout
-
-2️⃣ Text “ĐÓM XÊNH”
-
-Thêm ánh sáng mềm
-
-Nổi hơn trên nền tối
-
-3️⃣ Menu text
-
-To hơn
-
-Đậm hơn
-
-Sáng hơn
-
-Hover vẫn giữ vàng luxury
-
-Không bỏ underline animation
-
-================================🎬 HERO – LỊCH SỬ VERSION===================
-              🔹 HERO VER 1 – Cinematic Basic
-📏 Layout
-
-90vh
-
-Background full PNG
-
-Overlay gradient
-
-✨ Animation
-
-Fade in title
-
-Slide up text
-
-Glow chữ “Xênh.”
-
-Button glow
-
-Drop shadow depth
-
-👉 Đây là bản giống ảnh mẫu anh yêu cầu.
-
-              🔹 HERO VER 2 – Shrink Scroll
-➕ Thêm
+layoutId underline trượt
 
 useScroll
 
-Height 90vh → 60vh
+Blur dynamic
 
-Scale background
+Background opacity theo scroll
 
-Giảm opacity nhẹ
+🔹 VER 4 – Cinematic Apple Pro (HIỆN TẠI)
 
-❌ Vẫn giữ animation cũ
-
-👉 Bản chuyển từ static sang interactive.
-
-              🔹 HERO VER 3 – Apple Behavior
-➕ Thêm
-
-Thu đúng 20vh
-
-Parallax background tách layer
-
-Text scale riêng
-
-Border radius khi co
-
-❌ Nhưng mất:
-
-Fade animation ban đầu
+Logo 48px
 
 Glow mạnh
 
-Button depth
+Border 2 đầu sáng
 
-👉 Bản thiên về kỹ thuật, mất vibe.
+Shimmer viền
 
-              🔹 HERO VER 4 – Cinematic Apple Pro
+Underline trượt mượt
 
-Khôi phục lại toàn bộ:
+Scroll shrink
 
-🎨 Cinematic
+Blur tăng theo %
+
+Opacity tăng theo scroll
+
+Dropdown iOS panel style
+
+Icon PNG riêng
+
+Close button Apple style
+
+Click outside để đóng
+
+8️⃣ HERO – LỊCH SỬ PHÁT TRIỂN
+🔹 VER 1 – Cinematic Basic
+
+90vh
+
+Fade + Slide
+
+Glow chữ vàng
+
+Button glow
+
+Outdoor vibe
+
+🔹 VER 2 – Shrink Scroll
+
+useScroll
+
+90vh → 60vh
+
+Scale background
+
+🔹 VER 3 – Apple Behavior
+
+Thu đúng 20vh
+
+Parallax layer
+
+Border radius khi co
+
+Text scale riêng
+
+(mất cinematic effect)
+
+🔹 VER 4 – Cinematic Apple Pro (HIỆN TẠI)
+
+90vh → 20vh
+
+Border radius khi co
+
+Parallax background
+
+Text scale riêng
 
 Fade + slide animation
 
@@ -598,20 +616,99 @@ Glow chữ vàng mạnh
 
 Button glow xanh
 
-Drop shadow depth
+Opacity giảm khi scroll
 
-📏 Apple Behavior
+Depth shadow outdoor
 
-90vh → 20vh
+9️⃣ LỖI ĐÃ TỪNG GẶP & FIX
+❌ next not recognized
 
-Border radius xuất hiện khi co
+→ npm install
 
-Parallax background
+❌ Prisma build fail
 
-Text scale riêng
+Phải có:
 
-Opacity giảm dần khi scroll
+"build": "prisma generate && next build",
+"postinstall": "prisma generate"
 
-👉 Đây là bản cân bằng giữa cinematic và Apple interaction.
+❌ DATABASE_URL sai format
 
-              
+Phải dùng:
+
+postgresql://
+
+❌ Can't reach database
+
+Phải chọn Direct connection
+
+❌ ERR_TOO_MANY_REDIRECTS
+
+Chỉ set 1 Primary domain trên Vercel
+Không dùng next.config redirect
+
+🔟 PRODUCTION RULES (KHÔNG ĐƯỢC QUÊN)
+
+⚠ Vercel phải có:
+
+DATABASE_URL
+
+prisma generate trước build
+
+⚠ Domain:
+
+Chỉ 1 Primary
+
+Không redirect lung tung
+
+⚠ Prisma:
+
+Không bật log query trong production
+
+1️⃣1️⃣ TODO PHIÊN SAU
+
+Trang chi tiết sản phẩm Apple Store style
+
+Sticky buy button
+
+Parallax nâng cao
+
+Tinh chỉnh spacing Apple grid
+
+Animation mượt hơn
+
+SEO production nâng cao
+
+Sitemap + robots
+
+Metadata chuẩn SEO
+
+1️⃣2️⃣ YÊU CẦU CODE STYLE (BẮT BUỘC)
+
+Khi gửi code:
+
+Có phần tóm tắt tiếng Việt đầu file
+
+Có comment chỉ rõ nơi chỉnh sửa
+
+Gửi file hoàn chỉnh
+
+Cuối file có:
+
+end code
+
+🎯 TỔNG KẾT
+
+Dự án đã:
+
+✔ Ổn định backend
+✔ Ổn định deploy
+✔ Chuẩn hóa workflow
+✔ Chốt style system
+✔ Hoàn thành Header + Hero phiên bản Cinematic Apple Pro
+
+Hiện tại bước vào giai đoạn:
+
+👉 Tối ưu trải nghiệm cao cấp & hoàn thiện product detail
+
+===End Ver1.2 Stable===

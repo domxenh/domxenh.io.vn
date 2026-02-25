@@ -1,3 +1,12 @@
+/* Code 4 - app/globals.css
+TÓM TẮT (VN):
+- Giữ nguyên Dark Luxury palette + hover glow cũ.
+- Thêm:
+  + .apple-folder: khung danh mục kiểu folder iOS (glass blur, bo tròn, có chiều sâu).
+  + .badge-sale: banner SALE (đỏ/cam kiểu Apple).
+  + Tối ưu nhẹ .product-card khi nằm trong .apple-folder.
+*/
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -12,15 +21,17 @@ CODE: DARK LUXURY – ĐÓM XÊNH OFFICIAL PALETTE
 
 body {
   /* HERO GLOW LIGHT EFFECT */
-
   .hero-glow {
-    background:
-      radial-gradient(circle at 50% 30%, rgba(255,214,107,0.08), transparent 50%);
+    background: radial-gradient(
+      circle at 50% 30%,
+      rgba(255, 214, 107, 0.08),
+      transparent 50%
+    );
   }
-  background:
-    radial-gradient(
+
+  background: radial-gradient(
       circle at 20% 20%,
-      rgba(255,214,107,0.05),
+      rgba(255, 214, 107, 0.05),
       transparent 40%
     ),
     #0B1417;
@@ -45,17 +56,16 @@ body {
 
 .product-card {
   background: #13262B;
-  border: 1px solid rgba(255,255,255,0.05);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 20px;
   padding: 28px;
   transition: all 0.4s ease;
-  box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
 }
 
 .product-card:hover {
-  box-shadow:
-    0 0 30px rgba(255,214,107,0.25),
-    0 25px 60px rgba(0,0,0,0.6);
+  box-shadow: 0 0 30px rgba(255, 214, 107, 0.25),
+    0 25px 60px rgba(0, 0, 0, 0.6);
   transform: translateY(-6px);
 }
 
@@ -66,7 +76,7 @@ body {
 }
 
 .product-card img:hover {
-  filter: drop-shadow(0 0 15px rgba(255,214,107,0.4));
+  filter: drop-shadow(0 0 15px rgba(255, 214, 107, 0.4));
 }
 
 /* ===== TEXT SYSTEM ===== */
@@ -91,7 +101,7 @@ body {
 /* ===== BUTTON BRAND ===== */
 
 .btn-brand {
-  background: linear-gradient(135deg,#0F5C63,#1B7F6A);
+  background: linear-gradient(135deg, #0F5C63, #1B7F6A);
   color: white;
   padding: 12px 26px;
   border-radius: 999px;
@@ -103,7 +113,7 @@ body {
   transform: translateY(-2px);
 }
 
-/* ===== BADGE BÁN CHẠY ===== */
+/* ===== BADGE HOT ===== */
 
 .badge-hot {
   background: #F4C430;
@@ -113,4 +123,83 @@ body {
   border-radius: 999px;
 }
 
-/* end code */
+/* ===== BADGE SALE (mới) ===== */
+
+.badge-sale {
+  background: linear-gradient(135deg, #FF3B30, #FF9500);
+  color: #FFFFFF;
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 999px;
+  box-shadow: 0 0 18px rgba(255, 59, 48, 0.35);
+}
+
+/* ===== APPLE FOLDER CONTAINER (mới) =====
+   - Dùng cho 3 danh mục trên trang chủ
+   - Vibe giống folder iOS: bo tròn, glass blur, có chiều sâu
+*/
+
+.apple-folder {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 214, 107, 0.12), transparent 55%),
+    rgba(255, 255, 255, 0.06);
+
+  backdrop-filter: blur(26px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 44px;
+  padding: 32px;
+
+  box-shadow:
+    0 60px 160px rgba(0, 0, 0, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Nhẹ tay hơn cho card khi nằm trong folder để giống iOS grid */
+.apple-folder .product-card {
+  border-radius: 28px;
+  padding: 22px;
+}
+
+/* End code 4 */
+/* Folder LỚN */
+.folder-wrap {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 214, 107, 0.12), transparent 55%),
+    rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(22px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 44px;
+  padding: 32px;
+  box-shadow:
+    0 60px 160px rgba(0, 0, 0, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.folder-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.folder-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.folder-sub {
+  margin-top: 6px;
+  color: #A8C0C4;
+}
+
+/* Badge SALE */
+.badge-sale {
+  background: linear-gradient(135deg, #FF3B30, #FF9500);
+  color: #FFFFFF;
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 999px;
+  box-shadow: 0 0 18px rgba(255, 59, 48, 0.35);
+}

@@ -3,12 +3,17 @@ npm run dev
 
 //Update gifhub
 git add .
-git commit -m "Update V1.1"
+git commit -m "Update V1.2"
 git push origin main
-
 
 //Chat gpt new
 Đọc trạng thái project theo README_DEV.md
 
+//Câu lệnh Chatgpt
+Phát triển ver 5 cho header.
+Thêm bo tròn ở LOGO. viền LOGO đang bị thô, logo đang bị thu nhỏ lại vì khoảng trắng quá nhiều. 
+Chữ ở header cần thêm ánh sáng để nổi hơn
+Chữ Trang chủ, Edison, Đèn Tròn, Dây& Bóng đang bị nhỏ hoặc là chưa đậm lắm.
+Chỉ phát triển không renew và bớt tính năng cũ
 
-=====Ver 1.2=====update Header=====
+

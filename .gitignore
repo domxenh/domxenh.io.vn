@@ -5,3 +5,9 @@ node_modules
 
 .vercel
 .env*.local
+.env.local
+
+# backups
+*.rar
+*.zip
+*.7z

@@ -17,7 +17,7 @@ export default async function HomeProductFolders() {
   const byName = new Map(products.map((p) => [p.name, p]))
 
   return (
-    <section className="section-alt">
+    <section id="products" className="section-alt">
       <div className="max-w-7xl mx-auto px-6 space-y-10">
         {HOME_PRODUCT_FOLDERS.map((folder) => {
           const readyCount = folder.productNames.filter((n) => byName.has(n)).length

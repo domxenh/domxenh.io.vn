@@ -6,6 +6,7 @@ node_modules
 .vercel
 .env*.local
 .env.local
+README_DEV.md
 
 # backups
 *.rar

@@ -1,190 +1,211 @@
-/**
- * Tóm tắt (VI):
- * - Canvas animation "đom đóm" (fireflies) nhẹ, mượt: hạt bay chậm + nhấp nháy
- * - Dùng requestAnimationFrame; tự resize theo hero container
- * - Tối ưu: giảm motion khi user bật "prefers-reduced-motion"; pause khi tab ẩn
- *
- * Chỗ cần chỉnh:
- * - COUNT: số lượng đom đóm
- * - SPEED: tốc độ bay
- * - SIZE_RANGE / GLOW_RANGE: kích thước và độ glow
- * - HUE: tông màu (vàng ấm)
- */
-
 "use client"
 
-import { useEffect, useMemo, useRef } from "react"
+/**
+ * components/Fireflies.tsx
+ *
+ * TÓM TẮT (Fireflies v5.1 – giữ vibe cũ nhưng nâng cấp):
+ * - Mật độ cao hơn + sáng hơn (đỡ “mờ/ít”).
+ * - Có xa/gần: con gần to, sáng, glow mạnh; con xa nhỏ, nhẹ blur.
+ * - Thỉnh thoảng flash ngẫu nhiên 1 cái (burst), không đồng loạt.
+ * - Dùng chung Hero/Header:
+ *   <Fireflies variant="hero" />
+ *   <Fireflies variant="header" />
+ */
+
+import React, { useEffect, useMemo, useState } from "react"
+import { motion } from "framer-motion"
+
+type Variant = "hero" | "header"
 
 type Firefly = {
-  x: number
-  y: number
-  vx: number
-  vy: number
-  r: number
-  phase: number
-  twinkle: number
+  id: number
+  x: number // %
+  y: number // %
+  depth: 1 | 2 | 3 // 1 xa, 3 gần
+  size: number // px
+  blur: number // px
+  baseOpacity: number
+  driftX: number // px
+  driftY: number // px
+  driftDuration: number // s
+  pulseDuration: number // s
+  delay: number // s
 }
 
-export default function Fireflies() {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null)
-  const rafRef = useRef<number | null>(null)
-  const lastRef = useRef<number>(0)
-  const fliesRef = useRef<Firefly[]>([])
-  const reducedMotion = useMemo(() => {
-    if (typeof window === "undefined") return false
-    return window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false
-  }, [])
+const rand = (min: number, max: number) => Math.random() * (max - min) + min
 
-  // ====== TUNING ZONE (CHỈNH Ở ĐÂY) ======
-  const COUNT = 26
-  const SPEED = 0.18
-  const SIZE_RANGE: [number, number] = [0.9, 2.2]
-  const GLOW_RANGE: [number, number] = [6, 18]
-  const HUE = 46 // vàng ấm
-  // ======================================
+function pickDepth(): 1 | 2 | 3 {
+  // Nhiều con depth 2–3 hơn để nhìn “dày/đã” như fire cũ
+  const r = Math.random()
+  if (r < 0.25) return 1
+  if (r < 0.70) return 2
+  return 3
+}
 
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
+function build(count: number, seedOffset: number, scope: "full" | "top"): Firefly[] {
+  const list: Firefly[] = []
+  for (let i = 0; i < count; i++) {
+    const depth = pickDepth()
 
-    const ctx = canvas.getContext("2d")
-    if (!ctx) return
+    // scope: header/top => tập trung y gần phía trên, để giống “lan lên header”
+    const y =
+      scope === "top"
+        ? rand(0, 85) // tập trung vùng trên
+        : rand(0, 100)
 
-    const parent = canvas.parentElement
-    if (!parent) return
+    // Đậm hơn bản trước (để không mờ)
+    const size =
+      depth === 1 ? rand(2.2, 3.8) : depth === 2 ? rand(3.6, 6.0) : rand(5.8, 9.2)
 
-    const rand = (min: number, max: number) => min + Math.random() * (max - min)
+    const blur =
+      depth === 1 ? rand(0.2, 1.0) : depth === 2 ? rand(0.3, 1.4) : rand(0.4, 1.8)
 
-    const resize = () => {
-      const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1))
-      const { width, height } = parent.getBoundingClientRect()
-      canvas.width = Math.max(1, Math.floor(width * dpr))
-      canvas.height = Math.max(1, Math.floor(height * dpr))
-      canvas.style.width = `${width}px`
-      canvas.style.height = `${height}px`
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-    }
+    const baseOpacity =
+      depth === 1 ? rand(0.28, 0.45) : depth === 2 ? rand(0.40, 0.68) : rand(0.55, 0.90)
 
-    const init = () => {
-      const { width, height } = parent.getBoundingClientRect()
-      fliesRef.current = Array.from({ length: COUNT }, () => {
-        const angle = rand(0, Math.PI * 2)
-        return {
-          x: rand(0, width),
-          y: rand(0, height),
-          vx: Math.cos(angle) * rand(0.2, 1) * SPEED,
-          vy: Math.sin(angle) * rand(0.2, 1) * SPEED,
-          r: rand(SIZE_RANGE[0], SIZE_RANGE[1]),
-          phase: rand(0, Math.PI * 2),
-          twinkle: rand(0.6, 1.2),
-        }
-      })
-    }
+    const driftX =
+      depth === 1 ? rand(-55, 55) : depth === 2 ? rand(-90, 90) : rand(-130, 130)
+    const driftY =
+      depth === 1 ? rand(-45, 45) : depth === 2 ? rand(-70, 70) : rand(-110, 110)
 
-    const step = (t: number) => {
-      if (reducedMotion) return
+    const driftDuration =
+      depth === 1 ? rand(11, 18) : depth === 2 ? rand(9, 15) : rand(7, 12)
 
-      const { width, height } = parent.getBoundingClientRect()
-      const dt = Math.min(32, t - (lastRef.current || t))
-      lastRef.current = t
+    const pulseDuration =
+      depth === 1 ? rand(3.8, 6.8) : depth === 2 ? rand(3.0, 5.6) : rand(2.4, 4.8)
 
-      ctx.clearRect(0, 0, width, height)
-
-      // Vẽ từng con
-      for (const f of fliesRef.current) {
-        // Move
-        f.x += f.vx * dt
-        f.y += f.vy * dt
-
-        // Drift nhẹ (cho tự nhiên)
-        f.vx += rand(-0.002, 0.002) * dt
-        f.vy += rand(-0.002, 0.002) * dt
-
-        // Clamp vận tốc
-        const maxV = 0.22
-        f.vx = Math.max(-maxV, Math.min(maxV, f.vx))
-        f.vy = Math.max(-maxV, Math.min(maxV, f.vy))
-
-        // Wrap edges
-        if (f.x < -20) f.x = width + 20
-        if (f.x > width + 20) f.x = -20
-        if (f.y < -20) f.y = height + 20
-        if (f.y > height + 20) f.y = -20
-
-        // Twinkle (nhấp nháy)
-        f.phase += 0.02 * f.twinkle
-        const pulse = 0.45 + 0.55 * (0.5 + 0.5 * Math.sin(f.phase)) // 0..1
-        const alpha = 0.10 + 0.55 * pulse
-
-        const glow = rand(GLOW_RANGE[0], GLOW_RANGE[1])
-        ctx.save()
-        ctx.globalCompositeOperation = "lighter"
-
-        // Glow
-        ctx.beginPath()
-        ctx.fillStyle = `hsla(${HUE}, 100%, 65%, ${alpha * 0.55})`
-        ctx.shadowBlur = glow
-        ctx.shadowColor = `hsla(${HUE}, 100%, 70%, ${alpha})`
-        ctx.arc(f.x, f.y, f.r * (1 + pulse * 0.35), 0, Math.PI * 2)
-        ctx.fill()
-
-        // Core
-        ctx.beginPath()
-        ctx.shadowBlur = 0
-        ctx.fillStyle = `hsla(${HUE}, 100%, 78%, ${alpha})`
-        ctx.arc(f.x, f.y, Math.max(0.6, f.r * 0.55), 0, Math.PI * 2)
-        ctx.fill()
-
-        ctx.restore()
-      }
-
-      rafRef.current = requestAnimationFrame(step)
-    }
-
-    const onVisibility = () => {
-      if (document.hidden) {
-        if (rafRef.current) cancelAnimationFrame(rafRef.current)
-        rafRef.current = null
-      } else if (!reducedMotion) {
-        lastRef.current = performance.now()
-        rafRef.current = requestAnimationFrame(step)
-      }
-    }
-
-    resize()
-    init()
-
-    const ro = new ResizeObserver(() => {
-      resize()
-      // giữ lại vị trí tương đối cho mượt: init lại nhẹ nếu resize quá khác
-      init()
+    list.push({
+      id: seedOffset + i,
+      x: rand(0, 100),
+      y,
+      depth,
+      size,
+      blur,
+      baseOpacity,
+      driftX,
+      driftY,
+      driftDuration,
+      pulseDuration,
+      delay: rand(0, 4.5),
     })
-    ro.observe(parent)
+  }
+  return list
+}
 
-    document.addEventListener("visibilitychange", onVisibility)
+export default function Fireflies({ variant = "hero" }: { variant?: Variant }) {
+  // Dày hơn rõ rệt (như vibe cũ)
+  const count = variant === "hero" ? 44 : 18
+  const scope: "full" | "top" = variant === "hero" ? "full" : "top"
 
-    if (!reducedMotion) {
-      lastRef.current = performance.now()
-      rafRef.current = requestAnimationFrame(step)
+  // Flash: hero nhiều hơn, header ít hơn
+  const burstChance = variant === "hero" ? 0.75 : 0.45
+
+  const fireflies = useMemo(
+    () => build(count, variant === "hero" ? 1000 : 2000, scope),
+    [count, variant, scope]
+  )
+
+  const [burstId, setBurstId] = useState<number | null>(null)
+
+  // Burst ngẫu nhiên theo nhịp
+  useEffect(() => {
+    let alive = true
+    let t: number | undefined
+
+    const schedule = () => {
+      const next = rand(900, 1800) // flash thường xuyên hơn để “có điểm nhấn”
+      t = window.setTimeout(() => {
+        if (!alive) return
+        if (Math.random() < burstChance) {
+          const pick = fireflies[Math.floor(Math.random() * fireflies.length)]
+          setBurstId(pick?.id ?? null)
+
+          window.setTimeout(() => {
+            if (alive) setBurstId(null)
+          }, rand(220, 360))
+        }
+        schedule()
+      }, next)
     }
 
+    schedule()
     return () => {
-      document.removeEventListener("visibilitychange", onVisibility)
-      ro.disconnect()
-      if (rafRef.current) cancelAnimationFrame(rafRef.current)
-      rafRef.current = null
+      alive = false
+      if (t) window.clearTimeout(t)
     }
-  }, [reducedMotion])
-
-  if (reducedMotion) return null
+  }, [fireflies, burstChance])
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 pointer-events-none opacity-90"
-      aria-hidden="true"
-    />
+    <div className="absolute inset-0 pointer-events-none">
+      {fireflies.map((f) => {
+        const isBurst = burstId === f.id
+
+        // Glow “đã” hơn (đỡ mờ)
+        const glowA =
+          f.depth === 1
+            ? "drop-shadow-[0_0_10px_rgba(255,214,107,0.65)]"
+            : f.depth === 2
+              ? "drop-shadow-[0_0_16px_rgba(255,214,107,0.85)]"
+              : "drop-shadow-[0_0_22px_rgba(255,214,107,1)]"
+
+        const glowBurst =
+          f.depth === 1
+            ? "drop-shadow-[0_0_22px_rgba(255,214,107,1)]"
+            : f.depth === 2
+              ? "drop-shadow-[0_0_30px_rgba(255,214,107,1)]"
+              : "drop-shadow-[0_0_42px_rgba(255,214,107,1)]"
+
+        // Nền hạt: sáng trung tâm, loang ra (giữ vibe cũ)
+        const bg = isBurst
+          ? "radial-gradient(circle, rgba(255,214,107,1) 0%, rgba(255,214,107,0.55) 32%, rgba(255,214,107,0) 72%)"
+          : "radial-gradient(circle, rgba(255,214,107,0.98) 0%, rgba(255,214,107,0.42) 34%, rgba(255,214,107,0) 72%)"
+
+        return (
+          <motion.span
+            key={f.id}
+            className={`absolute rounded-full ${isBurst ? glowBurst : glowA}`}
+            style={{
+              left: `${f.x}%`,
+              top: `${f.y}%`,
+              width: `${f.size}px`,
+              height: `${f.size}px`,
+              filter: `blur(${f.blur}px)`,
+              background: bg,
+              // gần nổi hơn
+              mixBlendMode: "screen",
+            }}
+            initial={{ opacity: 0 }}
+            animate={{
+              // drift loop
+              x: [0, f.driftX, 0, -f.driftX * 0.65, 0],
+              y: [0, f.driftY, 0, -f.driftY * 0.65, 0],
+
+              // “thở” (giữ nét như fire cũ)
+              opacity: isBurst
+                ? [f.baseOpacity, 1, f.baseOpacity]
+                : [f.baseOpacity * 0.78, f.baseOpacity * 1.18, f.baseOpacity * 0.82],
+
+              // scale nhẹ; burst scale mạnh
+              scale: isBurst ? [1, 1.45, 1] : [1, 1.12, 1],
+            }}
+            transition={{
+              // drift
+              x: { duration: f.driftDuration, repeat: Infinity, ease: "easeInOut", delay: f.delay },
+              y: { duration: f.driftDuration, repeat: Infinity, ease: "easeInOut", delay: f.delay },
+
+              // pulse opacity/scale
+              opacity: isBurst
+                ? { duration: 0.32, ease: "easeOut" }
+                : { duration: f.pulseDuration, repeat: Infinity, ease: "easeInOut", delay: f.delay * 0.3 },
+              scale: isBurst
+                ? { duration: 0.32, ease: "easeOut" }
+                : { duration: f.pulseDuration, repeat: Infinity, ease: "easeInOut", delay: f.delay * 0.25 },
+            }}
+          />
+        )
+      })}
+    </div>
   )
 }
 
-/** end code */
+// end code

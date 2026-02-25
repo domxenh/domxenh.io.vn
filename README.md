@@ -3,7 +3,7 @@ npm run dev
 
 //Update gifhub
 git add .
-git commit -m "Update V1.2"
+git commit -m "Update V1.3"
 git push origin main
 
 //Chat gpt new

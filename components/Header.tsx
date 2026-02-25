@@ -3,15 +3,13 @@
 /**
  * components/Header.tsx
  *
- * TÓM TẮT (Header Ver5 – tối ưu mượt dựa trên cấu trúc Ver4):
- * - Giữ kiến trúc cũ: Border base + Shimmer + Scroll shrink + Underline + Mobile Apple panel.
- * - [V5] Scroll shrink mượt hơn: dùng useSpring để lọc scrollY trước khi transform blur/bg/padding/scale.
- * - [V5] Underline mượt, tránh giật responsive: tách layoutId desktop, mobile không dùng layoutId.
- * - [V5] Popup đóng nhanh hơn: exit dùng tween duration ngắn + giảm quãng trượt.
- * - [V5] Click vào khoảng trống (vùng wrapper panel) sẽ tắt popup.
- * - [V5] Khoá scroll nền khi mở popup + ESC để đóng + tự đóng khi đổi route.
- * - [V5] Update menu:
- *   Trang chủ / Sản phẩm / Bảo Hành / Liên Hệ (+ đổi href tương ứng).
+ * TÓM TẮT (Header Ver5 – full):
+ * - Border base + shimmer + scroll shrink + underline + mobile iOS panel.
+ * - Blur backdrop ngoài pill (không sửa layout):
+ *   - Ưu tiên dùng ảnh hero qua CSS var: var(--hero-bg)
+ *   - Fallback: /images/Header.jpg
+ * - Đồng bộ Fireflies với Hero: <Fireflies variant="header" />
+ * - Mobile popup: click khoảng trống/backdrop đóng, ESC đóng, khoá scroll nền, exit nhanh.
  */
 
 import Link from "next/link"
@@ -27,15 +25,15 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion"
+import Fireflies from "@/components/Fireflies"
 
 /**
- * [V5] Menu mới theo yêu cầu:
- * - Edison  -> Sản phẩm
- * - Đèn Tròn -> Bảo Hành
- * - Dây & Bóng -> Liên Hệ
+ * MENU
+ * - Trang chủ / Sản phẩm / Bảo Hành / Liên Hệ
  *
- * NOTE: Icon giữ nguyên file hiện có để không vỡ asset.
- * Nếu bạn muốn icon đúng nghĩa, đổi lại các path /icons/*.png.
+ * NOTE icon:
+ * Repo bạn chắc chắn có /icons/home.png.
+ * Các icon còn lại bạn có thể thay lại sau nếu đã tạo file trong public/icons.
  */
 const NAV_ITEMS = [
   { name: "Trang chủ", href: "/", icon: "/icons/home.png" },
@@ -50,14 +48,13 @@ export default function Header() {
   const { scrollY } = useScroll()
   const [open, setOpen] = useState(false)
 
-  /** [V5] Active item (ưu tiên match chính xác, fallback Trang chủ) */
   const activeItem = useMemo(() => {
     return NAV_ITEMS.find((item) => item.href === pathname) || NAV_ITEMS[0]
   }, [pathname])
 
   /**
    * =============================
-   * [V5] SCROLL SHRINK SYSTEM (SMOOTH)
+   * SCROLL SHRINK SYSTEM (SMOOTH)
    * =============================
    */
   const scrollYSmooth = useSpring(scrollY, {
@@ -76,9 +73,12 @@ export default function Header() {
   const backgroundColor = useMotionTemplate`rgba(20,25,30,${bgOpacity})`
   const navPadding = useMotionTemplate`${paddingY}px`
 
+  // Blur backdrop ngoài pill: fade theo scroll cho nhẹ
+  const headerBackdropOpacity = useTransform(scrollYSmooth, [0, 240], [0.6, 0.2])
+
   /**
    * =============================
-   * [V5] MOBILE PANEL UX POLISH
+   * MOBILE PANEL UX POLISH
    * =============================
    */
   useEffect(() => {
@@ -105,6 +105,35 @@ export default function Header() {
 
   return (
     <>
+      {/* ==========================================================
+          BACKDROP BLUR ngoài pill header (không sửa layout)
+          - Ưu tiên dùng ảnh hero: var(--hero-bg)
+          - Fallback: Header.jpg
+          ========================================================== */}
+      <motion.div
+        aria-hidden
+        className="fixed top-0 left-0 w-full h-28 md:h-32 z-40 pointer-events-none"
+        style={{
+          backgroundImage: "var(--hero-bg, url('/images/Header.jpg'))",
+          backgroundSize: "cover",
+          backgroundPosition: "top",
+          filter: "blur(5px)",
+          opacity: headerBackdropOpacity,
+          transform: "scale(1.0)",
+          WebkitMaskImage:
+            "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.65) 55%, rgba(0,0,0,0) 100%)",
+          maskImage:
+            "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.65) 55%, rgba(0,0,0,0) 100%)",
+        }}
+      />
+
+      {/* Fireflies đồng bộ với Hero (nhẹ hơn nhưng vẫn rõ) */}
+      {!reduceMotion && (
+        <div className="fixed top-0 left-0 w-full h-28 md:h-32 z-40 pointer-events-none">
+          <Fireflies variant="header" />
+        </div>
+      )}
+
       <header className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-6xl">
         <div className="relative rounded-full">
           {/* BORDER BASE */}
@@ -260,6 +289,7 @@ export default function Header() {
                   {activeItem.name}
                 </span>
 
+                {/* Apple grid icon */}
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                   <circle cx="5" cy="5" r="2" />
                   <circle cx="12" cy="5" r="2" />
@@ -292,11 +322,11 @@ export default function Header() {
         </div>
       </header>
 
-      {/* ===== APPLE PANEL ===== */}
+      {/* ===== APPLE PANEL (MOBILE) ===== */}
       <AnimatePresence initial={false}>
         {open && (
           <>
-            {/* BACKDROP */}
+            {/* BACKDROP (click là tắt) */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1, transition: { duration: 0.12 } }}
@@ -336,7 +366,7 @@ export default function Header() {
                 "
                 onClick={(e) => e.stopPropagation()}
               >
-                {/* CLOSE */}
+                {/* CLOSE BUTTON */}
                 <button
                   onClick={() => setOpen(false)}
                   className="
@@ -381,28 +411,17 @@ export default function Header() {
                         onClick={() => setOpen(false)}
                         className="flex flex-col items-center space-y-3 group"
                       >
-                        {/* ICON TILE */}
                         <motion.div
                           whileHover={reduceMotion ? undefined : { scale: 1.08 }}
                           whileTap={reduceMotion ? undefined : { scale: 0.96 }}
                           transition={{ type: "spring", stiffness: 300 }}
-                          className={`
-                            relative w-20 h-20
-                            rounded-3xl
-                            overflow-hidden
-                            bg-white/15
-                            border border-white/20
-                            ${
-                              isActive
-                                ? "shadow-[0_0_35px_rgba(255,214,107,1)]"
-                                : "group-hover:bg-white/25"
-                            }
-                          `}
+                          className={
+                            `relative w-20 h-20 rounded-3xl overflow-hidden bg-white/15 border border-white/20 ` +
+                            (isActive
+                              ? "shadow-[0_0_35px_rgba(255,214,107,1)]"
+                              : "group-hover:bg-white/25")
+                          }
                         >
-                          {/* NOTE:
-                             - fill + object-cover để phủ kín tile
-                             - scale để “ăn” padding nằm bên trong file icon (nếu icon có khoảng trắng)
-                           */}
                           <Image
                             src={item.icon}
                             alt={item.name}
@@ -413,14 +432,12 @@ export default function Header() {
                         </motion.div>
 
                         <span
-                          className={`
-                            text-base font-medium transition
-                            ${
-                              isActive
-                                ? "text-white drop-shadow-[0_0_12px_rgba(255,214,107,1)]"
-                                : "text-white/80 group-hover:text-white"
-                            }
-                          `}
+                          className={
+                            `text-base font-medium transition ` +
+                            (isActive
+                              ? "text-white drop-shadow-[0_0_12px_rgba(255,214,107,1)]"
+                              : "text-white/80 group-hover:text-white")
+                          }
                         >
                           {item.name}
                         </span>

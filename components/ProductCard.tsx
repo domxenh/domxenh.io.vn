@@ -1,7 +1,7 @@
 "use client"
 
-import Link from "next/link"
 import { motion } from "framer-motion"
+import { useProductQuickView } from "@/components/product/ProductQuickViewProvider"
 
 type ProductLike = {
   id?: string
@@ -11,6 +11,7 @@ type ProductLike = {
   price: number
   oldPrice?: number | null
   isHot?: boolean | null
+  description?: string | null
 }
 
 export default function ProductCard({
@@ -20,6 +21,8 @@ export default function ProductCard({
   product: ProductLike
   variant?: "default" | "compact"
 }) {
+  const { open } = useProductQuickView()
+
   const showSale =
     typeof product.oldPrice === "number" && product.oldPrice > product.price
 
@@ -35,93 +38,100 @@ export default function ProductCard({
 
   const fmt = (n: number) => n.toLocaleString("vi-VN")
 
-  // ✅ CHỈNH TAY Ở ĐÂY:
-  // khoảng cách TÊN -> GIÁ (đổi mt-1/mt-2/mt-3...)
-  const NAME_TO_PRICE_GAP_CLASS = "mt-1"
+  // ✅ chỉnh tay gap giá -> nút (px)
+  const PRICE_TO_BUTTON_GAP_PX = 14
 
-  // ✅ CHỈNH TAY Ở ĐÂY (px): khoảng cách GIÁ -> NÚT
-  const PRICE_TO_BUTTON_GAP_PX = 15
-
-  // ✅ Xuống dòng thông minh: ngắt ngay sau "Bộ dây đèn"
+  // ✅ xuống dòng thông minh: ngắt sau "Bộ dây đèn"
   const smartSplitName = (name: string) => {
     const key = "Bộ dây đèn"
     const idx = name.indexOf(key)
     if (idx === -1) return { line1: null as string | null, line2: null as string | null }
-
     const after = name.slice(idx + key.length).trim()
     if (!after) return { line1: null, line2: null }
-
     return { line1: key, line2: after }
   }
-
   const split = smartSplitName(product.name)
 
+  const openQuickView = () =>
+    open({
+      id: product.id,
+      slug: product.slug,
+      name: product.name,
+      image: product.image,
+      price: product.price,
+      oldPrice: product.oldPrice,
+      isHot: product.isHot,
+      description: product.description ?? null,
+    })
+
   return (
-    <motion.div
-      whileHover={{ scale: 1.02 }}
-      transition={{ duration: 0.3 }}
-      className="w-full"
-    >
-      <Link href={`/san-pham/${product.slug}`}>
-        <div
-          className={`
-            product-card text-center relative
-            w-full h-full flex flex-col
-            mx-auto
-            ${variant === "compact" ? "max-w-[240px] pt-4 px-4 pb-2" : ""}
-          `}
-        >
-          {badge && (
-            <div
-              className={`
-                absolute top-3 left-3 z-10
-                rounded-full px-2.5 py-1 text-[10px] md:text-[11px]
-                font-extrabold tracking-wide uppercase
-                shadow-[0_10px_25px_rgba(0,0,0,0.6)]
-                ring-1 ring-white/20 backdrop-blur
-                ${badge === "HOT" ? "bg-[#FFD66B] text-black" : "bg-red-500 text-white"}
-              `}
-            >
-              {badge}
-            </div>
-          )}
+    <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.3 }} className="w-full">
+      <div
+        className={`
+          product-card text-center relative
+          w-full h-full flex flex-col
+          mx-auto
+          ${variant === "compact" ? "max-w-[240px]" : ""}
+        `}
+      >
+        {/* Badge trái */}
+        {badge && (
+          <div
+            className={`
+              absolute top-3 left-3 z-10
+              rounded-full px-2.5 py-1 text-[10px] md:text-[11px]
+              font-extrabold tracking-wide uppercase
+              shadow-[0_10px_25px_rgba(0,0,0,0.6)]
+              ring-1 ring-white/20 backdrop-blur
+              ${badge === "HOT" ? "bg-[#FFD66B] text-black" : "bg-red-500 text-white"}
+            `}
+          >
+            {badge}
+          </div>
+        )}
 
-          {typeof discountPct === "number" && discountPct > 0 && (
-            <div
-              className="
-                absolute top-3 right-3 z-10
-                rounded-full px-2.5 py-1
-                text-[10px] md:text-[11px]
-                font-extrabold
-                bg-red-600 text-white
-                shadow-[0_10px_25px_rgba(0,0,0,0.6)]
-                ring-1 ring-white/15
-              "
-            >
-              -{discountPct}%
-            </div>
-          )}
-
+        {/* Badge phải: -% */}
+        {typeof discountPct === "number" && discountPct > 0 && (
           <div
             className="
-              mx-auto relative w-full
-              aspect-square
-              overflow-hidden rounded-2xl
-              bg-black/20 border border-white/10
+              absolute top-3 right-3 z-10
+              rounded-full px-2.5 py-1
+              text-[10px] md:text-[11px]
+              font-extrabold
+              bg-red-600 text-white
+              shadow-[0_10px_25px_rgba(0,0,0,0.6)]
+              ring-1 ring-white/15
             "
           >
-            <img
-              src={product.image}
-              alt={product.name}
-              loading="lazy"
-              className="w-full h-full object-cover rounded-2xl"
-            />
+            -{discountPct}%
           </div>
+        )}
 
-          {/* ✅ TÊN 2 DÒNG - XUỐNG DÒNG THÔNG MINH SAU "Bộ dây đèn" */}
-          {/* ✅ TÊN 2 DÒNG - CĂN GIỮA KHI RESIZE */}
+        {/* Ảnh (click mở modal) */}
+        <button
+          type="button"
+          onClick={openQuickView}
+          className="mx-auto relative w-full aspect-square overflow-hidden rounded-2xl bg-black/20 border border-white/10"
+          aria-label={`Xem nhanh ${product.name}`}
+        >
+          <img
+            src={product.image}
+            alt={product.name}
+            loading="lazy"
+            className="w-full h-full object-cover rounded-2xl"
+          />
+        </button>
+
+        {/* Tên (click mở modal) */}
+        <button
+          type="button"
+          onClick={openQuickView}
+          className="mt-3 block w-full"
+          aria-label={`Xem nhanh ${product.name}`}
+          title={product.name}
+        >
           {split.line1 ? (
-            <div className="mt-3 w-full text-center" title={product.name}>
+            <div className="w-full text-center">
               <p
                 className={`
                   heading leading-snug
@@ -131,7 +141,6 @@ export default function ProductCard({
               >
                 {split.line1}
               </p>
-
               <p
                 className={`
                   heading leading-snug
@@ -145,11 +154,10 @@ export default function ProductCard({
           ) : (
             <h3
               className={`
-                mt-3 heading leading-snug
+                heading leading-snug
                 ${variant === "compact" ? "text-base md:text-lg font-semibold" : "text-lg md:text-xl"}
                 mx-auto max-w-full text-center
               `}
-              title={product.name}
               style={{
                 display: "-webkit-box",
                 WebkitBoxOrient: "vertical",
@@ -160,39 +168,43 @@ export default function ProductCard({
               {product.name}
             </h3>
           )}
+        </button>
 
-          {/* ✅ KHOẢNG CÁCH TÊN -> GIÁ (chỉnh tay bằng NAME_TO_PRICE_GAP_CLASS) */}
-          <div
-            className={`${NAME_TO_PRICE_GAP_CLASS} flex w-full flex-nowrap items-baseline justify-between gap-3`}
-          >
-            {showSale ? (
-              <p className="whitespace-nowrap text-xs md:text-sm text-white/55 line-through text-left">
-                {fmt(product.oldPrice as number)} đ
-              </p>
-            ) : (
-              <span />
-            )}
-
-            <p
-              className="
-                whitespace-nowrap text-base md:text-lg font-extrabold
-                text-[#FFD66B] text-right ml-auto
-                drop-shadow-[0_0_10px_rgba(255,214,107,0.55)]
-              "
-            >
-              {fmt(product.price)} đ
+        {/* Giá */}
+        <div className="mt-2 flex w-full flex-nowrap items-baseline justify-between gap-3 px-0">
+          {showSale ? (
+            <p className="whitespace-nowrap text-xs md:text-sm text-white/55 line-through text-left">
+              {fmt(product.oldPrice as number)} đ
             </p>
-          </div>
+          ) : (
+            <span />
+          )}
 
-          {/* ✅ KHOẢNG CÁCH GIÁ -> NÚT (chỉnh tay bằng PRICE_TO_BUTTON_GAP_PX) */}
-          <div
-            className="mt-auto pt-[var(--gap)] pb-0"
-            style={{ ["--gap" as any]: `${PRICE_TO_BUTTON_GAP_PX}px` }}
+          <p
+            className="
+              whitespace-nowrap text-base md:text-lg font-extrabold
+              text-[#FFD66B] text-right ml-auto
+              drop-shadow-[0_0_10px_rgba(255,214,107,0.55)]
+            "
           >
-            <button className="btn-brand">Chi Tiết</button>
-          </div>
+            {fmt(product.price)} đ
+          </p>
         </div>
-      </Link>
+
+        {/* Nút Chi Tiết => mở modal */}
+        <div
+          className="mt-auto pt-[var(--gap)] pb-0"
+          style={{ ["--gap" as any]: `${PRICE_TO_BUTTON_GAP_PX}px` }}
+        >
+          <button
+            type="button"
+            onClick={openQuickView}
+            className="btn-brand inline-flex items-center justify-center"
+          >
+            Chi Tiết
+          </button>
+        </div>
+      </div>
     </motion.div>
   )
 }

@@ -23,7 +23,7 @@ export default async function HomeProductFolders() {
       }}
     >
       {/* Fireflies background layer */}
-      <div className="pointer-events-none absolute inset-0 z-0 opacity-70">
+      <div className="pointer-events-none absolute inset-0 z-0 opacity-70 hidden md:block">
         <Fireflies />
       </div>
 
@@ -37,8 +37,8 @@ export default async function HomeProductFolders() {
                   rounded-[32px]
                   border border-white/10
                   bg-gradient-to-b from-white/10 to-white/5
-                  shadow-[0_40px_120px_rgba(0,0,0,0.65)]
-                  backdrop-blur-2xl
+                  backdrop-blur-md md:backdrop-blur-2xl
+                  shadow-[0_25px_80px_rgba(0,0,0,0.55)] md:shadow-[0_40px_120px_rgba(0,0,0,0.65)]
                   p-6 md:p-8
                 "
               >

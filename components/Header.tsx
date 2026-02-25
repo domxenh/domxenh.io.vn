@@ -7,7 +7,7 @@
  * - Border base + shimmer + scroll shrink + underline + mobile iOS panel.
  * - Blur backdrop ngoài pill (không sửa layout):
  *   - Ưu tiên dùng ảnh hero qua CSS var: var(--hero-bg)
- *   - Fallback: /images/Header.jpg
+ *   - Fallback: /images/hero-outdoor.png
  * - Đồng bộ Fireflies với Hero: <Fireflies variant="header" />
  * - Mobile popup: click khoảng trống/backdrop đóng, ESC đóng, khoá scroll nền, exit nhanh.
  */

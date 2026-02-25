@@ -155,9 +155,15 @@ body {
 }
 
 /* Nhẹ tay hơn cho card khi nằm trong folder để giống iOS grid */
+/* FIX: giảm khoảng trống đáy card trong folder */
 .apple-folder .product-card {
   border-radius: 28px;
-  padding: 22px;
+
+  /* CHỈNH Ở ĐÂY:
+     - top/right/left giữ 22px
+     - bottom giảm còn 12px để không bị “độn” dưới nút
+  */
+  padding: 22px 22px 12px 22px;
 }
 
 /* End code 4 */
@@ -202,4 +208,9 @@ body {
   font-size: 12px;
   border-radius: 999px;
   box-shadow: 0 0 18px rgba(255, 59, 48, 0.35);
+}
+
+/* hide horizontal scrollbar for title scroller */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }

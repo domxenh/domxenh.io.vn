@@ -1,15 +1,21 @@
-//Chạy http://localhost:3000/
+        //Chạy http://localhost:3000/
 npm run dev
 
-//Update gifhub
+        //Push schema (nếu bạn sửa schema.prisma):
+npx prisma db push
+
+        //Seed lại:
+npx prisma db seed
+
+            //Update gifhub
 git add .
-git commit -m "Update V1.3"
+git commit -m "Update V1.21"
 git push origin main
 
-//Chat gpt new
+            //Chat gpt new
 Đọc trạng thái project theo README_DEV.md
 
-//Câu lệnh Chatgpt
+            //Câu lệnh Chatgpt
 Phát triển ver 5 cho header.
 Thêm bo tròn ở LOGO. viền LOGO đang bị thô, logo đang bị thu nhỏ lại vì khoảng trắng quá nhiều. 
 Chữ ở header cần thêm ánh sáng để nổi hơn

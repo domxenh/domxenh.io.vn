@@ -1,3 +1,8 @@
+// prisma/schema.prisma
+// TÓM TẮT (ver 1.3):
+// - Chỉ format lại field isHot cho đúng style, tránh nhìn “lệch hàng”
+// - Không đổi logic DB (giữ nguyên oldPrice/isHot)
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,12 +13,12 @@ datasource db {
 }
 
 model Category {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   name      String
-  slug      String   @unique
+  slug      String    @unique
   image     String?
   products  Product[]
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
 }
 
 model Product {
@@ -22,13 +27,13 @@ model Product {
   slug        String   @unique
   price       Int
   oldPrice    Int?
+  isHot       Boolean  @default(false)
   description String
   image       String
   stock       Int
   categoryId  String
   category    Category @relation(fields: [categoryId], references: [id])
   createdAt   DateTime @default(now())
-  isHot Boolean @default(false)
 }
 
 model Post {
@@ -39,3 +44,5 @@ model Post {
   image     String?
   createdAt DateTime @default(now())
 }
+
+// end code

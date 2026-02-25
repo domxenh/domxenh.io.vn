@@ -1,30 +1,38 @@
 // components/home/folderConfig.ts
-// Cấu hình folder ở trang chủ (curated)
+// TÓM TẮT (ver 1.3):
+// - Sửa lỗi Home folder bị trống do lệch product.name
+// - Chuyển curated list từ productNames -> productSlugs (ổn định hơn)
+// - Title/desc giữ nguyên theo UI Apple folder
+//
+// CHỖ CẦN CHỈNH:
+// - Muốn thay sản phẩm trong từng folder: sửa mảng productSlugs bên dưới.
+//
+// end goal: Home luôn map đúng sản phẩm miễn DB giữ slug ổn định
 
 export const HOME_PRODUCT_FOLDERS = [
   {
-    title: "Bộ dây đèn Edison",
+    title: "Bộ dây đèn EDISON",
     desc: "Ánh vàng ấm, vibe cổ điển – lắp là xênh.",
-    productNames: [
-      "Bộ dây đèn Edison",
-      "Bộ dây đèn Edison 1 tóc",
-      "Bộ dây đèn Edison 2 tóc",
+    productSlugs: [
+      "bo-day-den-edison",
+      "bo-day-den-edison-1-toc",
+      "bo-day-den-edison-2-toc",
     ],
   },
   {
-    title: "Bộ dây đèn bóng Tròn",
+    title: "Bộ dây đèn Tròn",
     desc: "Nhẹ nhàng hiện đại – nhiều mức công suất.",
-    productNames: [
-      "Bộ dây đèn bóng Tròn 3W",
-      "Bộ dây đèn bóng Tròn 5W",
-      "Bộ dây đèn bóng Tròn 7W",
-      "Bộ dây đèn bóng Tròn 9W",
+    productSlugs: [
+      "bo-day-den-bong-tron-3w",
+      "bo-day-den-bong-tron-5w",
+      "bo-day-den-bong-tron-7w",
+      "bo-day-den-bong-tron-9w",
     ],
   },
   {
-    title: "Dây lẻ - Bóng lẻ",
+    title: "Dây lẻ, Bóng lẻ",
     desc: "Phụ kiện thay thế & nâng cấp theo nhu cầu.",
-    productNames: ["Dây lẻ", "Bóng lẻ"],
+    productSlugs: ["day-le", "bong-le"],
   },
 ] as const
 

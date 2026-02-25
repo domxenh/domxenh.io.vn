@@ -8,7 +8,15 @@ export default async function CatalogGrid() {
 
   return (
     <FadeInSection>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div
+        className="
+          grid gap-4 sm:gap-6
+          justify-items-center
+          [grid-template-columns:repeat(auto-fit,minmax(180px,1fr))]
+          sm:[grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]
+          lg:[grid-template-columns:repeat(auto-fit,minmax(240px,1fr))]
+        "
+      >
         {products.map((p) => (
           <ProductCard key={p.id} product={p} variant="default" />
         ))}

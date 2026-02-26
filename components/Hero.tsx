@@ -1,35 +1,23 @@
 /**
  * Tóm tắt (VI):
- * - Hero tĩnh (không scroll animation)
- * - Đồng bộ ảnh nền với Header: dùng /images/hero-outdoor.png
- * - Set CSS var --hero-bg để header có thể dùng cùng ảnh hero (tạo cảm giác liền mạch)
- * - Mobile tối ưu: chiều cao hero thấp hơn, thêm padding-top để không bị header che,
- *   font/button scale hợp lý, object-position đẹp hơn.
- * - Nút "Khám phá ngay" scroll mượt xuống section sản phẩm id="products"
- *
- * Chỗ cần chỉnh:
- * - TARGET_ID: id section sản phẩm
- * - HERO_BG: ảnh nền hero (đang dùng hero-outdoor.png)
- * - HERO_HEIGHT: chiều cao responsive
+ * - Desktop: giữ nguyên Hero + Fireflies + motion như cũ
+ * - Mobile: KHÔNG render Hero (bỏ hero + bỏ toàn bộ hiệu ứng riêng mobile)
  */
 
 "use client"
 
 import { motion } from "framer-motion"
 import type { ReactNode } from "react"
-import { useEffect } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Fireflies from "@/components/Fireflies"
 
 function GlowWord({ children }: { children: ReactNode }) {
   return (
     <span className="relative inline-flex items-center font-extrabold italic">
-      {/* nền highlight */}
       <span
         aria-hidden
         className="absolute -inset-x-2 -inset-y-1 rounded-full bg-[#FFD66B]/18"
       />
-
-      {/* glow mạnh */}
       <span
         aria-hidden
         className="absolute inset-0 text-[#FFD66B] opacity-80 blur-md"
@@ -42,8 +30,6 @@ function GlowWord({ children }: { children: ReactNode }) {
       >
         {children}
       </span>
-
-      {/* chữ thật (không được transparent nữa) */}
       <span className="relative text-[#FFD66B] drop-shadow-[0_0_20px_rgba(255,214,107,1)]">
         {children}
       </span>
@@ -53,26 +39,36 @@ function GlowWord({ children }: { children: ReactNode }) {
 
 export default function Hero() {
   const TARGET_ID = "products"
-
-  // ✅ Đồng bộ ảnh hero với header
   const HERO_BG = "/images/hero-outdoor.png"
-
-  // ✅ Mobile thấp hơn, desktop cao hơn
   const HERO_HEIGHT = "h-[72vh] sm:h-[80vh] md:h-[92vh]"
 
-  // ✅ Set CSS var để Header có thể lấy đúng ảnh Hero (liền mạch)
+  // ✅ Mobile: bỏ hẳn Hero (không render => không hiệu ứng)
+  const [isMobile, setIsMobile] = useState(false)
   useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)")
+    const apply = () => setIsMobile(mq.matches)
+    apply()
+    mq.addEventListener?.("change", apply)
+    return () => mq.removeEventListener?.("change", apply)
+  }, [])
+
+  // ✅ Chỉ set CSS var hero-bg khi desktop (vì mobile không render hero)
+  useEffect(() => {
+    if (isMobile) return
     document.documentElement.style.setProperty("--hero-bg", `url('${HERO_BG}')`)
     return () => {
       document.documentElement.style.removeProperty("--hero-bg")
     }
-  }, [HERO_BG])
+  }, [HERO_BG, isMobile])
 
   const handleScrollToProducts = () => {
     const el = document.getElementById(TARGET_ID)
     if (!el) return
     el.scrollIntoView({ behavior: "smooth", block: "start" })
   }
+
+  // ✅ Mobile: bỏ hoàn toàn
+  if (isMobile) return null
 
   return (
     <motion.section
@@ -95,13 +91,12 @@ export default function Hero() {
         />
       </div>
 
-      {/* Overlay (giữ ảnh nhìn thấy, chỉ tối + blur nhẹ) */}
+      {/* Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/40 to-[#0B1417]" />
 
-      {/* Fireflies layer */}
+      {/* Fireflies layer (desktop only vì mobile đã return null) */}
       <div className="absolute inset-0">
         <Fireflies variant="hero" />
-        {/* haze nhẹ để đom đóm hòa vào nền + blur nhẹ ảnh */}
         <div className="absolute inset-0 backdrop-blur-[1.2px]" />
       </div>
 
@@ -159,12 +154,10 @@ export default function Hero() {
           animate={{
             opacity: 1,
             y: 0,
-            // pulse gây chú ý (liên tục)
             scale: [1, 1.06, 1],
           }}
           transition={{
             duration: 1.4,
-            // pulse loop nhẹ
             scale: { duration: 1.6, repeat: Infinity, ease: "easeInOut", delay: 1.4 },
           }}
           whileHover={{ scale: 1.08 }}
@@ -182,7 +175,6 @@ export default function Hero() {
             overflow-hidden
           "
         >
-          {/* glow nền */}
           <span
             aria-hidden
             className="
@@ -194,7 +186,6 @@ export default function Hero() {
             "
           />
 
-          {/* shimmer chạy ngang (subtle) */}
           <motion.span
             aria-hidden
             className="absolute inset-0"

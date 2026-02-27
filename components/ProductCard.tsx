@@ -1,8 +1,11 @@
+// version V2.1 https://github.com/domxenh/domxenh.io.vn/blob/main/components/ProductCard.tsx
+
 "use client"
 
 import Link from "next/link"
 import { motion, useReducedMotion } from "framer-motion"
 import { useEffect, useState } from "react"
+import { useProductQuickView } from "@/components/product/ProductQuickViewProvider"
 
 type ProductLike = {
   id?: string
@@ -12,6 +15,8 @@ type ProductLike = {
   price: number
   oldPrice?: number | null
   isHot?: boolean | null
+  // ✅ phát triển thêm (không ảnh hưởng cũ): nếu có description thì modal dùng được
+  description?: string | null
 }
 
 export default function ProductCard({
@@ -22,6 +27,9 @@ export default function ProductCard({
   variant?: "default" | "compact"
 }) {
   const reduceMotion = useReducedMotion()
+
+  // ✅ NEW: dùng Quick View (không phá cấu trúc cũ)
+  const { open } = useProductQuickView()
 
   // ✅ mobile detect để tắt hover scale (mượt hơn khi scroll/tap)
   const [isMobile, setIsMobile] = useState(false)
@@ -158,7 +166,17 @@ export default function ProductCard({
             className="mt-auto pt-[var(--gap)]"
             style={{ ["--gap" as any]: `${PRICE_TO_BUTTON_GAP_PX}px` }}
           >
-            <button className="btn-brand">Chi Tiết</button>
+            {/* ✅ NEW: bấm Chi Tiết mở QuickView, không đi trang */}
+            <button
+              className="btn-brand"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                open(product as any)
+              }}
+            >
+              Chi Tiết
+            </button>
           </div>
         </div>
       </Link>

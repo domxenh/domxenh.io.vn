@@ -1,5 +1,6 @@
-Đọc trạng thái project theo README_DEV.md
+Đọc trạng thái project và link PROJECT https://github.com/domxenh/domxenh.io.vn theo README_DEV.md và phát triển tiếp PROJECT
 
+# PROJECT link: https://github.com/domxenh/domxenh.io.vn
 
 # 📦 PROJECT v1.0: DOMXENH.IO.VN – ĐÓM XÊNH
 
@@ -847,7 +848,6 @@ Hiện tại bước vào giai đoạn:
 ## 6) Lệnh quan trọng
 
 ### Dev
-```bash
 npm run dev
 7) Fix lỗi Postgres “prepared statement already exists” (Dev)
 
@@ -916,7 +916,274 @@ Confirm pages:
 /san-pham-full có catalog grid
 
 Header hoạt động mượt, mobile panel đóng nhanh
-
 ===End Ver 1.2===
 
+# 📦 PROJECT v1.3: DOMXENH.IO.VN – ĐÓM XÊNH (Next.js + Prisma + Supabase)
 
+
+## - Mục tiêu phiên bản v1.3
+
+  Cải tiến trang chủ theo layout Apple-like categories (3 danh mục cố định, mỗi danh mục có curated products).
+
+  Mỗi sản phẩm hiển thị: Giá niêm yết (price), giá gạch (oldPrice), badge HOT/SALE và -% giảm giá, nút Chi Tiết.
+
+  Giữ animation của bản cũ trên desktop.
+
+  Tối ưu UI/UX: grid tự co (auto-fit/minmax), căn giữa title + card, ảnh sản phẩm vuông, spacing đẹp khi resize.
+
+  Nền khu vực danh mục dùng ảnh hero: public/images/hero-outdoor.png.
+
+  Nút “Chi Tiết” nâng cấp: mở ngay trên trang (Quick View modal) cho cả Home và trang full products.
+
+  Tối ưu mobile-only: bỏ Hero + tắt hiệu ứng (Fireflies/motion/blur/shimmer) để menu mở nhanh và list/ảnh load mượt.
+
+## 1- Yêu cầu dữ liệu (DB / Prisma)
+  Model Product tối thiểu
+
+  slug, name, image
+
+  price, oldPrice
+
+  isHot
+
+  description (khuyến nghị để hiện trong Quick View)
+
+  oldPrice > price thì tự hiểu là đang SALE và tính -%.
+
+## 2 - Danh mục Apple-like ở trang chủ
+  3 danh mục (curated)
+
+  Bộ dây đèn EDISON (3 sản phẩm)
+
+  Bộ dây đèn Tròn (4 sản phẩm)
+
+  Dây lẻ, Bóng lẻ (2 sản phẩm)
+
+  Cách match sản phẩm trong danh mục
+
+  Match theo slug (ổn định hơn name)
+
+  File cấu hình:
+
+  components/home/folderConfig.ts
+
+  Trường productSlugs: string[]
+
+  ## 3- HomeProductFolders: layout + auto-fit/minmax + căn giữa
+  File chỉnh
+
+  components/home/HomeProductFolders.tsx
+
+  Các điểm đã làm
+
+  Header danh mục căn giữa (title + desc).
+
+  Grid dùng auto-fit/minmax để tự co số cột khi thu hẹp:
+
+  Mobile: min 180px
+
+  Desktop: min 220px+
+
+  Card luôn ở giữa: justify-items-center
+
+  Đã xóa dòng counter dạng: 3/3 sản phẩm theo yêu cầu.
+
+  ## 4- ProductCard: badge rõ + giá vàng glow + ảnh vuông + spacing chuẩn resize
+  File chỉnh
+
+  components/ProductCard.tsx
+
+  Quy ước hiển thị
+
+  Badge trái:
+
+  HOT nếu isHot === true
+
+  SALE nếu oldPrice > price và không hot
+
+  Badge phải:
+
+  -% giảm giá (màu đỏ) nếu oldPrice > price
+
+  Giá:
+
+  Giá gạch ngang (oldPrice) hiển thị bên trái
+
+  Giá price hiển thị bên phải, màu vàng + glow
+
+  Ảnh:
+
+  Luôn vuông: aspect-square
+
+  Tên:
+
+  2 dòng thông minh:
+
+  Ưu tiên xuống dòng sau cụm “Bộ dây đèn”
+
+  Nếu không có cụm đó: clamp tối đa 2 dòng
+
+  Khi resize: chữ tự căn giữa
+
+  CSS ảnh hưởng spacing đáy card
+
+  app/globals.css có .product-card và .apple-folder .product-card set padding.
+
+  Đã giảm padding đáy trong .apple-folder .product-card để không “độn” dưới nút.
+
+  5- Nền khu vực danh mục bằng ảnh hero-outdoor.png
+  Yêu cầu file ảnh
+
+  Ảnh đặt tại: public/images/hero-outdoor.png
+
+  File chỉnh
+
+  components/home/HomeProductFolders.tsx
+
+  Cách set nền
+
+  set background image cho section#products:
+
+  url('/images/hero-outdoor.png')
+
+  thêm overlay gradient (để text/card nổi).
+
+  ## 6- Fireflies ở danh mục sản phẩm
+  Component
+
+  components/Fireflies.tsx
+
+  File chỉnh
+
+  components/home/HomeProductFolders.tsx
+
+  Quy tắc bật/tắt
+
+  Desktop: có thể bật để đẹp
+
+  Mobile: khuyến nghị tắt để mượt (xem mục 9)
+
+  ## 7- Quick View “Chi Tiết” mở ngay trên trang (Home + Full products)
+  Mục tiêu
+
+  Click “Chi Tiết” không chuyển trang → mở modal Quick View.
+
+  Áp dụng cả:
+
+  trang chủ (Home folders)
+
+  trang sản phẩm full (CatalogGrid / full listing)
+
+  File tạo mới
+
+  components/product/ProductQuickViewProvider.tsx
+
+  cung cấp context open(product) / close()
+
+  render modal ở root
+
+  File chỉnh để wrap provider toàn site
+
+  app/layout.tsx
+
+  bọc children + Header/Footer trong <ProductQuickViewProvider>
+
+  File chỉnh nút Chi Tiết
+
+  components/ProductCard.tsx
+
+  thay hành vi nút “Chi Tiết” → gọi open(product)
+
+  (tuỳ chọn) click ảnh/tên cũng mở modal
+
+  Dữ liệu cần cho modal
+
+  description nên có trong query list (Home/Catalog) để hiển thị trong modal
+
+  ## 8- Tối ưu load sản phẩm: cache server query
+  File chỉnh
+
+  lib/products.ts
+
+  Thay đổi
+
+  Dùng cache() từ react để tránh query lặp trong server render tree:
+
+  getAllProducts
+
+  getProductsBySlugs
+
+  getProductBySlug
+
+  Nếu muốn cache theo thời gian (revalidate), dùng unstable_cache (tuỳ version Next).
+
+  ## 9- Mobile-only performance mode (bỏ Hero + tắt hiệu ứng)
+  Mục tiêu
+
+  Mobile: menu mở nhanh, giảm delay load ảnh/sản phẩm, giảm giật/lag.
+
+  Desktop: giữ hiệu ứng đẹp như cũ.
+
+  Hero
+
+  File: components/Hero.tsx
+
+  Mobile: return null (không render hero) hoặc hidden md:block.
+
+  Fireflies / shimmer / blur / motion
+
+  Header:
+
+  tắt Fireflies trên mobile
+
+  giảm blur/overlay/shadow trên mobile (md:)
+
+  Home folders:
+
+  Fireflies: hidden md:block
+
+  backdrop-blur mạnh chỉ bật desktop
+
+  ProductCard:
+
+  tắt hover scale trên mobile (điều kiện isMobile)
+
+  tắt prefetch link sản phẩm: prefetch={false} (giảm prefetch hàng loạt)
+
+  ## 10- Favicon
+
+  Thay favicon bằng file .ico:
+
+  public/favicon.ico
+
+  Nếu App Router dùng app/favicon.ico hoặc app/icon.png, ưu tiên file trong app/.
+
+  Cache trình duyệt rất lì:
+
+  mở incognito / clear site data / hard refresh.
+
+  ## 11- Chạy dự án (Dev)
+  npm install
+  npm run dev
+  ## 12- Prisma/DB (nếu cần)
+  npx prisma db push
+  npx prisma db seed
+ ## 13- Checklist nhanh khi nghiệm thu
+
+  (đã có) Home hiển thị đúng 3 danh mục, đúng số sản phẩm từng danh mục
+
+  (đã có) Card: HOT/SALE rõ + có -% đỏ
+
+  (đã có) Giá: oldPrice gạch trái, price vàng glow phải
+
+  (đã có) Ảnh vuông, không mất góc
+
+  (đã có) Resize: grid tự co, title + card căn giữa
+
+  (đã có) Nền danh mục hiện ảnh /images/hero-outdoor.png
+
+  (đã có) Mobile: hero biến mất, hiệu ứng tắt
+
+  (chưa có) “Chi Tiết” mở modal Quick View ở Home + trang full product
+  
+  =====end ver 1.3=====

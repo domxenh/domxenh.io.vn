@@ -12,12 +12,8 @@ import Footer from "@/components/Footer"
 import ProductQuickViewProvider from "@/components/product/ProductQuickViewProvider"
 
 export const metadata = {
-  openGraph: {
-    images: ["/icon.png"],
-  },
-  twitter: {
-    images: ["/icon.png"],
-  },
+  openGraph: { images: ["/icon.png"] },
+  twitter: { images: ["/icon.png"] },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -26,13 +22,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <ProductQuickViewProvider>
           <Header />
-
           {/* Apple không dùng container cố định */}
           {children}
-
           <Footer />
         </ProductQuickViewProvider>
       </body>
     </html>
   )
 }
+
+// end code

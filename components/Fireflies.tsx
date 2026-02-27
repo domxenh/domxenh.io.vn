@@ -3,19 +3,21 @@
 /**
  * components/Fireflies.tsx
  *
- * TÓM TẮT (Fireflies v5.1 – giữ vibe cũ nhưng nâng cấp):
- * - Mật độ cao hơn + sáng hơn (đỡ “mờ/ít”).
- * - Có xa/gần: con gần to, sáng, glow mạnh; con xa nhỏ, nhẹ blur.
- * - Thỉnh thoảng flash ngẫu nhiên 1 cái (burst), không đồng loạt.
- * - Dùng chung Hero/Header:
+ * TÓM TẮT (Fireflies v5.2 – phát triển, không renew):
+ * - GIỮ vibe cũ + nâng cấp: mật độ/độ sáng/xa-gần/burst.
+ * - BỔ SUNG variant "products" để dùng cho khu vực sản phẩm (full area, mật độ vừa).
+ * - Không đổi cách render (absolute inset-0) để tương thích toàn dự án.
+ *
+ * Dùng:
  *   <Fireflies variant="hero" />
  *   <Fireflies variant="header" />
+ *   <Fireflies variant="products" />
  */
 
 import React, { useEffect, useMemo, useState } from "react"
 import { motion } from "framer-motion"
 
-type Variant = "hero" | "header"
+type Variant = "hero" | "header" | "products"
 
 type Firefly = {
   id: number
@@ -47,13 +49,8 @@ function build(count: number, seedOffset: number, scope: "full" | "top"): Firefl
   for (let i = 0; i < count; i++) {
     const depth = pickDepth()
 
-    // scope: header/top => tập trung y gần phía trên, để giống “lan lên header”
-    const y =
-      scope === "top"
-        ? rand(0, 85) // tập trung vùng trên
-        : rand(0, 100)
+    const y = scope === "top" ? rand(0, 85) : rand(0, 100)
 
-    // Đậm hơn bản trước (để không mờ)
     const size =
       depth === 1 ? rand(2.2, 3.8) : depth === 2 ? rand(3.6, 6.0) : rand(5.8, 9.2)
 
@@ -69,10 +66,12 @@ function build(count: number, seedOffset: number, scope: "full" | "top"): Firefl
       depth === 1 ? rand(-45, 45) : depth === 2 ? rand(-70, 70) : rand(-110, 110)
 
     const driftDuration =
-      depth === 1 ? rand(11, 18) : depth === 2 ? rand(9, 15) : rand(7, 12)
+      depth === 1 ? rand(8, 12) : depth === 2 ? rand(9, 14) : rand(10, 16)
 
     const pulseDuration =
-      depth === 1 ? rand(3.8, 6.8) : depth === 2 ? rand(3.0, 5.6) : rand(2.4, 4.8)
+      depth === 1 ? rand(2.6, 4.2) : depth === 2 ? rand(2.2, 3.6) : rand(1.8, 3.0)
+
+    const delay = rand(0, 4.0)
 
     list.push({
       id: seedOffset + i,
@@ -86,49 +85,41 @@ function build(count: number, seedOffset: number, scope: "full" | "top"): Firefl
       driftY,
       driftDuration,
       pulseDuration,
-      delay: rand(0, 4.5),
+      delay,
     })
   }
   return list
 }
 
 export default function Fireflies({ variant = "hero" }: { variant?: Variant }) {
-  // Dày hơn rõ rệt (như vibe cũ)
-  const count = variant === "hero" ? 44 : 18
-  const scope: "full" | "top" = variant === "hero" ? "full" : "top"
+  // GIỮ thông số cũ, chỉ thêm mode products
+  const count = variant === "hero" ? 44 : variant === "products" ? 30 : 18
+  const scope: "full" | "top" = variant === "hero" ? "full" : variant === "products" ? "full" : "top"
 
-  // Flash: hero nhiều hơn, header ít hơn
-  const burstChance = variant === "hero" ? 0.75 : 0.45
+  const burstChance = variant === "hero" ? 0.75 : variant === "products" ? 0.60 : 0.45
 
   const fireflies = useMemo(
-    () => build(count, variant === "hero" ? 1000 : 2000, scope),
+    () => build(count, variant === "hero" ? 1000 : variant === "products" ? 1500 : 2000, scope),
     [count, variant, scope]
   )
 
   const [burstId, setBurstId] = useState<number | null>(null)
 
-  // Burst ngẫu nhiên theo nhịp
   useEffect(() => {
     let alive = true
     let t: number | undefined
 
-    const schedule = () => {
-      const next = rand(900, 1800) // flash thường xuyên hơn để “có điểm nhấn”
-      t = window.setTimeout(() => {
-        if (!alive) return
-        if (Math.random() < burstChance) {
-          const pick = fireflies[Math.floor(Math.random() * fireflies.length)]
-          setBurstId(pick?.id ?? null)
-
-          window.setTimeout(() => {
-            if (alive) setBurstId(null)
-          }, rand(220, 360))
-        }
-        schedule()
-      }, next)
+    const tick = () => {
+      if (!alive) return
+      if (Math.random() < burstChance) {
+        const pick = fireflies[Math.floor(Math.random() * fireflies.length)]
+        setBurstId(pick?.id ?? null)
+        window.setTimeout(() => setBurstId(null), 380)
+      }
+      t = window.setTimeout(tick, rand(800, 1600))
     }
 
-    schedule()
+    tick()
     return () => {
       alive = false
       if (t) window.clearTimeout(t)
@@ -139,61 +130,37 @@ export default function Fireflies({ variant = "hero" }: { variant?: Variant }) {
     <div className="absolute inset-0 pointer-events-none">
       {fireflies.map((f) => {
         const isBurst = burstId === f.id
-
-        // Glow “đã” hơn (đỡ mờ)
-        const glowA =
-          f.depth === 1
-            ? "drop-shadow-[0_0_10px_rgba(255,214,107,0.65)]"
+        const glow =
+          f.depth === 3
+            ? "drop-shadow-[0_0_16px_rgba(255,214,107,0.55)]"
             : f.depth === 2
-              ? "drop-shadow-[0_0_16px_rgba(255,214,107,0.85)]"
-              : "drop-shadow-[0_0_22px_rgba(255,214,107,1)]"
-
-        const glowBurst =
-          f.depth === 1
-            ? "drop-shadow-[0_0_22px_rgba(255,214,107,1)]"
-            : f.depth === 2
-              ? "drop-shadow-[0_0_30px_rgba(255,214,107,1)]"
-              : "drop-shadow-[0_0_42px_rgba(255,214,107,1)]"
-
-        // Nền hạt: sáng trung tâm, loang ra (giữ vibe cũ)
-        const bg = isBurst
-          ? "radial-gradient(circle, rgba(255,214,107,1) 0%, rgba(255,214,107,0.55) 32%, rgba(255,214,107,0) 72%)"
-          : "radial-gradient(circle, rgba(255,214,107,0.98) 0%, rgba(255,214,107,0.42) 34%, rgba(255,214,107,0) 72%)"
+              ? "drop-shadow-[0_0_10px_rgba(255,214,107,0.35)]"
+              : "drop-shadow-[0_0_6px_rgba(255,214,107,0.22)]"
 
         return (
           <motion.span
             key={f.id}
-            className={`absolute rounded-full ${isBurst ? glowBurst : glowA}`}
+            className={`absolute rounded-full ${glow}`}
             style={{
               left: `${f.x}%`,
               top: `${f.y}%`,
               width: `${f.size}px`,
               height: `${f.size}px`,
               filter: `blur(${f.blur}px)`,
-              background: bg,
-              // gần nổi hơn
-              mixBlendMode: "screen",
+              background:
+                "radial-gradient(circle, rgba(255,214,107,0.95) 0%, rgba(255,214,107,0.35) 45%, rgba(255,214,107,0.0) 72%)",
             }}
-            initial={{ opacity: 0 }}
             animate={{
-              // drift loop
               x: [0, f.driftX, 0, -f.driftX * 0.65, 0],
               y: [0, f.driftY, 0, -f.driftY * 0.65, 0],
-
-              // “thở” (giữ nét như fire cũ)
               opacity: isBurst
                 ? [f.baseOpacity, 1, f.baseOpacity]
                 : [f.baseOpacity * 0.78, f.baseOpacity * 1.18, f.baseOpacity * 0.82],
-
-              // scale nhẹ; burst scale mạnh
               scale: isBurst ? [1, 1.45, 1] : [1, 1.12, 1],
             }}
             transition={{
-              // drift
               x: { duration: f.driftDuration, repeat: Infinity, ease: "easeInOut", delay: f.delay },
               y: { duration: f.driftDuration, repeat: Infinity, ease: "easeInOut", delay: f.delay },
-
-              // pulse opacity/scale
               opacity: isBurst
                 ? { duration: 0.32, ease: "easeOut" }
                 : { duration: f.pulseDuration, repeat: Infinity, ease: "easeInOut", delay: f.delay * 0.3 },

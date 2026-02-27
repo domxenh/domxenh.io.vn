@@ -1,6 +1,13 @@
-// lib/products.ts
-import { cache } from "react"
+// lib/products.ts ver2.1 https://github.com/domxenh/domxenh.io.vn/blob/main/lib/products.ts
 import { prisma } from "@/lib/prisma"
+import { cache } from "react"
+
+/**
+ * TÓM TẮT:
+ * - Thêm cache() để tránh query lặp trong server render tree.
+ * - Thêm getProductsBySlugs (match theo slug ổn định hơn name).
+ * - Include description để Quick View modal dùng được.
+ */
 
 export type ProductCardDTO = {
   id: string
@@ -24,14 +31,15 @@ const selectCard = {
   description: true,
 } as const
 
-/**
- * ✅ Cache query để tránh bị gọi lặp trong cùng request tree
- * (đặc biệt khi Home/Catalog render nhiều component con)
- */
+export const getProductsByNames = cache(async (names: string[]) => {
+  const products = await prisma.product.findMany({
+    where: { name: { in: names } },
+    select: selectCard,
+  })
+  return products as ProductCardDTO[]
+})
 
-// match theo slug (ổn định hơn name)
 export const getProductsBySlugs = cache(async (slugs: string[]) => {
-  if (!slugs?.length) return []
   const products = await prisma.product.findMany({
     where: { slug: { in: slugs } },
     select: selectCard,
@@ -47,10 +55,12 @@ export const getAllProducts = cache(async () => {
   return products as ProductCardDTO[]
 })
 
-// Trang chi tiết riêng (nếu còn dùng)
 export const getProductBySlug = cache(async (slug: string) => {
-  if (!slug) return null
-  return prisma.product.findUnique({
+  const product = await prisma.product.findUnique({
     where: { slug },
+    select: selectCard,
   })
+  return product as ProductCardDTO | null
 })
+
+// end code

@@ -1,4 +1,10 @@
 // app/san-pham-full/page.tsx
+// TÓM TẮT (VI):
+// - Trang Sản phẩm Full vẫn render CatalogGrid như hiện tại.
+// - Chỉ chỉnh nội dung mô tả để khẳng định: trải nghiệm card + Quick View đồng bộ với trang chủ.
+// - Không đổi cấu trúc layout/route.
+// end code ở cuối file.
+
 import FadeInSection from "@/components/FadeInSection"
 import CatalogGrid from "@/components/catalog/CatalogGrid"
 
@@ -16,7 +22,7 @@ export default function SanPhamFullPage() {
             Sản phẩm
           </h1>
           <p className="mt-4 text-white/75 max-w-2xl">
-            Đây là trang full catalog (khác với danh mục curated ở trang chủ).
+            Danh sách đầy đủ sản phẩm. Giao diện card và Quick View đồng bộ như trên trang chủ.
           </p>
         </FadeInSection>
 

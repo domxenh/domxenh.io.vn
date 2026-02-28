@@ -1,13 +1,15 @@
-// lib/products.ts ver2.1 https://github.com/domxenh/domxenh.io.vn/blob/main/lib/products.ts
-import { prisma } from "@/lib/prisma"
-import { cache } from "react"
-
+// lib/products.ts
 /**
- * TÓM TẮT:
- * - Thêm cache() để tránh query lặp trong server render tree.
- * - Thêm getProductsBySlugs (match theo slug ổn định hơn name).
- * - Include description để Quick View modal dùng được.
+ * TÓM TẮT (VN):
+ * - FIX lỗi build do lib/products.ts bị dán nhầm JSX (<html>, <body>...).
+ * - File này CHỈ chứa các hàm query Prisma.
+ * - Bổ sung getProductsBySlugs để HomeProductFolders.tsx dùng theo slug.
+ *
+ * CHỖ SỬA:
+ * - Đảm bảo KHÔNG có JSX trong file này.
  */
+
+import { prisma } from "@/lib/prisma"
 
 export type ProductCardDTO = {
   id: string
@@ -17,7 +19,6 @@ export type ProductCardDTO = {
   price: number
   oldPrice: number | null
   isHot: boolean
-  description: string
 }
 
 const selectCard = {
@@ -28,39 +29,31 @@ const selectCard = {
   price: true,
   oldPrice: true,
   isHot: true,
-  description: true,
 } as const
 
-export const getProductsByNames = cache(async (names: string[]) => {
+export async function getProductsByNames(names: string[]) {
   const products = await prisma.product.findMany({
     where: { name: { in: names } },
     select: selectCard,
   })
   return products as ProductCardDTO[]
-})
+}
 
-export const getProductsBySlugs = cache(async (slugs: string[]) => {
+/** ✅ NEW: Query theo slug để khớp folderConfig dùng productSlugs */
+export async function getProductsBySlugs(slugs: string[]) {
   const products = await prisma.product.findMany({
     where: { slug: { in: slugs } },
     select: selectCard,
   })
   return products as ProductCardDTO[]
-})
+}
 
-export const getAllProducts = cache(async () => {
+export async function getAllProducts() {
   const products = await prisma.product.findMany({
     orderBy: { createdAt: "desc" },
     select: selectCard,
   })
   return products as ProductCardDTO[]
-})
-
-export const getProductBySlug = cache(async (slug: string) => {
-  const product = await prisma.product.findUnique({
-    where: { slug },
-    select: selectCard,
-  })
-  return product as ProductCardDTO | null
-})
+}
 
 // end code

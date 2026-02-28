@@ -1,15 +1,17 @@
 // components/home/folderConfig.ts
-// Cấu hình folder ở trang chủ (curated)
-
-/**
- * TÓM TẮT:
- * - Đổi match sản phẩm từ productNames -> productSlugs (ổn định hơn).
- * - Slug lấy theo prisma/seed.ts hiện tại.
- */
+// TÓM TẮT (ver 1.4):
+// - Thêm key cho mỗi folder để lọc theo query ?cat=...
+// - productSlugs giữ nguyên
+//
+// cat keys:
+// - edison
+// - tron
+// - day-le-bong-le
 
 export const HOME_PRODUCT_FOLDERS = [
   {
-    title: "Bộ dây đèn Edison",
+    key: "edison",
+    title: "Bộ dây đèn EDISON",
     desc: "Ánh vàng ấm, vibe cổ điển – lắp là xênh.",
     productSlugs: [
       "bo-day-den-edison",
@@ -18,7 +20,8 @@ export const HOME_PRODUCT_FOLDERS = [
     ],
   },
   {
-    title: "Bộ dây đèn bóng Tròn",
+    key: "tron",
+    title: "Bộ dây đèn Tròn",
     desc: "Nhẹ nhàng hiện đại – nhiều mức công suất.",
     productSlugs: [
       "bo-day-den-bong-tron-3w",
@@ -28,7 +31,8 @@ export const HOME_PRODUCT_FOLDERS = [
     ],
   },
   {
-    title: "Dây lẻ - Bóng lẻ",
+    key: "day-le-bong-le",
+    title: "Dây lẻ, Bóng lẻ",
     desc: "Phụ kiện thay thế & nâng cấp theo nhu cầu.",
     productSlugs: ["day-le", "bong-le"],
   },

@@ -1,34 +1,45 @@
 // app/layout.tsx
-// ======================================
-// Layout full width kiểu Apple
-// - Hero / page full màn hình
-// - Có Header/Footer
-// - Bọc ProductQuickViewProvider để Quick View mở trên mọi trang
-// ======================================
-
 import "./globals.css"
+import type { ReactNode } from "react"
+import { Suspense } from "react"
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
-import ProductQuickViewProvider from "@/components/product/ProductQuickViewProvider"
+import Fireflies from "@/components/Fireflies"
 
 export const metadata = {
-  openGraph: { images: ["/icon.png"] },
-  twitter: { images: ["/icon.png"] },
+  metadataBase: new URL("https://domxenh.io.vn"), // đổi sang domain thật của bạn nếu cần
+  openGraph: {
+    images: ["/icon.png"],
+  },
+  twitter: {
+    images: ["/icon.png"],
+  },
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="vi">
       <body>
-        <ProductQuickViewProvider>
+        {/* ✅ FIX build: Header dùng useSearchParams => bọc Suspense */}
+        <Suspense
+          fallback={
+            // fallback nhẹ để tránh giật layout khi Header chưa hydrate
+            <div
+              aria-hidden
+              style={{ height: "92px" }}
+            />
+          }
+        >
           <Header />
-          {/* Apple không dùng container cố định */}
-          {children}
-          <Footer />
-        </ProductQuickViewProvider>
+        </Suspense>
+
+        {/* ✅ Fireflies GLOBAL: chỉ render 1 lần cho toàn site */}
+        <Fireflies />
+
+        {children}
+
+        <Footer />
       </body>
     </html>
   )
 }
-
-// end code

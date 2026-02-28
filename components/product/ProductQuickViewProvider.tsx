@@ -1,22 +1,10 @@
 "use client"
 
-/**
- * Version 2.0 – https://github.com/domxenh/domxenh.io.vn/blob/main/components/product/ProductQuickViewProvider.tsx
- * components/product/ProductQuickViewProvider.tsx 
- *
- * TÓM TẮT:
- * - Tạo Quick View modal mở ngay trên trang (Home + Catalog).
- * - Cung cấp context: open(product) / close()
- * - Modal đóng bằng: click overlay, nút X, phím ESC.
- * - Giữ nhẹ nhàng: chỉ render modal khi cần.
- */
-
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react"
-import { AnimatePresence, motion } from "framer-motion"
+import React, { createContext, useContext, useMemo, useState } from "react"
 import Link from "next/link"
 
 export type QuickViewProduct = {
-  id: string
+  id?: string
   slug: string
   name: string
   image: string
@@ -35,215 +23,140 @@ const ProductQuickViewContext = createContext<Ctx | null>(null)
 
 export function useProductQuickView() {
   const ctx = useContext(ProductQuickViewContext)
-  if (!ctx) throw new Error("useProductQuickView must be used inside <ProductQuickViewProvider />")
+  if (!ctx) throw new Error("useProductQuickView must be used within ProductQuickViewProvider")
   return ctx
 }
 
-function fmtVND(n: number) {
-  return n.toLocaleString("vi-VN")
-}
-
 export default function ProductQuickViewProvider({ children }: { children: React.ReactNode }) {
+  const [isOpen, setIsOpen] = useState(false)
   const [product, setProduct] = useState<QuickViewProduct | null>(null)
 
-  const close = useCallback(() => setProduct(null), [])
-  const open = useCallback((p: QuickViewProduct) => setProduct(p), [])
-
-  // ESC để đóng
-  useEffect(() => {
-    if (!product) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close()
-    }
-    window.addEventListener("keydown", onKey)
-    return () => window.removeEventListener("keydown", onKey)
-  }, [product, close])
-
-  // Lock scroll khi mở modal
-  useEffect(() => {
-    if (!product) return
-    const prev = document.documentElement.style.overflow
+  const open = (p: QuickViewProduct) => {
+    setProduct(p)
+    setIsOpen(true)
     document.documentElement.style.overflow = "hidden"
-    return () => {
-      document.documentElement.style.overflow = prev
-    }
-  }, [product])
+  }
 
-  const value = useMemo(() => ({ open, close }), [open, close])
+  const close = () => {
+    setIsOpen(false)
+    document.documentElement.style.overflow = ""
+    setTimeout(() => setProduct(null), 150)
+  }
 
-  const showSale = !!product && typeof product.oldPrice === "number" && product.oldPrice > product.price
-  const discountPercent =
-    product && showSale ? Math.round(((product.oldPrice as number) - product.price) / (product.oldPrice as number) * 100) : 0
+  const value = useMemo(() => ({ open, close }), [])
 
   return (
     <ProductQuickViewContext.Provider value={value}>
       {children}
 
-      <AnimatePresence>
-        {product && (
-          <motion.div
-            className="fixed inset-0 z-[100] flex items-center justify-center px-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+      {isOpen && product && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center px-4" role="dialog" aria-modal="true">
+          {/* Backdrop */}
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            onClick={close}
+            aria-label="Đóng"
+          />
+
+          {/* Panel */}
+          <div
+            className="
+              relative z-[81] w-full max-w-3xl
+              rounded-[28px] border border-white/10
+              bg-gradient-to-b from-white/10 to-white/5
+              shadow-[0_40px_140px_rgba(0,0,0,0.75)]
+              backdrop-blur-2xl
+              overflow-hidden
+            "
           >
-            {/* Overlay */}
-            <button aria-label="Đóng" className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={close} />
+            <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-[#FFD66B]/10 blur-3xl" />
 
-            {/* Panel */}
-            <motion.div
-              role="dialog"
-              aria-modal="true"
-              className="
-                relative w-full max-w-3xl overflow-hidden
-                rounded-[28px] border border-white/12
-                bg-gradient-to-b from-[#0F1F23]/95 to-[#0B1417]/95
-                shadow-[0_40px_140px_rgba(0,0,0,0.75)]
-              "
-              initial={{ y: 20, scale: 0.98, opacity: 0 }}
-              animate={{ y: 0, scale: 1, opacity: 1 }}
-              exit={{ y: 16, scale: 0.985, opacity: 0 }}
-              transition={{ duration: 0.22, ease: "easeOut" }}
-            >
-              {/* Glow decor */}
-              <div className="pointer-events-none absolute -top-28 -left-28 h-80 w-80 rounded-full bg-[#FFD66B]/10 blur-3xl" />
-              <div className="pointer-events-none absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-[#0F5C63]/12 blur-3xl" />
+            <div className="relative p-5 sm:p-6">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <h3 className="text-xl sm:text-2xl font-semibold text-white truncate">{product.name}</h3>
+                  <p className="mt-1 text-white/60 text-sm">Xem nhanh chi tiết sản phẩm</p>
+                </div>
 
-              {/* Close */}
-              <button
-                onClick={close}
-                aria-label="Đóng"
-                className="
-                  absolute top-3 right-3 z-10
-                  h-10 w-10 rounded-full
-                  border border-white/12 bg-white/5
-                  text-white/85 hover:bg-white/10
-                "
-              >
-                ✕
-              </button>
+                <button
+                  type="button"
+                  onClick={close}
+                  className="
+                    shrink-0 rounded-full px-3 py-2
+                    text-white/80 hover:text-white
+                    bg-white/10 hover:bg-white/15
+                    border border-white/10
+                  "
+                >
+                  Đóng
+                </button>
+              </div>
 
-              <div className="relative grid grid-cols-1 md:grid-cols-2 gap-0">
+              <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-5">
                 {/* Image */}
-                <div className="relative">
-                  <div className="relative aspect-square w-full bg-black/25">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="absolute inset-0 h-full w-full object-cover"
-                      loading="lazy"
-                    />
-                  </div>
-
-                  {/* Badges (HOT + -% cạnh nhau, to hơn & nổi bật hơn) */}
-                  <div className="absolute left-4 top-4 z-20 flex items-center gap-2">
-                    {product.isHot && (
-                      <span
-                        className="
-                          inline-flex items-center justify-center
-                          rounded-full px-3.5 py-1.5
-                          text-xs md:text-sm font-extrabold tracking-wide
-                          bg-[#FFD66B] text-black
-                          shadow-[0_14px_40px_rgba(0,0,0,0.55)]
-                          ring-2 ring-white/35
-                          drop-shadow-[0_0_16px_rgba(255,214,107,0.55)]
-                        "
-                      >
-                        HOT
-                      </span>
-                    )}
-
-                    {showSale && (
-                      <span
-                        className="
-                          inline-flex items-center justify-center
-                          rounded-full px-3.5 py-1.5
-                          text-xs md:text-sm font-extrabold tracking-wide
-                          bg-red-600 text-white
-                          shadow-[0_14px_40px_rgba(0,0,0,0.55)]
-                          ring-2 ring-white/25
-                          drop-shadow-[0_0_18px_rgba(255,40,40,0.35)]
-                        "
-                      >
-                        -{discountPercent}%
-                      </span>
-                    )}
-
-                    {/* Nếu không HOT mà có sale, muốn hiện SALE cạnh -% */}
-                    {!product.isHot && showSale && (
-                      <span
-                        className="
-                          inline-flex items-center justify-center
-                          rounded-full px-3.5 py-1.5
-                          text-xs md:text-sm font-extrabold tracking-wide
-                          bg-white/14 text-white
-                          shadow-[0_14px_40px_rgba(0,0,0,0.55)]
-                          ring-2 ring-white/20
-                        "
-                      >
-                        SALE
-                      </span>
-                    )}
+                <div className="rounded-2xl border border-white/10 bg-black/20 overflow-hidden">
+                  <div className="aspect-square w-full">
+                    <img src={product.image} alt={product.name} className="w-full h-full object-cover" loading="lazy" />
                   </div>
                 </div>
 
-                {/* Content */}
-                <div className="p-6 md:p-7">
-                  <h3 className="text-xl md:text-2xl font-semibold text-white drop-shadow-[0_0_18px_rgba(255,214,107,0.18)]">
-                    {product.name}
-                  </h3>
-
-                  <div className="mt-4 flex items-end justify-between gap-4">
-                    <div className="flex items-end gap-3">
-                      {showSale && (
-                        <div className="text-white/45 line-through text-sm">{fmtVND(product.oldPrice as number)} đ</div>
+                {/* Info */}
+                <div className="flex flex-col">
+                  <div className="rounded-2xl border border-white/10 bg-black/15 p-4">
+                    <div className="flex items-baseline justify-between gap-3">
+                      {typeof product.oldPrice === "number" && product.oldPrice > product.price ? (
+                        <p className="text-white/55 line-through text-sm whitespace-nowrap">
+                          {product.oldPrice.toLocaleString("vi-VN")} đ
+                        </p>
+                      ) : (
+                        <span />
                       )}
 
-                      <div className="text-[#FFD66B] text-2xl font-bold drop-shadow-[0_0_18px_rgba(255,214,107,0.35)]">
-                        {fmtVND(product.price)} đ
-                      </div>
+                      <p
+                        className="
+                          text-[#FFD66B] font-extrabold text-lg whitespace-nowrap
+                          drop-shadow-[0_0_10px_rgba(255,214,107,0.55)]
+                        "
+                      >
+                        {product.price.toLocaleString("vi-VN")} đ
+                      </p>
                     </div>
+
+                    {product.description ? (
+                      <p className="mt-3 text-white/70 text-sm leading-relaxed">{product.description}</p>
+                    ) : (
+                      <p className="mt-3 text-white/50 text-sm">(Chưa có mô tả)</p>
+                    )}
                   </div>
 
-                  <p className="mt-4 text-white/70 leading-relaxed">
-                    {product.description || "Mô tả sản phẩm đang được cập nhật."}
-                  </p>
+                  <div className="mt-4 flex flex-col sm:flex-row gap-3">
+                    <button className="btn-brand w-full sm:w-auto" type="button">
+                      Liên hệ mua
+                    </button>
 
-                  <div className="mt-6 flex flex-col sm:flex-row gap-3">
+                    {/* nếu vẫn muốn giữ trang chi tiết cho SEO */}
                     <Link
                       href={`/san-pham/${product.slug}`}
                       className="
-                        inline-flex items-center justify-center
+                        w-full sm:w-auto text-center
                         rounded-full px-5 py-3
-                        border border-white/12 bg-white/5 text-white/90
-                        hover:bg-white/10
+                        bg-white/10 hover:bg-white/15
+                        border border-white/10
+                        text-white font-semibold
                       "
-                      onClick={close}
-                      prefetch={false}
                     >
-                      Xem trang sản phẩm
+                      Xem trang chi tiết
                     </Link>
-
-                    <button
-                      className="btn-brand"
-                      onClick={() => {
-                        // TODO: sau này gắn Zalo / Giỏ hàng
-                        close()
-                      }}
-                    >
-                      Mua / Tư vấn nhanh
-                    </button>
                   </div>
 
-                  <div className="mt-4 text-xs text-white/45">Tip: bấm ra ngoài hoặc nhấn ESC để đóng.</div>
+                  <div className="mt-auto" />
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </div>
+          </div>
+        </div>
+      )}
     </ProductQuickViewContext.Provider>
   )
 }
-
-// end code

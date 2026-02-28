@@ -38,7 +38,7 @@ async function main() {
         oldPrice: 820000, // SALE
         isHot: true, // HOT
         description: "Bộ dây đèn Edison tiêu chuẩn ngoài trời.",
-        image: "/images/den1.jpg",
+        image: "/images/den1.webp",
         stock: 20,
         categoryId: folder1.id,
       },
@@ -49,7 +49,7 @@ async function main() {
         oldPrice: 890000, // SALE
         isHot: false,
         description: "Phiên bản Edison 1 tóc.",
-        image: "/images/den2.jpg",
+        image: "/images/den2.webp",
         stock: 18,
         categoryId: folder1.id,
       },
@@ -60,7 +60,7 @@ async function main() {
         oldPrice: 1090000, // SALE
         isHot: true, // HOT
         description: "Phiên bản Edison 2 tóc.",
-        image: "/images/den3.jpg",
+        image: "/images/den3.webp",
         stock: 15,
         categoryId: folder1.id,
       },
@@ -73,7 +73,7 @@ async function main() {
         oldPrice: 690000, // SALE
         isHot: false,
         description: "Bộ dây bóng tròn 3W.",
-        image: "/images/den4.jpg",
+        image: "/images/den4.webp",
         stock: 25,
         categoryId: folder2.id,
       },
@@ -84,7 +84,7 @@ async function main() {
         oldPrice: 790000, // SALE
         isHot: true, // HOT
         description: "Bộ dây bóng tròn 5W.",
-        image: "/images/den5.jpg",
+        image: "/images/den5.webp",
         stock: 22,
         categoryId: folder2.id,
       },
@@ -95,7 +95,7 @@ async function main() {
         oldPrice: 950000, // SALE
         isHot: false,
         description: "Bộ dây bóng tròn 7W.",
-        image: "/images/den6.jpg",
+        image: "/images/den6.webp",
         stock: 18,
         categoryId: folder2.id,
       },
@@ -106,7 +106,7 @@ async function main() {
         oldPrice: 1090000, // SALE
         isHot: true, // HOT
         description: "Bộ dây bóng tròn 9W.",
-        image: "/images/den1.jpg",
+        image: "/images/den7.webp",
         stock: 14,
         categoryId: folder2.id,
       },
@@ -119,7 +119,7 @@ async function main() {
         oldPrice: 79000, // SALE
         isHot: false,
         description: "Dây lẻ để nối dài / thay thế.",
-        image: "/images/den2.jpg",
+        image: "/images/den8.webp",
         stock: 100,
         categoryId: folder3.id,
       },
@@ -130,7 +130,7 @@ async function main() {
         oldPrice: 52000, // SALE
         isHot: true, // HOT
         description: "Bóng lẻ thay thế.",
-        image: "/images/den3.jpg",
+        image: "/images/den9.webp",
         stock: 150,
         categoryId: folder3.id,
       },

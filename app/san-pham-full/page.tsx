@@ -6,7 +6,6 @@ export const metadata = {
   description: "Danh mục sản phẩm của ĐÓM XÊNH.",
 }
 
-// ✅ cache route (giảm load lại khi click)
 export const revalidate = 120
 
 export default async function SanPhamFullPage({
@@ -19,7 +18,8 @@ export default async function SanPhamFullPage({
 
   return (
     <main className="min-h-screen pt-28 md:pt-32">
-      <HomeProductFolders cat={cat} />
+      {/* ✅ tắt animation để giảm lag hydrate */}
+      <HomeProductFolders cat={cat} disableAnimations />
     </main>
   )
 }

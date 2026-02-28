@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { usePathname, useSearchParams } from "next/navigation"
+import { usePathname, useSearchParams, useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
 
 type NavItem = {
@@ -29,6 +29,10 @@ function isActivePath(pathname: string, href: string) {
   if (href === "/") return pathname === "/"
   const pure = href.split("?")[0].split("#")[0]
   return pathname.startsWith(pure)
+}
+
+function isSanPhamFullHref(href: string) {
+  return href.startsWith("/san-pham-full")
 }
 
 // --- SF-symbol-ish icon base style (thin + rounded) ---
@@ -145,6 +149,7 @@ function IconDots9({ active }: { active?: boolean }) {
 }
 
 export default function Header() {
+  const router = useRouter()
   const pathname = usePathname()
   const search = useSearchParams()
   const activeCat = search.get("cat") || ""
@@ -157,6 +162,12 @@ export default function Header() {
   }, [pathname])
 
   useEffect(() => setOpen(false), [pathname, activeCat])
+
+  // ✅ Warm-up route: mở menu là prefetch luôn /san-pham-full để click "Sản phẩm" gần như instant
+  useEffect(() => {
+    if (!open) return
+    router.prefetch("/san-pham-full")
+  }, [open, router])
 
   useEffect(() => {
     if (!open) return
@@ -207,7 +218,7 @@ export default function Header() {
         }}
       />
 
-      {/* ✅ Safe-area top: tránh tai thỏ che header */}
+      {/* ✅ Safe-area top */}
       <header
         className="fixed left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-6xl"
         style={{ top: "calc(env(safe-area-inset-top, 0px) + 24px)" }}
@@ -249,7 +260,6 @@ export default function Header() {
                 />
               </div>
 
-              {/* ✅ CHỈ SỬA Ở ĐÂY: mobile nhỏ hơn, desktop giữ nguyên */}
               <span className="relative text-white font-semibold text-xl sm:text-2xl md:text-3xl tracking-wide">
                 <span aria-hidden className="pointer-events-none absolute inset-0 text-[#FFD66B] opacity-35 blur-md">
                   ĐÓM XÊNH
@@ -264,13 +274,18 @@ export default function Header() {
             <div className="hidden md:flex items-center gap-8">
               {NAV_ITEMS.map((item) => {
                 const active = isActivePath(pathname, item.href)
+                const prefetch = isSanPhamFullHref(item.href)
+
                 return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      prefetch={item.href === "/san-pham-full"}
-                      className="relative px-2 whitespace-nowrap"
-                    >
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    prefetch={prefetch}
+                    onMouseEnter={() => {
+                      if (prefetch) router.prefetch("/san-pham-full")
+                    }}
+                    className="relative px-2 whitespace-nowrap"
+                  >
                     <span
                       className={[
                         "font-medium whitespace-nowrap",
@@ -324,7 +339,6 @@ export default function Header() {
             style={{ WebkitTapHighlightColor: "transparent" }}
           />
 
-          {/* ✅ Safe-area top for sheet too */}
           <div
             className="absolute left-1/2 -translate-x-1/2 w-[94%] max-w-6xl"
             style={{ top: "calc(env(safe-area-inset-top, 0px) + 24px)" }}
@@ -356,6 +370,7 @@ export default function Header() {
               <div className="p-3">
                 {NAV_ITEMS.map((item) => {
                   const active = isActivePath(pathname, item.href)
+                  const prefetch = isSanPhamFullHref(item.href)
 
                   const icon =
                     item.key === "home" ? <IconHome active={active} /> :
@@ -367,7 +382,10 @@ export default function Header() {
                     <div key={item.href} className="mb-1">
                       <Link
                         href={item.href}
-                        prefetch={false}
+                        prefetch={prefetch}
+                        onMouseEnter={() => {
+                          if (prefetch) router.prefetch("/san-pham-full")
+                        }}
                         onClick={() => setOpen(false)}
                         className={[
                           "flex items-center gap-3 rounded-2xl px-4 py-3 transition",
@@ -401,7 +419,8 @@ export default function Header() {
                               <Link
                                 key={c.href}
                                 href={c.href}
-                                prefetch={false}
+                                prefetch={true}
+                                onMouseEnter={() => router.prefetch("/san-pham-full")}
                                 onClick={() => setOpen(false)}
                                 className={[
                                   "block rounded-xl px-4 py-2 border border-transparent outline-none",

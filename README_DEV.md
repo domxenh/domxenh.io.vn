@@ -753,7 +753,7 @@ Hiện tại bước vào giai đoạn:
   - **Logo**: giảm blur/mờ, viền mềm hơn (ring mỏng + inset shadow), glow sắc hơn.
 
 - **Hero**:
-  - Dùng ảnh nền `public/images/hero-outdoor.png`.
+  - Dùng ảnh nền `public/images/hero-outdoor.webp`.
   - Blur nhẹ để vẫn nhìn thấy ảnh.
   - CTA “Khám phá ngay” có hiệu ứng thu hút (pulse + shimmer).
   - Click CTA scroll xuống section danh mục sản phẩm (`#products`).
@@ -847,7 +847,6 @@ Hiện tại bước vào giai đoạn:
 ## 6) Lệnh quan trọng
 
 ### Dev
-```bash
 npm run dev
 7) Fix lỗi Postgres “prepared statement already exists” (Dev)
 
@@ -893,7 +892,7 @@ lib/data.ts (mock cũ, không dùng nếu đã dùng Prisma)
 
 components/catalog/ProductCard.tsx (nếu trùng với components/ProductCard.tsx)
 
-hero-outdoor.png ở root (đã có public/images/hero-outdoor.png)
+hero-outdoor.webp ở root (đã có public/images/hero-outdoor.webp)
 
 SVG template không dùng: public/next.svg, public/vercel.svg, ...
 
@@ -920,3 +919,6 @@ Header hoạt động mượt, mobile panel đóng nhanh
 ===End Ver 1.2===
 
 
+
+# 📦 PROJECT v1.3: DOMXENH.IO.VN – ĐÓM XÊNH (Next.js + Prisma + Supabase + vercel)
+* Xóa hết toàn bộ quickview và tối ưu lại để không bị lag, nặng web

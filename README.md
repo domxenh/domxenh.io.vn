@@ -1,25 +1,30 @@
-        //Chạy http://localhost:3000/
+#        //Chạy http://localhost:3000/ + xóa cache
+Remove-Item -Recurse -Force .next
 npm run dev
-
-        //Push schema (nếu bạn sửa schema.prisma):
-npx prisma db push
-
-        //Seed lại:
+#        //Seed lại:
 npx prisma db seed
+#       //cover ảnh
+node scripts/convert-images.mjs
+#       //Kiểm tra nhanh sản phẩm trong Prisma Studio:
+npx prisma studio
 
-            //Update gifhub
-git add .
-git commit -m "Update V1.24"
-git push origin main
+# 1) Build (khuyến nghị bắt buộc trước khi push)
+npm run build
+## Nếu bạn chỉ muốn chắc “cache không làm bậy” (thỉnh thoảng mới cần):
+npm run clean
+npm run build
 
-            //Chat gpt new
-Đọc trạng thái project theo README_DEV.md
+# 2) Chạy lint (dự án bạn chưa có script lint)
+npx next lint
 
-            //Câu lệnh Chatgpt
-Phát triển ver 5 cho header.
-Thêm bo tròn ở LOGO. viền LOGO đang bị thô, logo đang bị thu nhỏ lại vì khoảng trắng quá nhiều. 
-Chữ ở header cần thêm ánh sáng để nổi hơn
-Chữ Trang chủ, Edison, Đèn Tròn, Dây& Bóng đang bị nhỏ hoặc là chưa đậm lắm.
-Chỉ phát triển không renew và bớt tính năng cũ
+# 3) Prisma (chỉ khi bạn có sửa schema)
+npx prisma generate
 
+# 4) Kiểm tra Git trước khi commit
+git status
+git diff
 
+# 5) Commit/push
+git add -p
+git commit -m "fix: ..."
+git push

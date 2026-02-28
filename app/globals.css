@@ -214,3 +214,18 @@ body {
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* ===== Responsive text + Safe-area ===== */
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  overflow-x: hidden;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Tránh text dài phá layout khi màn nhỏ */
+p, h1, h2, h3, h4, h5, h6, a, span {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}

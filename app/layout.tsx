@@ -1,17 +1,13 @@
 // app/layout.tsx
-// ======================================
-// Layout full width kiểu Apple
-// - Hero / page full màn hình
-// - Có Header/Footer
-// - Bọc ProductQuickViewProvider để Quick View mở trên mọi trang
-// ======================================
-
 import "./globals.css"
+import type { ReactNode } from "react"
+import { Suspense } from "react"
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
-import ProductQuickViewProvider from "@/components/product/ProductQuickViewProvider"
+import Fireflies from "@/components/Fireflies"
 
 export const metadata = {
+  metadataBase: new URL("https://domxenh.io.vn"), // đổi sang domain thật của bạn nếu cần
   openGraph: {
     images: ["/icon.png"],
   },

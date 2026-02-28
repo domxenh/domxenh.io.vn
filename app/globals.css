@@ -7,8 +7,11 @@ TÓM TẮT (VN):
   + Tối ưu nhẹ .product-card khi nằm trong .apple-folder.
 */
 
+/* stylelint-disable-next-line at-rule-no-unknown */
 @tailwind base;
+/* stylelint-disable-next-line at-rule-no-unknown */
 @tailwind components;
+/* stylelint-disable-next-line at-rule-no-unknown */
 @tailwind utilities;
 
 /*
@@ -218,14 +221,16 @@ body {
 /* ===== Responsive text + Safe-area ===== */
 html { -webkit-text-size-adjust: 100%; }
 
-body {
-  overflow-x: hidden;
-  padding-top: env(safe-area-inset-top, 0px);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+/* ==========================================
+   FIX SCROLL OFFSET FOR FIXED HEADER
+   Click menu (#products / #cat-*) sẽ trỏ đúng đầu section
+========================================== */
+.scroll-mt-header{
+  scroll-margin-top: 96px; /* desktop */
 }
 
-/* Tránh text dài phá layout khi màn nhỏ */
-p, h1, h2, h3, h4, h5, h6, a, span {
-  overflow-wrap: anywhere;
-  word-break: break-word;
+@media (max-width: 768px){
+  .scroll-mt-header{
+    scroll-margin-top: 78px; /* mobile */
+  }
 }

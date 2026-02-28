@@ -1,36 +1,52 @@
 // components/home/HomeProductFolders.tsx
+/**
+ * - Fireflies: đã bỏ khỏi section (global ở layout)
+ * - Support filter folder by ?cat=...
+ * - Anchor id per folder for exact auto-scroll:
+ *   #cat-edison, #cat-tron, #cat-day-le-bong-le
+ *
+ * FIX UI:
+ * - Grid responsive: iPhone hẹp 1 cột, sm 2 cột, md 3, lg 4
+ * - Giữ lại ảnh nền danh mục (không phá cấu trúc cũ)
+ * - FIX SCROLL: click menu trỏ đúng đầu section (không bị header che)
+ */
+
 import FadeInSection from "@/components/FadeInSection"
 import ProductCard from "@/components/ProductCard"
 import { HOME_PRODUCT_FOLDERS } from "@/components/home/folderConfig"
 import { getProductsBySlugs } from "@/lib/products"
-import Fireflies from "@/components/Fireflies"
 
-export default async function HomeProductFolders() {
-  const allSlugs = HOME_PRODUCT_FOLDERS.flatMap((f) => [...f.productSlugs])
+export default async function HomeProductFolders({ cat }: { cat?: string }) {
+  const filtered =
+    cat && HOME_PRODUCT_FOLDERS.some((f) => f.key === cat)
+      ? HOME_PRODUCT_FOLDERS.filter((f) => f.key === cat)
+      : HOME_PRODUCT_FOLDERS
+
+  const allSlugs = filtered.flatMap((f) => [...f.productSlugs])
   const products = await getProductsBySlugs(allSlugs)
   const bySlug = new Map(products.map((p) => [p.slug, p]))
+
+  // ✅ Ảnh nền danh mục: bạn có file hero-outdoor.webp trong public/images
+  const CATALOG_BG = "/images/hero-outdoor.webp"
 
   return (
     <section
       id="products"
-      className="section-alt relative overflow-hidden !pt-8 md:!pt-12 !pb-8 md:!pb-12"
+      className="section-alt scroll-mt-header relative overflow-hidden !pt-8 md:!pt-12 !pb-8 md:!pb-12"
       style={{
-        backgroundImage:
-            "linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0.75)), url('/images/catalog.png')",
+        backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0.75)), url('${CATALOG_BG}')`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
       }}
     >
-      {/* Fireflies background layer */}
-      <div className="pointer-events-none absolute inset-0 z-0 opacity-70 hidden md:block">
-        <Fireflies />
-      </div>
-
       <div className="relative z-10 max-w-7xl mx-auto px-6 space-y-10">
-        {HOME_PRODUCT_FOLDERS.map((folder) => {
+        {filtered.map((folder) => {
           return (
             <FadeInSection key={folder.title}>
+              {/* ✅ Anchor for exact scroll + offset để không bị header che */}
+              <div id={`cat-${folder.key}`} className="scroll-mt-header" />
+
               <div
                 className="
                   relative overflow-hidden
@@ -44,7 +60,6 @@ export default async function HomeProductFolders() {
               >
                 <div className="pointer-events-none absolute -top-24 -left-24 h-72 w-72 rounded-full bg-[#FFD66B]/10 blur-3xl" />
 
-                {/* Header căn giữa */}
                 <div className="relative flex flex-col items-center text-center gap-3">
                   <div>
                     <h2 className="text-2xl md:text-3xl font-semibold text-white drop-shadow-[0_0_18px_rgba(255,214,107,0.35)]">
@@ -56,13 +71,15 @@ export default async function HomeProductFolders() {
                   </div>
                 </div>
 
-                {/* Auto-fit/minmax + card luôn ở giữa */}
+                {/* ✅ Grid: iPhone hẹp 1 cột | sm 2 cột | md 3 | lg 4 */}
                 <div
                   className="
                     relative mt-6 grid gap-4 sm:gap-6
-                    justify-items-center
-                    [grid-template-columns:repeat(auto-fit,minmax(180px,1fr))]
-                    sm:[grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]
+                    grid-cols-1
+                    sm:grid-cols-2
+                    md:grid-cols-3
+                    lg:grid-cols-4
+                    items-stretch
                   "
                 >
                   {folder.productSlugs.map((slug) => {
@@ -73,7 +90,7 @@ export default async function HomeProductFolders() {
                         <div
                           key={slug}
                           className="
-                            w-full max-w-[260px]
+                            w-full
                             rounded-3xl border border-white/10 bg-black/20
                             p-5 text-white/60 text-center
                           "

@@ -1,4 +1,12 @@
 // components/catalog/CatalogGrid.tsx
+/**
+ * - Grid trang /san-pham-full: lấy toàn bộ sản phẩm từ DB.
+ * - KHÔNG dùng QuickView, chỉ render ProductCard.
+ *
+ * FIX UI:
+ * - Grid cols theo breakpoint để không bị đè/overlap khi màn hẹp
+ */
+
 import FadeInSection from "@/components/FadeInSection"
 import ProductCard from "@/components/ProductCard"
 import { getAllProducts } from "@/lib/products"
@@ -11,10 +19,10 @@ export default async function CatalogGrid() {
       <div
         className="
           grid gap-4 sm:gap-6
-          justify-items-center
-          [grid-template-columns:repeat(auto-fit,minmax(180px,1fr))]
-          sm:[grid-template-columns:repeat(auto-fit,minmax(220px,1fr))]
-          lg:[grid-template-columns:repeat(auto-fit,minmax(240px,1fr))]
+          grid-cols-2
+          sm:grid-cols-3
+          lg:grid-cols-4
+          items-stretch
         "
       >
         {products.map((p) => (

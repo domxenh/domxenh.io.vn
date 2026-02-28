@@ -1,33 +1,25 @@
+"use client"
+
 /**
  * Tóm tắt (VI):
- * - Desktop: giữ nguyên Hero + Fireflies + motion như cũ
- * - Mobile: KHÔNG render Hero (bỏ hero + bỏ toàn bộ hiệu ứng riêng mobile)
+ * - Hero tĩnh + nền hero-outdoor.webp
+ * - Set CSS var --hero-bg để header đồng bộ nền
+ * - ✅ Fireflies: ĐÃ BỎ khỏi Hero (chuyển sang global ở app/layout.tsx)
+ * - CTA scroll xuống #products
  */
-
-"use client"
 
 import { motion } from "framer-motion"
 import type { ReactNode } from "react"
-import { useEffect, useMemo, useState } from "react"
-import Fireflies from "@/components/Fireflies"
+import { useEffect } from "react"
 
 function GlowWord({ children }: { children: ReactNode }) {
   return (
     <span className="relative inline-flex items-center font-extrabold italic">
-      <span
-        aria-hidden
-        className="absolute -inset-x-2 -inset-y-1 rounded-full bg-[#FFD66B]/18"
-      />
-      <span
-        aria-hidden
-        className="absolute inset-0 text-[#FFD66B] opacity-80 blur-md"
-      >
+      <span aria-hidden className="absolute -inset-x-2 -inset-y-1 rounded-full bg-[#FFD66B]/18" />
+      <span aria-hidden className="absolute inset-0 text-[#FFD66B] opacity-80 blur-md">
         {children}
       </span>
-      <span
-        aria-hidden
-        className="absolute inset-0 text-[#FFD66B] opacity-45 blur-2xl"
-      >
+      <span aria-hidden className="absolute inset-0 text-[#FFD66B] opacity-45 blur-2xl">
         {children}
       </span>
       <span className="relative text-[#FFD66B] drop-shadow-[0_0_20px_rgba(255,214,107,1)]">
@@ -39,36 +31,21 @@ function GlowWord({ children }: { children: ReactNode }) {
 
 export default function Hero() {
   const TARGET_ID = "products"
-  const HERO_BG = "/images/hero-outdoor.png"
+  const HERO_BG = "/images/hero-outdoor.webp"
   const HERO_HEIGHT = "h-[72vh] sm:h-[80vh] md:h-[92vh]"
 
-  // ✅ Mobile: bỏ hẳn Hero (không render => không hiệu ứng)
-  const [isMobile, setIsMobile] = useState(false)
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 768px)")
-    const apply = () => setIsMobile(mq.matches)
-    apply()
-    mq.addEventListener?.("change", apply)
-    return () => mq.removeEventListener?.("change", apply)
-  }, [])
-
-  // ✅ Chỉ set CSS var hero-bg khi desktop (vì mobile không render hero)
-  useEffect(() => {
-    if (isMobile) return
     document.documentElement.style.setProperty("--hero-bg", `url('${HERO_BG}')`)
     return () => {
       document.documentElement.style.removeProperty("--hero-bg")
     }
-  }, [HERO_BG, isMobile])
+  }, [HERO_BG])
 
   const handleScrollToProducts = () => {
     const el = document.getElementById(TARGET_ID)
     if (!el) return
     el.scrollIntoView({ behavior: "smooth", block: "start" })
   }
-
-  // ✅ Mobile: bỏ hoàn toàn
-  if (isMobile) return null
 
   return (
     <motion.section
@@ -77,52 +54,23 @@ export default function Hero() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
     >
-      {/* Background */}
       <div className="absolute inset-0">
         <img
           src={HERO_BG}
           alt="Đèn trang trí ĐÓM XÊNH"
-          className="
-            w-full h-full object-cover
-            object-[center_35%]
-            md:object-center
-            scale-[1.03]
-          "
+          className="w-full h-full object-cover object-[center_35%] md:object-center scale-[1.03]"
         />
       </div>
 
-      {/* Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/40 to-[#0B1417]" />
 
-      {/* Fireflies layer (desktop only vì mobile đã return null) */}
-      <div className="absolute inset-0">
-        <Fireflies variant="hero" />
-        <div className="absolute inset-0 backdrop-blur-[1.2px]" />
-      </div>
-
-      {/* Content */}
-      <div
-        className="
-          relative z-10
-          flex h-full flex-col items-center justify-center text-center
-          px-6
-          pt-24 md:pt-0
-        "
-      >
+      <div className="relative z-10 flex h-full flex-col items-center justify-center text-center px-6 pt-24 md:pt-0">
         <motion.h1
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
-          className="
-            whitespace-nowrap
-            font-semibold tracking-[-0.02em]
-            text-white
-            drop-shadow-[0_0_28px_rgba(0,0,0,0.65)]
-          "
-          style={{
-            fontSize: "clamp(28px, 6vw, 76px)",
-            lineHeight: 1.05,
-          }}
+          className="whitespace-nowrap font-semibold tracking-[-0.02em] text-white drop-shadow-[0_0_28px_rgba(0,0,0,0.65)]"
+          style={{ fontSize: "clamp(28px, 6vw, 76px)", lineHeight: 1.05 }}
         >
           Đèn Trang Trí Ngoài Trời
         </motion.h1>
@@ -131,14 +79,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 60 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2 }}
-          className="
-            mt-5 md:mt-6
-            mx-auto
-            text-lg sm:text-xl md:text-2xl
-            font-medium tracking-[-0.01em]
-            text-white/95
-            drop-shadow-[0_0_18px_rgba(0,0,0,0.55)]
-          "
+          className="mt-5 md:mt-6 mx-auto text-lg sm:text-xl md:text-2xl font-medium tracking-[-0.01em] text-white/95 drop-shadow-[0_0_18px_rgba(0,0,0,0.55)]"
         >
           <span className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-2">
             <span className="whitespace-nowrap">Không những</span>
@@ -151,11 +92,7 @@ export default function Hero() {
         <motion.button
           type="button"
           initial={{ opacity: 0, y: 80 }}
-          animate={{
-            opacity: 1,
-            y: 0,
-            scale: [1, 1.06, 1],
-          }}
+          animate={{ opacity: 1, y: 0, scale: [1, 1.06, 1] }}
           transition={{
             duration: 1.4,
             scale: { duration: 1.6, repeat: Infinity, ease: "easeInOut", delay: 1.4 },
@@ -163,28 +100,9 @@ export default function Hero() {
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.96 }}
           onClick={handleScrollToProducts}
-          className="
-            relative
-            mt-9 md:mt-12
-            px-8 py-4 md:px-10 md:py-4.5
-            rounded-full
-            text-white font-semibold text-lg md:text-xl
-            bg-gradient-to-r from-[#0F5C63] to-[#0B8A92]
-            shadow-[0_0_48px_rgba(255,214,107,0.28)]
-            border border-white/20
-            overflow-hidden
-          "
+          className="relative mt-9 md:mt-12 px-8 py-4 md:px-10 md:py-4.5 rounded-full text-white font-semibold text-lg md:text-xl bg-gradient-to-r from-[#0F5C63] to-[#0B8A92] shadow-[0_0_48px_rgba(255,214,107,0.28)] border border-white/20 overflow-hidden"
         >
-          <span
-            aria-hidden
-            className="
-              absolute -inset-6
-              rounded-full
-              bg-[#FFD66B]/12
-              blur-2xl
-              opacity-80
-            "
-          />
+          <span aria-hidden className="absolute -inset-6 rounded-full bg-[#FFD66B]/12 blur-2xl opacity-80" />
 
           <motion.span
             aria-hidden
@@ -207,4 +125,4 @@ export default function Hero() {
   )
 }
 
-/** end code */
+// end code

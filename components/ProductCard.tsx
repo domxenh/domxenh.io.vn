@@ -1,8 +1,14 @@
 "use client"
 
 import Link from "next/link"
-import { motion, useReducedMotion } from "framer-motion"
-import { useEffect, useState } from "react"
+import { motion } from "framer-motion"
+
+/**
+ * TÓM TẮT:
+ * - HOT/SALE và -% giảm giá nằm trong ảnh (góc dưới trái)
+ * - Tăng size ảnh (compact + default) để không bị bé
+ * - Giữ nguyên cấu trúc card cũ (không đổi layout)
+ */
 
 type ProductLike = {
   id?: string
@@ -21,143 +27,71 @@ export default function ProductCard({
   product: ProductLike
   variant?: "default" | "compact"
 }) {
-  const reduceMotion = useReducedMotion()
-
-  // ✅ mobile detect để tắt hover scale (mượt hơn khi scroll/tap)
-  const [isMobile, setIsMobile] = useState(false)
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 768px)")
-    const apply = () => setIsMobile(mq.matches)
-    apply()
-    mq.addEventListener?.("change", apply)
-    return () => mq.removeEventListener?.("change", apply)
-  }, [])
-
   const showSale =
     typeof product.oldPrice === "number" && product.oldPrice > product.price
 
   const badge = product.isHot ? "HOT" : showSale ? "SALE" : null
 
-  const discountPct = showSale
-    ? Math.round(
-        (((product.oldPrice as number) - product.price) / (product.oldPrice as number)) * 100
-      )
-    : null
+  const discountPercent =
+    showSale && product.oldPrice
+      ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
+      : null
 
   const fmt = (n: number) => n.toLocaleString("vi-VN")
 
-  const NAME_TO_PRICE_GAP = "mt-2" // giữ nguyên như file gốc của bạn
-  const PRICE_TO_BUTTON_GAP_PX = 10
+  // ✅ Tăng size ảnh: compact đang quá bé -> tăng rõ rệt
+  const imgClass =
+    variant === "compact"
+      ? "h-48 sm:h-52" // trước là h-36
+      : "h-72 md:h-80" // trước là h-60
 
   return (
-    <motion.div
-      whileHover={!reduceMotion && !isMobile ? { scale: 1.02 } : undefined}
-      transition={{ duration: 0.22 }}
-      className="w-full"
-    >
-      {/* ✅ tắt prefetch để giảm lag trên mobile khi có nhiều card */}
-      <Link href={`/san-pham/${product.slug}`} prefetch={false}>
-        <div
-          className={`
-            product-card text-center relative
-            w-full h-full flex flex-col
-            mx-auto
-            ${variant === "compact" ? "max-w-[240px] p-4" : ""}
-          `}
-        >
-          {badge && (
-            <div
-              className={`
-                absolute top-3 left-3 z-10
-                rounded-full px-2.5 py-1 text-[10px] md:text-[11px]
-                font-extrabold tracking-wide uppercase
-                shadow-[0_10px_25px_rgba(0,0,0,0.6)]
-                ring-1 ring-white/20 backdrop-blur
-                ${badge === "HOT" ? "bg-[#FFD66B] text-black" : "bg-red-500 text-white"}
-              `}
-            >
-              {badge}
-            </div>
-          )}
-
-          {typeof discountPct === "number" && discountPct > 0 && (
-            <div
-              className="
-                absolute top-3 right-3 z-10
-                rounded-full px-2.5 py-1
-                text-[10px] md:text-[11px]
-                font-extrabold
-                bg-red-600 text-white
-                shadow-[0_10px_25px_rgba(0,0,0,0.6)]
-                ring-1 ring-white/15
-              "
-            >
-              -{discountPct}%
-            </div>
-          )}
-
+    <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.3 }}>
+      <Link href={`/san-pham/${product.slug}`}>
+        <div className={`product-card text-center relative ${variant === "compact" ? "p-5" : ""}`}>
+          {/* Ảnh */}
           <div
-            className="
-              mx-auto relative w-full
-              aspect-square
-              overflow-hidden rounded-2xl
-              bg-black/20 border border-white/10
-            "
+            className={`mx-auto relative w-full overflow-hidden rounded-2xl bg-black/20 border border-white/10 ${imgClass}`}
           >
             <img
               src={product.image}
               alt={product.name}
+              className="absolute inset-0 w-full h-full object-cover"
               loading="lazy"
-              decoding="async"
-              fetchPriority="low"
-              className="w-full h-full object-cover rounded-2xl"
             />
+
+            {/* ✅ Badge trong ảnh - góc dưới trái */}
+            {(badge || (typeof discountPercent === "number" && discountPercent > 0)) && (
+              <div className="absolute bottom-3 left-3 z-10 flex items-center gap-2">
+                {badge && (
+                  <div className="rounded-full px-3 py-1 text-xs font-semibold bg-black/55 border border-[#FF3B30]/70 text-[#FF3B30] backdrop-blur-md">
+                    {badge}
+                  </div>
+                )}
+
+                {typeof discountPercent === "number" && discountPercent > 0 && (
+                  <div className="rounded-full px-3 py-1 text-xs font-semibold bg-[#FF3B30] text-white shadow-[0_0_18px_rgba(255,59,48,0.35)]">
+                    -{discountPercent}%
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
-          {/* giữ nguyên cấu trúc title của bạn */}
-          <div
-            className={`
-              mt-3 w-full hide-scrollbar
-              whitespace-nowrap
-              overflow-x-auto
-              scroll-smooth
-              pb-1
-              ${variant === "compact" ? "text-base md:text-lg font-semibold" : "text-lg md:text-xl"}
-            `}
-            title={product.name}
-            style={{
-              WebkitOverflowScrolling: "touch",
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-            }}
-          >
-            <span className="heading inline-block pr-2">{product.name}</span>
-          </div>
+          <h3 className={`mt-5 heading ${variant === "compact" ? "text-base" : "text-xl"}`}>
+            {product.name}
+          </h3>
 
-          <div className={`${NAME_TO_PRICE_GAP} flex w-full flex-nowrap items-baseline justify-between gap-3`}>
-            {showSale ? (
-              <p className="whitespace-nowrap text-xs md:text-sm text-white/55 line-through text-left">
+          <div className="mt-3 flex items-center justify-center gap-3">
+            <p className="price">{fmt(product.price)} đ</p>
+            {showSale && (
+              <p className="text-white/45 line-through text-sm">
                 {fmt(product.oldPrice as number)} đ
               </p>
-            ) : (
-              <span />
             )}
-
-            <p
-              className="
-                whitespace-nowrap text-base md:text-lg font-extrabold
-                text-[#FFD66B] text-right ml-auto
-                drop-shadow-[0_0_10px_rgba(255,214,107,0.55)]
-              "
-            >
-              {fmt(product.price)} đ
-            </p>
           </div>
 
-          <div
-            className="mt-auto pt-[var(--gap)]"
-            style={{ ["--gap" as any]: `${PRICE_TO_BUTTON_GAP_PX}px` }}
-          >
+          <div className="mt-5">
             <button className="btn-brand">Chi Tiết</button>
           </div>
         </div>
@@ -165,3 +99,5 @@ export default function ProductCard({
     </motion.div>
   )
 }
+
+// end code

@@ -2,12 +2,17 @@
 import Hero from "@/components/Hero"
 import HomeProductFolders from "@/components/home/HomeProductFolders"
 
+export const metadata = {
+  title: "ĐÓM XÊNH | Đèn trang trí ngoài trời",
+  description: "Không những Sáng mà còn phải Xênh.",
+}
+
 export default function HomePage() {
   return (
-    <div className="mt-32">
+    <main className="min-h-screen">
       <Hero />
       <HomeProductFolders />
-    </div>
+    </main>
   )
 }
 

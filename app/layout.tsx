@@ -16,18 +16,29 @@ export const metadata = {
   },
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="vi">
       <body>
-        <ProductQuickViewProvider>
+        {/* ✅ FIX build: Header dùng useSearchParams => bọc Suspense */}
+        <Suspense
+          fallback={
+            // fallback nhẹ để tránh giật layout khi Header chưa hydrate
+            <div
+              aria-hidden
+              style={{ height: "92px" }}
+            />
+          }
+        >
           <Header />
+        </Suspense>
 
-          {/* Apple không dùng container cố định */}
-          {children}
+        {/* ✅ Fireflies GLOBAL: chỉ render 1 lần cho toàn site */}
+        <Fireflies />
 
-          <Footer />
-        </ProductQuickViewProvider>
+        {children}
+
+        <Footer />
       </body>
     </html>
   )

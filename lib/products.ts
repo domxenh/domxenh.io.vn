@@ -1,5 +1,14 @@
 // lib/products.ts
-import { cache } from "react"
+/**
+ * TÓM TẮT (VN):
+ * - FIX lỗi build do lib/products.ts bị dán nhầm JSX (<html>, <body>...).
+ * - File này CHỈ chứa các hàm query Prisma.
+ * - Bổ sung getProductsBySlugs để HomeProductFolders.tsx dùng theo slug.
+ *
+ * CHỖ SỬA:
+ * - Đảm bảo KHÔNG có JSX trong file này.
+ */
+
 import { prisma } from "@/lib/prisma"
 
 export type ProductCardDTO = {
@@ -10,7 +19,6 @@ export type ProductCardDTO = {
   price: number
   oldPrice: number | null
   isHot: boolean
-  description: string
 }
 
 const selectCard = {
@@ -21,36 +29,31 @@ const selectCard = {
   price: true,
   oldPrice: true,
   isHot: true,
-  description: true,
 } as const
 
-/**
- * ✅ Cache query để tránh bị gọi lặp trong cùng request tree
- * (đặc biệt khi Home/Catalog render nhiều component con)
- */
+export async function getProductsByNames(names: string[]) {
+  const products = await prisma.product.findMany({
+    where: { name: { in: names } },
+    select: selectCard,
+  })
+  return products as ProductCardDTO[]
+}
 
-// match theo slug (ổn định hơn name)
-export const getProductsBySlugs = cache(async (slugs: string[]) => {
-  if (!slugs?.length) return []
+/** ✅ NEW: Query theo slug để khớp folderConfig dùng productSlugs */
+export async function getProductsBySlugs(slugs: string[]) {
   const products = await prisma.product.findMany({
     where: { slug: { in: slugs } },
     select: selectCard,
   })
   return products as ProductCardDTO[]
-})
+}
 
-export const getAllProducts = cache(async () => {
+export async function getAllProducts() {
   const products = await prisma.product.findMany({
     orderBy: { createdAt: "desc" },
     select: selectCard,
   })
   return products as ProductCardDTO[]
-})
+}
 
-// Trang chi tiết riêng (nếu còn dùng)
-export const getProductBySlug = cache(async (slug: string) => {
-  if (!slug) return null
-  return prisma.product.findUnique({
-    where: { slug },
-  })
-})
+// end code

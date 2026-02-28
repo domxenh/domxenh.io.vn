@@ -1,16 +1,16 @@
 // components/home/folderConfig.ts
-// TÓM TẮT (ver 1.3):
-// - Sửa lỗi Home folder bị trống do lệch product.name
-// - Chuyển curated list từ productNames -> productSlugs (ổn định hơn)
-// - Title/desc giữ nguyên theo UI Apple folder
+// TÓM TẮT (ver 1.4):
+// - Thêm key cho mỗi folder để lọc theo query ?cat=...
+// - productSlugs giữ nguyên
 //
-// CHỖ CẦN CHỈNH:
-// - Muốn thay sản phẩm trong từng folder: sửa mảng productSlugs bên dưới.
-//
-// end goal: Home luôn map đúng sản phẩm miễn DB giữ slug ổn định
+// cat keys:
+// - edison
+// - tron
+// - day-le-bong-le
 
 export const HOME_PRODUCT_FOLDERS = [
   {
+    key: "edison",
     title: "Bộ dây đèn EDISON",
     desc: "Ánh vàng ấm, vibe cổ điển – lắp là xênh.",
     productSlugs: [
@@ -20,6 +20,7 @@ export const HOME_PRODUCT_FOLDERS = [
     ],
   },
   {
+    key: "tron",
     title: "Bộ dây đèn Tròn",
     desc: "Nhẹ nhàng hiện đại – nhiều mức công suất.",
     productSlugs: [
@@ -30,6 +31,7 @@ export const HOME_PRODUCT_FOLDERS = [
     ],
   },
   {
+    key: "day-le-bong-le",
     title: "Dây lẻ, Bóng lẻ",
     desc: "Phụ kiện thay thế & nâng cấp theo nhu cầu.",
     productSlugs: ["day-le", "bong-le"],

@@ -1,15 +1,6 @@
 // lib/products.ts
-/**
- * TÓM TẮT (VN):
- * - FIX lỗi build do lib/products.ts bị dán nhầm JSX (<html>, <body>...).
- * - File này CHỈ chứa các hàm query Prisma.
- * - Bổ sung getProductsBySlugs để HomeProductFolders.tsx dùng theo slug.
- *
- * CHỖ SỬA:
- * - Đảm bảo KHÔNG có JSX trong file này.
- */
-
 import { prisma } from "@/lib/prisma"
+import { unstable_cache } from "next/cache"
 
 export type ProductCardDTO = {
   id: string
@@ -31,28 +22,59 @@ const selectCard = {
   isHot: true,
 } as const
 
+// ✅ Cache helpers (giảm query lại khi chuyển trang)
+const cachedFindManyByNames = unstable_cache(
+  async (names: string[]) => {
+    return prisma.product.findMany({
+      where: { name: { in: names } },
+      select: selectCard,
+    })
+  },
+  ["products:byNames"],
+  { revalidate: 120 }
+)
+
+const cachedFindManyAll = unstable_cache(
+  async () => {
+    return prisma.product.findMany({
+      orderBy: { createdAt: "desc" },
+      select: selectCard,
+    })
+  },
+  ["products:all"],
+  { revalidate: 120 }
+)
+
+const cachedFindManyBySlugs = unstable_cache(
+  async (slugs: string[]) => {
+    return prisma.product.findMany({
+      where: { slug: { in: slugs } },
+      select: selectCard,
+    })
+  },
+  ["products:bySlugs"],
+  { revalidate: 120 }
+)
+
 export async function getProductsByNames(names: string[]) {
-  const products = await prisma.product.findMany({
-    where: { name: { in: names } },
-    select: selectCard,
-  })
-  return products as ProductCardDTO[]
+  if (!names || names.length === 0) return [] as ProductCardDTO[]
+  const unique = Array.from(new Set(names))
+  const products = await cachedFindManyByNames(unique)
+  // giữ thứ tự theo config
+  const map = new Map(products.map((p) => [p.name, p]))
+  return unique.map((n) => map.get(n)).filter(Boolean) as ProductCardDTO[]
 }
 
-/** ✅ NEW: Query theo slug để khớp folderConfig dùng productSlugs */
 export async function getProductsBySlugs(slugs: string[]) {
-  const products = await prisma.product.findMany({
-    where: { slug: { in: slugs } },
-    select: selectCard,
-  })
-  return products as ProductCardDTO[]
+  if (!slugs || slugs.length === 0) return [] as ProductCardDTO[]
+  const unique = Array.from(new Set(slugs))
+  const products = await cachedFindManyBySlugs(unique)
+  const map = new Map(products.map((p) => [p.slug, p]))
+  return unique.map((s) => map.get(s)).filter(Boolean) as ProductCardDTO[]
 }
 
 export async function getAllProducts() {
-  const products = await prisma.product.findMany({
-    orderBy: { createdAt: "desc" },
-    select: selectCard,
-  })
+  const products = await cachedFindManyAll()
   return products as ProductCardDTO[]
 }
 

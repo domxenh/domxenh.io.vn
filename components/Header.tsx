@@ -265,15 +265,12 @@ export default function Header() {
               {NAV_ITEMS.map((item) => {
                 const active = isActivePath(pathname, item.href)
                 return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    prefetch={false}
-                    className={[
-                      "relative px-3 py-2 rounded-full transition",
-                      active ? "bg-white/6" : "hover:bg-white/5",
-                    ].join(" ")}
-                  >
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      prefetch={item.href === "/san-pham-full"}
+                      className="relative px-2 whitespace-nowrap"
+                    >
                     <span
                       className={[
                         "font-medium whitespace-nowrap",

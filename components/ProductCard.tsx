@@ -1,14 +1,8 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { motion } from "framer-motion"
-
-/**
- * TÓM TẮT:
- * - HOT/SALE và -% giảm giá nằm trong ảnh (góc dưới trái)
- * - Tăng size ảnh (compact + default) để không bị bé
- * - Giữ nguyên cấu trúc card cũ (không đổi layout)
- */
 
 type ProductLike = {
   id?: string
@@ -39,28 +33,24 @@ export default function ProductCard({
 
   const fmt = (n: number) => n.toLocaleString("vi-VN")
 
-  // ✅ Tăng size ảnh: compact đang quá bé -> tăng rõ rệt
   const imgClass =
-    variant === "compact"
-      ? "h-48 sm:h-52" // trước là h-36
-      : "h-72 md:h-80" // trước là h-60
+    variant === "compact" ? "h-48 sm:h-52" : "h-72 md:h-80"
 
   return (
     <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.3 }}>
       <Link href={`/san-pham/${product.slug}`}>
         <div className={`product-card text-center relative ${variant === "compact" ? "p-5" : ""}`}>
-          {/* Ảnh */}
           <div
             className={`mx-auto relative w-full overflow-hidden rounded-2xl bg-black/20 border border-white/10 ${imgClass}`}
           >
-            <img
+            <Image
               src={product.image}
               alt={product.name}
-              className="absolute inset-0 w-full h-full object-cover"
-              loading="lazy"
+              fill
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              className="object-cover"
             />
 
-            {/* ✅ Badge trong ảnh - góc dưới trái */}
             {(badge || (typeof discountPercent === "number" && discountPercent > 0)) && (
               <div className="absolute bottom-3 left-3 z-10 flex items-center gap-2">
                 {badge && (

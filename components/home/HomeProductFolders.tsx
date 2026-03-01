@@ -58,9 +58,17 @@ export default async function HomeProductFolders({
 
               <div className="relative flex flex-col items-center text-center gap-3">
                 <div>
-                  <h2 className="text-2xl md:text-3xl font-semibold text-white drop-shadow-[0_0_18px_rgba(255,214,107,0.35)]">
+                  {/* ✅ Title nổi bật hơn nhưng không lạc tone */}
+                  <h2
+                    className="
+                      text-2xl md:text-3xl font-semibold
+                      text-[#FFD66B]
+                      drop-shadow-[0_0_22px_rgba(255,214,107,0.55)]
+                    "
+                  >
                     {folder.title}
                   </h2>
+
                   <p className="mt-2 text-white/70 max-w-2xl mx-auto">
                     {folder.desc}
                   </p>

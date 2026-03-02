@@ -22,16 +22,16 @@ CODE: DARK LUXURY – ĐÓM XÊNH OFFICIAL PALETTE
 
 /* ===== BACKGROUND CHÍNH ===== */
 
-body {
-  /* HERO GLOW LIGHT EFFECT */
-  .hero-glow {
-    background: radial-gradient(
-      circle at 50% 30%,
-      rgba(255, 214, 107, 0.08),
-      transparent 50%
-    );
-  }
+/* HERO GLOW LIGHT EFFECT */
+.hero-glow {
+  background: radial-gradient(
+    circle at 50% 30%,
+    rgba(255, 214, 107, 0.08),
+    transparent 50%
+  );
+}
 
+body {
   background: radial-gradient(
       circle at 20% 20%,
       rgba(255, 214, 107, 0.05),
@@ -204,14 +204,7 @@ body {
 }
 
 /* Badge SALE */
-.badge-sale {
-  background: linear-gradient(135deg, #FF3B30, #FF9500);
-  color: #FFFFFF;
-  padding: 4px 10px;
-  font-size: 12px;
-  border-radius: 999px;
-  box-shadow: 0 0 18px rgba(255, 59, 48, 0.35);
-}
+/* (đã khai báo ở trên) */
 
 /* hide horizontal scrollbar for title scroller */
 .hide-scrollbar::-webkit-scrollbar {

@@ -8,6 +8,7 @@ node_modules
 .env.local
 README_DEV.md
 README.md
+CHANGELOG.md
 
 # backups
 *.rar

@@ -6,37 +6,29 @@ import Header from "@/components/Header"
 import Footer from "@/components/Footer"
 import Fireflies from "@/components/Fireflies"
 
+// ✅ dùng relative để chắc chắn không lỗi alias
+import CartHost from "../components/cart/CartHost"
+
 export const metadata = {
-  metadataBase: new URL("https://domxenh.io.vn"), // đổi sang domain thật của bạn nếu cần
-  openGraph: {
-    images: ["/icon.png"],
-  },
-  twitter: {
-    images: ["/icon.png"],
-  },
+  metadataBase: new URL("https://domxenh.io.vn"),
+  openGraph: { images: ["/icon.png"] },
+  twitter: { images: ["/icon.png"] },
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="vi">
       <body>
-        {/* ✅ FIX build: Header dùng useSearchParams => bọc Suspense */}
-        <Suspense
-          fallback={
-            // fallback nhẹ để tránh giật layout khi Header chưa hydrate
-            <div
-              aria-hidden
-              style={{ height: "92px" }}
-            />
-          }
-        >
+        <Suspense fallback={<div aria-hidden style={{ height: "92px" }} />}>
           <Header />
         </Suspense>
 
-        {/* ✅ Fireflies GLOBAL: chỉ render 1 lần cho toàn site */}
         <Fireflies />
 
         {children}
+
+        {/* ✅ icon giỏ nổi + popup giỏ hàng */}
+        <CartHost />
 
         <Footer />
       </body>

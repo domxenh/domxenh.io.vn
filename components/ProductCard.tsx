@@ -36,14 +36,13 @@ export default function ProductCard({
   const fmt = (n: number) => n.toLocaleString("vi-VN")
   const imgClass = variant === "compact" ? "h-48 sm:h-52" : "h-72 md:h-80"
 
-  // ✅ HOT/SALE: chữ đỏ + to hơn 1 chút
   const badgeClass =
     "rounded-full px-3 py-1.5 text-[12px] font-extrabold tracking-wide " +
     "bg-black/55 border border-[#FF3B30]/55 text-[#FF3B30] " +
     "shadow-[0_0_18px_rgba(255,59,48,0.30)] backdrop-blur"
 
   const Card = (
-    <Link href={`/san-pham/${product.slug}`}>
+    <Link href={`/san-pham/${product.slug}`} className="block">
       <div
         className={[
           "product-card relative",
@@ -67,7 +66,6 @@ export default function ProductCard({
             className="object-cover"
           />
 
-          {/* ✅ HOT/SALE ở góc trái dưới ảnh */}
           {badge ? (
             <div className="absolute left-3 bottom-3 z-10">
               <span className={badgeClass}>{badge}</span>
@@ -75,15 +73,13 @@ export default function ProductCard({
           ) : null}
         </div>
 
-        {/* Content: giữ đồng size */}
+        {/* Content */}
         <div className="mt-5 w-full flex flex-col items-center">
-          {/* Title */}
           <div className="min-h-[2.7em] flex items-center justify-center">
             <h3
               className={[
                 "heading",
                 variant === "compact" ? "text-base" : "text-xl",
-                // ✅ tên vàng + sáng mạnh
                 "text-[#FFD66B]",
                 "drop-shadow-[0_0_30px_rgba(255,214,107,0.85)]",
                 "leading-snug line-clamp-2",
@@ -93,7 +89,6 @@ export default function ProductCard({
             </h3>
           </div>
 
-          {/* Price row */}
           <div className="mt-3 flex flex-wrap items-baseline justify-center gap-2 min-h-[28px]">
             {typeof discountPercent === "number" && discountPercent > 0 ? (
               <span className="shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold bg-[#FF3B30] text-white shadow-[0_0_18px_rgba(255,59,48,0.35)]">
@@ -101,7 +96,6 @@ export default function ProductCard({
               </span>
             ) : null}
 
-            {/* ✅ giá sáng hơn */}
             <p
               className={[
                 "price",
@@ -123,8 +117,11 @@ export default function ProductCard({
           </div>
         </div>
 
+        {/* ✅ FIX: không dùng button trong Link */}
         <div className="mt-5">
-          <button className="btn-brand">Chi Tiết</button>
+          <span className="btn-brand inline-flex items-center justify-center">
+            Chi Tiết
+          </span>
         </div>
       </div>
     </Link>

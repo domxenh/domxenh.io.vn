@@ -17,21 +17,6 @@ function fmtVnd(n: number) {
   return n.toLocaleString("vi-VN") + " đ"
 }
 
-function CartIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M6.5 6h14l-1.3 7.2a2 2 0 0 1-2 1.6H9a2 2 0 0 1-2-1.6L5.3 3.8H3"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path d="M9 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM18 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" fill="currentColor" />
-    </svg>
-  )
-}
-
 export default function StickyBuyBar({
   productSlug,
   productName,
@@ -111,11 +96,6 @@ export default function StickyBuyBar({
     })
   }
 
-  const onCart = () => {
-    addCurrent()
-    openCart()
-  }
-
   const onOrder = () => {
     if (inStock) addCurrent()
     openCart()
@@ -126,7 +106,6 @@ export default function StickyBuyBar({
       <div className="fixed left-0 right-0 bottom-0 z-[90] pointer-events-none">
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/60 to-transparent" />
 
-        {/* ✅ co theo content (không max-w 7xl) */}
         <div
           className="pointer-events-auto w-fit mx-auto px-3"
           style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 12px)" }}
@@ -151,26 +130,12 @@ export default function StickyBuyBar({
                       {priceText}
                     </div>
 
-                    {oldText ? (
-                      <div className="text-white/45 line-through whitespace-nowrap text-sm">
-                        {oldText}
-                      </div>
-                    ) : null}
+                    {oldText ? <div className="text-white/45 line-through whitespace-nowrap text-sm">{oldText}</div> : null}
                   </div>
                 </div>
 
-                <div className="shrink-0 flex items-center gap-2 ml-auto">
-                  <button
-                    type="button"
-                    onClick={onCart}
-                    className="rounded-full px-4 py-2.5 font-semibold text-white/90 border border-white/12 bg-white/5 hover:bg-white/10 transition inline-flex items-center gap-2"
-                    aria-label="Thêm vào giỏ"
-                    title="Thêm vào giỏ"
-                  >
-                    <CartIcon />
-                    <span className="hidden sm:inline">Giỏ</span>
-                  </button>
-
+                {/* ✅ XÓA nút Giỏ cạnh nút đặt hàng */}
+                <div className="shrink-0 flex items-center ml-auto">
                   <button
                     type="button"
                     disabled={!inStock}

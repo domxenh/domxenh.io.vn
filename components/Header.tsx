@@ -1,9 +1,11 @@
+// components/Header.tsx
 "use client"
 
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useSearchParams, useRouter } from "next/navigation"
 import { useEffect, useMemo, useState } from "react"
+import { getCart, openCart } from "@/components/cart/cartStore"
 
 type NavItem = {
   name: string
@@ -18,7 +20,6 @@ const NAV_ITEMS: NavItem[] = [
   { key: "contact", name: "Liên Hệ", href: "/lien-he" },
 ]
 
-// ✅ Exact scroll to each category block
 const PRODUCT_CATS = [
   { key: "edison", name: "Bộ dây đèn EDISON", href: "/san-pham-full?cat=edison#cat-edison" },
   { key: "tron", name: "Bộ dây đèn Tròn", href: "/san-pham-full?cat=tron#cat-tron" },
@@ -35,21 +36,12 @@ function isSanPhamFullHref(href: string) {
   return href.startsWith("/san-pham-full")
 }
 
-// --- SF-symbol-ish icon base style (thin + rounded) ---
-function SvgWrap({
-  children,
-  active,
-}: {
-  children: React.ReactNode
-  active?: boolean
-}) {
+function SvgWrap({ children, active }: { children: React.ReactNode; active?: boolean }) {
   return (
     <span
       className={[
         "inline-flex items-center justify-center",
-        active
-          ? "text-[#FFD66B] drop-shadow-[0_0_10px_rgba(255,214,107,0.35)]"
-          : "text-white/78",
+        active ? "text-[#FFD66B] drop-shadow-[0_0_10px_rgba(255,214,107,0.35)]" : "text-white/78",
       ].join(" ")}
     >
       {children}
@@ -122,12 +114,7 @@ function IconPhone({ active }: { active?: boolean }) {
           strokeWidth={STROKE}
           strokeLinejoin="round"
         />
-        <path
-          d="M10.6 17.6h2.8"
-          stroke="currentColor"
-          strokeWidth={STROKE}
-          strokeLinecap="round"
-        />
+        <path d="M10.6 17.6h2.8" stroke="currentColor" strokeWidth={STROKE} strokeLinecap="round" />
       </svg>
     </SvgWrap>
   )
@@ -138,12 +125,33 @@ function IconDots9({ active }: { active?: boolean }) {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
       {[
-        [6, 6],[12, 6],[18, 6],
-        [6, 12],[12, 12],[18, 12],
-        [6, 18],[12, 18],[18, 18],
+        [6, 6],
+        [12, 6],
+        [18, 6],
+        [6, 12],
+        [12, 12],
+        [18, 12],
+        [6, 18],
+        [12, 18],
+        [18, 18],
       ].map(([x, y], i) => (
         <circle key={i} cx={x} cy={y} r="1.35" fill={fill} />
       ))}
+    </svg>
+  )
+}
+
+function CartIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M6.5 6h14l-1.3 7.2a2 2 0 0 1-2 1.6H9a2 2 0 0 1-2-1.6L5.3 3.8H3"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M9 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM18 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" fill="currentColor" />
     </svg>
   )
 }
@@ -154,16 +162,24 @@ export default function Header() {
   const search = useSearchParams()
   const activeCat = search.get("cat") || ""
 
+  const [cartCount, setCartCount] = useState(0)
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
-  const activeItem = useMemo(() => {
-    return NAV_ITEMS.find((i) => isActivePath(pathname, i.href)) ?? NAV_ITEMS[0]
-  }, [pathname])
+  useMemo(() => NAV_ITEMS.find((i) => isActivePath(pathname, i.href)) ?? NAV_ITEMS[0], [pathname])
 
   useEffect(() => setOpen(false), [pathname, activeCat])
 
-  // ✅ Warm-up route: mở menu là prefetch luôn /san-pham-full để click "Sản phẩm" gần như instant
+  useEffect(() => {
+    const refresh = () => {
+      const items = getCart()
+      setCartCount(items.reduce((s, it) => s + it.qty, 0))
+    }
+    refresh()
+    window.addEventListener("cart:changed", refresh)
+    return () => window.removeEventListener("cart:changed", refresh)
+  }, [])
+
   useEffect(() => {
     if (!open) return
     router.prefetch("/san-pham-full")
@@ -198,9 +214,22 @@ export default function Header() {
     ? "shadow-[0_30px_90px_rgba(0,0,0,0.85)]"
     : "shadow-[0_20px_70px_rgba(0,0,0,0.7)]"
 
+  // PC cart button (giữ chữ Giỏ Hàng)
+  const cartBtnClass =
+    "inline-flex items-center gap-2 rounded-full px-3.5 py-2 border border-[#FFD66B]/25 " +
+    "bg-white/5 text-[#FFD66B] shadow-[0_0_26px_rgba(255,214,107,0.18)] " +
+    "hover:bg-white/8 hover:border-[#FFD66B]/35 transition"
+
+  const cartTextClass = "font-semibold drop-shadow-[0_0_14px_rgba(255,214,107,0.75)]"
+
+  // ✅ Mobile cart icon-only
+  const cartIconBtnClass =
+    "relative inline-flex items-center justify-center rounded-full w-11 h-11 " +
+    "border border-[#FFD66B]/25 bg-white/5 text-[#FFD66B] " +
+    "shadow-[0_0_26px_rgba(255,214,107,0.16)] hover:bg-white/8 hover:border-[#FFD66B]/35 transition"
+
   return (
     <>
-      {/* Hero background behind header */}
       <div
         aria-hidden
         className="fixed top-0 left-0 w-full h-28 md:h-32 z-40 pointer-events-none"
@@ -213,12 +242,10 @@ export default function Header() {
           transform: "scale(1.02)",
           WebkitMaskImage:
             "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.65) 55%, rgba(0,0,0,0) 100%)",
-          maskImage:
-            "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.65) 55%, rgba(0,0,0,0) 100%)",
+          maskImage: "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.65) 55%, rgba(0,0,0,0) 100%)",
         }}
       />
 
-      {/* ✅ Safe-area top */}
       <header
         className="fixed left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-6xl"
         style={{ top: "calc(env(safe-area-inset-top, 0px) + 24px)" }}
@@ -230,8 +257,7 @@ export default function Header() {
               padding: "1px",
               background:
                 "linear-gradient(90deg, rgba(255,214,107,0.85) 0%, rgba(255,214,107,0.15) 40%, rgba(255,214,107,0.15) 60%, rgba(255,214,107,0.85) 100%)",
-              WebkitMask:
-                "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+              WebkitMask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
               WebkitMaskComposite: "xor",
               maskComposite: "exclude",
             }}
@@ -264,9 +290,7 @@ export default function Header() {
                 <span aria-hidden className="pointer-events-none absolute inset-0 text-[#FFD66B] opacity-35 blur-md">
                   ĐÓM XÊNH
                 </span>
-                <span className="relative drop-shadow-[0_0_14px_rgba(255,214,107,0.85)]">
-                  ĐÓM XÊNH
-                </span>
+                <span className="relative drop-shadow-[0_0_14px_rgba(255,214,107,0.85)]">ĐÓM XÊNH</span>
               </span>
             </Link>
 
@@ -305,15 +329,44 @@ export default function Header() {
                   </Link>
                 )
               })}
+
+              {/* Cart button on PC */}
+              <button
+                type="button"
+                onClick={() => openCart()}
+                className={cartBtnClass}
+                aria-label="Mở giỏ hàng"
+                title="Giỏ Hàng"
+                style={{ WebkitTapHighlightColor: "transparent" }}
+              >
+                <CartIcon />
+                <span className={cartTextClass}>Giỏ Hàng</span>
+                {cartCount > 0 ? (
+                  <span className="ml-0.5 rounded-full px-2 py-0.5 text-xs font-extrabold bg-[#FF3B30] text-white">
+                    {cartCount > 99 ? "99+" : String(cartCount)}
+                  </span>
+                ) : null}
+              </button>
             </div>
 
             {/* Mobile */}
             <div className="md:hidden flex items-center gap-3">
-              <span className="text-sm font-semibold px-3 py-1.5 rounded-full border bg-white/5 border-white/12 text-white/90 shadow-[0_0_24px_rgba(255,214,107,0.12)]">
-                <span className="text-[#FFD66B] drop-shadow-[0_0_10px_rgba(255,214,107,0.45)]">
-                  {activeItem.name}
-                </span>
-              </span>
+              {/* ✅ Icon-only cart */}
+              <button
+                type="button"
+                onClick={() => openCart()}
+                className={cartIconBtnClass}
+                aria-label="Mở giỏ hàng"
+                title="Giỏ Hàng"
+                style={{ WebkitTapHighlightColor: "transparent" }}
+              >
+                <CartIcon />
+                {cartCount > 0 ? (
+                  <span className="absolute -right-1 -top-1 rounded-full min-w-[20px] h-5 px-1.5 text-[11px] font-extrabold bg-[#FF3B30] text-white grid place-items-center">
+                    {cartCount > 99 ? "99+" : String(cartCount)}
+                  </span>
+                ) : null}
+              </button>
 
               <button
                 type="button"
@@ -344,23 +397,33 @@ export default function Header() {
             style={{ top: "calc(env(safe-area-inset-top, 0px) + 24px)" }}
           >
             <div className="rounded-3xl border border-white/12 bg-black/70 backdrop-blur-2xl shadow-[0_40px_120px_rgba(0,0,0,0.8)] overflow-hidden">
-              <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
-                <div className="flex items-center gap-3">
+              {/* ✅ Center logo + title; close stays right */}
+              <div className="relative px-5 py-4 border-b border-white/10">
+                <div className="flex items-center justify-center gap-3">
                   <Image
                     src="/images/logo.webp"
                     alt=""
-                    width={36}
-                    height={36}
-                    className="rounded-full object-cover ring-[0.5px] ring-white/18"
+                    width={38}
+                    height={38}
+                    className="rounded-full object-cover ring-[0.5px] ring-white/18 shadow-[0_0_20px_rgba(255,214,107,0.35)]"
                   />
-                  <div className="text-white font-semibold text-xl">ĐÓM XÊNH</div>
+                  <div className="relative font-semibold text-[22px] tracking-wide text-[#FFD66B]">
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute inset-0 blur-md opacity-70"
+                      style={{ color: "#FFD66B" }}
+                    >
+                      ĐÓM XÊNH
+                    </span>
+                    <span className="relative drop-shadow-[0_0_22px_rgba(255,214,107,0.95)]">ĐÓM XÊNH</span>
+                  </div>
                 </div>
 
                 <button
                   type="button"
                   aria-label="Close"
                   onClick={() => setOpen(false)}
-                  className="text-white/85 hover:text-white transition rounded-full px-3 py-2 border border-white/10 bg-white/5 outline-none"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/85 hover:text-white transition rounded-full w-10 h-10 border border-white/10 bg-white/5 outline-none grid place-items-center"
                   style={{ WebkitTapHighlightColor: "transparent" }}
                 >
                   <span className="text-xl leading-none">×</span>
@@ -397,12 +460,11 @@ export default function Header() {
                         style={{ WebkitTapHighlightColor: "transparent" }}
                       >
                         {icon}
+                        {/* ✅ Slightly bigger text */}
                         <span
                           className={[
-                            "font-medium",
-                            active
-                              ? "text-[#FFD66B] drop-shadow-[0_0_14px_rgba(255,214,107,0.55)]"
-                              : "",
+                            "font-medium text-[16px]",
+                            active ? "text-[#FFD66B] drop-shadow-[0_0_14px_rgba(255,214,107,0.55)]" : "",
                           ].join(" ")}
                         >
                           {item.name}
@@ -412,8 +474,7 @@ export default function Header() {
                       {item.key === "products" && (
                         <div className="mt-2 ml-11 space-y-1">
                           {PRODUCT_CATS.map((c) => {
-                            const subActive =
-                              pathname.startsWith("/san-pham-full") && activeCat === c.key
+                            const subActive = pathname.startsWith("/san-pham-full") && activeCat === c.key
 
                             return (
                               <Link
@@ -426,11 +487,12 @@ export default function Header() {
                                   "block rounded-xl px-4 py-2 border border-transparent outline-none",
                                   subActive
                                     ? "bg-white/10 border-white/15 text-[#FFD66B] drop-shadow-[0_0_14px_rgba(255,214,107,0.55)]"
-                                    : "text-white/80 hover:text-white hover:bg-white/8",
+                                    : "text-white/85 hover:text-white hover:bg-white/8",
                                 ].join(" ")}
                                 style={{ WebkitTapHighlightColor: "transparent" }}
                               >
-                                <span className="text-sm">• {c.name}</span>
+                                {/* ✅ Slightly bigger sub text */}
+                                <span className="text-[14px]">• {c.name}</span>
                               </Link>
                             )
                           })}
@@ -447,5 +509,3 @@ export default function Header() {
     </>
   )
 }
-
-// end code

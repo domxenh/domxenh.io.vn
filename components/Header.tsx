@@ -214,7 +214,6 @@ export default function Header() {
     ? "shadow-[0_30px_90px_rgba(0,0,0,0.85)]"
     : "shadow-[0_20px_70px_rgba(0,0,0,0.7)]"
 
-  // PC cart button (giữ chữ Giỏ Hàng)
   const cartBtnClass =
     "inline-flex items-center gap-2 rounded-full px-3.5 py-2 border border-[#FFD66B]/25 " +
     "bg-white/5 text-[#FFD66B] shadow-[0_0_26px_rgba(255,214,107,0.18)] " +
@@ -222,7 +221,6 @@ export default function Header() {
 
   const cartTextClass = "font-semibold drop-shadow-[0_0_14px_rgba(255,214,107,0.75)]"
 
-  // ✅ Mobile cart icon-only
   const cartIconBtnClass =
     "relative inline-flex items-center justify-center rounded-full w-11 h-11 " +
     "border border-[#FFD66B]/25 bg-white/5 text-[#FFD66B] " +
@@ -242,7 +240,8 @@ export default function Header() {
           transform: "scale(1.02)",
           WebkitMaskImage:
             "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.65) 55%, rgba(0,0,0,0) 100%)",
-          maskImage: "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.65) 55%, rgba(0,0,0,0) 100%)",
+          maskImage:
+            "linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0.65) 55%, rgba(0,0,0,0) 100%)",
         }}
       />
 
@@ -294,8 +293,8 @@ export default function Header() {
               </span>
             </Link>
 
-            {/* Desktop */}
-            <div className="hidden md:flex items-center gap-8">
+            {/* ✅ Desktop only from lg and up */}
+            <div className="hidden lg:flex items-center gap-8">
               {NAV_ITEMS.map((item) => {
                 const active = isActivePath(pathname, item.href)
                 const prefetch = isSanPhamFullHref(item.href)
@@ -330,7 +329,6 @@ export default function Header() {
                 )
               })}
 
-              {/* Cart button on PC */}
               <button
                 type="button"
                 onClick={() => openCart()}
@@ -349,9 +347,8 @@ export default function Header() {
               </button>
             </div>
 
-            {/* Mobile */}
-            <div className="md:hidden flex items-center gap-3">
-              {/* ✅ Icon-only cart */}
+            {/* ✅ Mobile for < lg */}
+            <div className="lg:hidden flex items-center gap-3">
               <button
                 type="button"
                 onClick={() => openCart()}
@@ -382,9 +379,9 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Mobile menu */}
+      {/* ✅ Mobile menu for < lg */}
       {open && (
-        <div className="fixed inset-0 z-[60] md:hidden">
+        <div className="fixed inset-0 z-[60] lg:hidden">
           <button
             aria-label="Close menu"
             className="absolute inset-0 bg-black/55"
@@ -397,7 +394,6 @@ export default function Header() {
             style={{ top: "calc(env(safe-area-inset-top, 0px) + 24px)" }}
           >
             <div className="rounded-3xl border border-white/12 bg-black/70 backdrop-blur-2xl shadow-[0_40px_120px_rgba(0,0,0,0.8)] overflow-hidden">
-              {/* ✅ Center logo + title; close stays right */}
               <div className="relative px-5 py-4 border-b border-white/10">
                 <div className="flex items-center justify-center gap-3">
                   <Image
@@ -408,11 +404,7 @@ export default function Header() {
                     className="rounded-full object-cover ring-[0.5px] ring-white/18 shadow-[0_0_20px_rgba(255,214,107,0.35)]"
                   />
                   <div className="relative font-semibold text-[22px] tracking-wide text-[#FFD66B]">
-                    <span
-                      aria-hidden
-                      className="pointer-events-none absolute inset-0 blur-md opacity-70"
-                      style={{ color: "#FFD66B" }}
-                    >
+                    <span aria-hidden className="pointer-events-none absolute inset-0 blur-md opacity-70" style={{ color: "#FFD66B" }}>
                       ĐÓM XÊNH
                     </span>
                     <span className="relative drop-shadow-[0_0_22px_rgba(255,214,107,0.95)]">ĐÓM XÊNH</span>
@@ -460,7 +452,6 @@ export default function Header() {
                         style={{ WebkitTapHighlightColor: "transparent" }}
                       >
                         {icon}
-                        {/* ✅ Slightly bigger text */}
                         <span
                           className={[
                             "font-medium text-[16px]",
@@ -475,7 +466,6 @@ export default function Header() {
                         <div className="mt-2 ml-11 space-y-1">
                           {PRODUCT_CATS.map((c) => {
                             const subActive = pathname.startsWith("/san-pham-full") && activeCat === c.key
-
                             return (
                               <Link
                                 key={c.href}
@@ -491,7 +481,6 @@ export default function Header() {
                                 ].join(" ")}
                                 style={{ WebkitTapHighlightColor: "transparent" }}
                               >
-                                {/* ✅ Slightly bigger sub text */}
                                 <span className="text-[14px]">• {c.name}</span>
                               </Link>
                             )

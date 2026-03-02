@@ -34,8 +34,8 @@ async function main() {
       {
         name: "Bộ dây đèn Edison",
         slug: "bo-day-den-edison",
-        price: 180.000,
-        oldPrice: 216.000, // SALE
+        price: 180000,
+        oldPrice: 216000, // SALE
         isHot: true, // HOT
         description: "Bộ dây đèn Edison tiêu chuẩn ngoài trời.",
         image: "/images/den1.webp",

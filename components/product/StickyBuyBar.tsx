@@ -114,12 +114,13 @@ export default function StickyBuyBar({
             <div className="pointer-events-none absolute inset-0 rounded-2xl border border-white/10" />
             <div className="relative rounded-2xl bg-black/55 backdrop-blur-2xl shadow-[0_20px_70px_rgba(0,0,0,0.75)] px-4 py-3">
               <div className="flex items-center gap-3 flex-wrap">
-                <div className="min-w-0 flex-1">
+                {/* ✅ căn giữa tên SKU + giá */}
+                <div className="min-w-0 flex-1 text-center">
                   <div className="font-semibold text-[#FFD66B] drop-shadow-[0_0_18px_rgba(255,214,107,0.35)] leading-snug">
                     {label}
                   </div>
 
-                  <div className="mt-1 flex items-baseline gap-2 flex-wrap">
+                  <div className="mt-1 flex items-baseline gap-2 flex-wrap justify-center">
                     {typeof discountPercent === "number" && discountPercent > 0 ? (
                       <span className="shrink-0 rounded-full px-2.5 py-1 text-xs font-extrabold bg-[#FF3B30] text-white">
                         -{discountPercent}%
@@ -134,7 +135,6 @@ export default function StickyBuyBar({
                   </div>
                 </div>
 
-                {/* ✅ XÓA nút Giỏ cạnh nút đặt hàng */}
                 <div className="shrink-0 flex items-center ml-auto">
                   <button
                     type="button"

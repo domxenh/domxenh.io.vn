@@ -59,13 +59,13 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
         {
           label: "Edison COMBO 20m30",
           skuCode: "edison 10m15+ 10m15",
-          image: `${base}edison-10m15+ 10m15.webp`,
+          image: `${base}edison-10m15+10m15.webp`,
           price: 404000,
           oldPrice: calcOldPrice(404000, "edison 10m15+ 10m15"),
         },
         {
           label: "Edison COMBO 15m30",
-          skuCode: "edison 10m20+ 5m10",
+          skuCode: "edison 10m20+5m10",
           // đúng file trong thư mục của bạn: edison-10m20+5m10.webp
           image: `${base}edison-10m20+5m10.webp`,
           price: 389000,
@@ -81,7 +81,7 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
         {
           label: "5 Mét Dây + 10 Bóng",
           skuCode: "edison- 5m10",
-          image: `${base}edison- 5m10.webp`,
+          image: `${base}edison-5m10.webp`,
           price: 180000,
           oldPrice: calcOldPrice(180000, "edison- 5m10"),
         },
@@ -95,7 +95,7 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
         {
           label: "7,5 Mét Dây + 12 Bóng",
           skuCode: "edison- 7,5m12",
-          image: `${base}edison- 7,5m12.webp`,
+          image: `${base}edison-7,5m12.webp`,
           price: 199000,
           oldPrice: calcOldPrice(199000, "edison- 7,5m12"),
         },

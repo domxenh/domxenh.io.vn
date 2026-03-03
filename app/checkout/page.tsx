@@ -1,6 +1,13 @@
 // app/checkout/page.tsx
+import { Suspense } from "react"
 import CheckoutClient from "./CheckoutClient"
 
+export const dynamic = "force-dynamic"
+
 export default function CheckoutPage() {
-  return <CheckoutClient />
+  return (
+    <Suspense fallback={<div style={{ padding: 24 }}>Loading...</div>}>
+      <CheckoutClient />
+    </Suspense>
+  )
 }

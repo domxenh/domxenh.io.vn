@@ -1,12 +1,23 @@
 // app/thanh-toan/CheckoutClient.tsx
 "use client"
 
+/**
+ * TÓM TẮT (VN):
+ * - COD + đặt cọc: bấm Đặt Hàng => hiện modal Apple.
+ * - Không đồng ý: đóng modal.
+ * - Đồng ý:
+ *   1) Gửi đơn lên Sheet (eventType=deposit_request, paymentMethod=cod_deposit, amount=50000)
+ *   2) Chuyển /checkout?amount=50000&mode=deposit
+ *
+ * NƠI CHỈNH:
+ * - agreeDepositAndGoPay(): thêm eventType=deposit_request
+ */
+
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import {
   CartItem,
   cartTotal,
-  clearCart,
   getCart,
   removeFromCart,
   updateQty,
@@ -54,7 +65,29 @@ function saveShippingInfo(data: ShippingInfo) {
   }
 }
 
-// Nhận dạng: phone trước, name & address sau (heuristic nhẹ, đủ dùng)
+function getOrCreateOrderId() {
+  const k = "domxenh_orderid_v1"
+  const old = localStorage.getItem(k)
+  if (old) return old
+  const id =
+    (crypto?.randomUUID?.() ||
+      `oid_${Date.now()}_${Math.random().toString(16).slice(2)}`)
+  localStorage.setItem(k, id)
+  return id
+}
+
+function buildItemsTextFromCart(items: CartItem[]) {
+  const map = new Map<string, number>()
+  for (const it of items) {
+    const sku = (it.skuCode || "").trim()
+    if (!sku) continue
+    map.set(sku, (map.get(sku) || 0) + (it.qty || 1))
+  }
+  return Array.from(map.entries())
+    .map(([sku, qty]) => `${sku} x${qty}`)
+    .join(" | ")
+}
+
 function parseQuickInfo(raw: string) {
   const text = (raw || "").trim()
   if (!text) return null
@@ -103,25 +136,25 @@ export default function CheckoutClient() {
   const router = useRouter()
   const [items, setItems] = useState<CartItem[]>([])
 
-  // Quick paste box
   const [quickText, setQuickText] = useState("")
   const canApplyQuick = quickText.trim().length > 0
 
-  // Form fields (SẼ ĐƯỢC LƯU localStorage)
   const [receiverName, setReceiverName] = useState("")
   const [phone, setPhone] = useState("")
   const [region, setRegion] = useState("")
   const [street, setStreet] = useState("")
 
-  // Voucher
   const [voucher, setVoucher] = useState("")
   const voucherCode = useMemo(() => normalizeVoucher(voucher), [voucher])
   const isDOMMPS = voucherCode === "DOMMPS"
   const isDOMXENH = voucherCode === "DOMXENH"
   const voucherDiscount = isDOMXENH ? 10000 : 0
 
-  // Payment method
   const [payMethod, setPayMethod] = useState<"cod_deposit" | "bank">("cod_deposit")
+
+  const [showDepositModal, setShowDepositModal] = useState(false)
+  const [depositSending, setDepositSending] = useState(false)
+  const [depositError, setDepositError] = useState("")
 
   useEffect(() => {
     setItems(getCart())
@@ -130,7 +163,6 @@ export default function CheckoutClient() {
     return () => window.removeEventListener("cart:changed", onChanged)
   }, [])
 
-  // ✅ Load Thông tin nhận hàng từ localStorage
   useEffect(() => {
     const saved = loadShippingInfo()
     if (!saved) return
@@ -140,7 +172,6 @@ export default function CheckoutClient() {
     if (saved.street) setStreet(saved.street)
   }, [])
 
-  // ✅ Auto-save (debounce nhẹ)
   const saveTimer = useRef<number | null>(null)
   useEffect(() => {
     if (saveTimer.current) window.clearTimeout(saveTimer.current)
@@ -208,24 +239,56 @@ export default function CheckoutClient() {
       return
     }
 
-    // ✅ Chuyển khoản: sang trang QR, tự điền amount
     if (payMethod === "bank") {
       router.push(`/checkout?amount=${encodeURIComponent(String(finalTotal))}`)
       return
     }
 
-    // COD: giữ flow cũ
-    const summary =
-      `Đặt hàng thành công (demo)!\n\n` +
-      `Tên: ${receiverName}\n` +
-      `SĐT: ${phone}\n` +
-      `Khu vực: ${region}\n` +
-      `Địa chỉ: ${street}\n\n` +
-      `Phương thức: Thanh toán khi nhận hàng & đặt cọc\n` +
-      `Voucher: ${voucherCode || "(không)"}\n` +
-      `Tổng thanh toán: ${fmtVnd(finalTotal)}`
-    alert(summary)
-    clearCart()
+    setDepositError("")
+    setShowDepositModal(true)
+  }
+
+  async function agreeDepositAndGoPay() {
+    setDepositError("")
+    setDepositSending(true)
+
+    try {
+      const orderId = getOrCreateOrderId()
+      const itemsText = buildItemsTextFromCart(items)
+
+      const payload = {
+        orderId,
+        eventType: "deposit_request", // ✅ CHỈNH
+        paymentMethod: "cod_deposit",
+        amount: 50000,
+        totalAmount: finalTotal,
+        shipping: {
+          receiverName: receiverName.trim(),
+          phone: phone.trim(),
+          region: region.trim(),
+          street: street.trim(),
+        },
+        itemsText,
+      }
+
+      const res = await fetch("/api/confirm-transfer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+
+      if (!res.ok && res.status !== 409) {
+        const t = await res.text().catch(() => "")
+        throw new Error(t || `Lỗi gửi dữ liệu (${res.status})`)
+      }
+
+      setShowDepositModal(false)
+      router.push(`/checkout?amount=50000&mode=deposit`)
+    } catch (e: any) {
+      setDepositError(e?.message || "Gửi dữ liệu thất bại")
+    } finally {
+      setDepositSending(false)
+    }
   }
 
   return (
@@ -235,7 +298,6 @@ export default function CheckoutClient() {
         Tổng tiền: <span className="text-white font-semibold">{fmtVnd(finalTotal)}</span>
       </p>
 
-      {/* BOX 1: Quick paste */}
       <section className="mt-6 rounded-2xl border border-[#FF3B30]/30 bg-white/5 backdrop-blur px-4 py-4">
         <div className="flex items-start gap-3">
           <div className="mt-1 text-[#FF3B30]">
@@ -275,7 +337,52 @@ export default function CheckoutClient() {
         </div>
       </section>
 
-      {/* BOX 2: Thông tin nhận hàng */}
+      {showDepositModal ? (
+        <div className="fixed inset-0 z-[120] bg-black/55 backdrop-blur-sm grid place-items-center px-4">
+          <div className="w-full max-w-[520px] rounded-[28px] border border-white/10 bg-[#0b0f12]/92 shadow-[0_30px_110px_rgba(0,0,0,0.72)] overflow-hidden">
+            <div className="px-6 py-5 border-b border-white/10">
+              <div className="text-white/60 text-sm">Xác nhận đặt cọc</div>
+              <div className="mt-1 text-[#FFD66B] text-[22px] font-extrabold drop-shadow-[0_0_18px_rgba(255,214,107,0.35)]">
+                Bạn vui lòng cọc giúp Shop 50k trước
+              </div>
+            </div>
+
+            <div className="px-6 py-5 text-white/80 leading-6">
+              Bạn vui lòng cọc giúp Shop 50k trước để shop đi đơn luôn cho bạn nhé.
+              <br />
+              Số tiền cọc sẽ được trừ vào tổng tiền khi bạn nhận hàng.
+              <br />
+              Shop cảm ơn bạn.
+              {depositError ? (
+                <div className="mt-3 text-[#FF6B5E] text-sm font-semibold">Lỗi: {depositError}</div>
+              ) : null}
+            </div>
+
+            <div className="px-6 py-5 border-t border-white/10 flex flex-col sm:flex-row gap-2 sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setShowDepositModal(false)}
+                disabled={depositSending}
+                className="rounded-full px-5 py-3 font-semibold text-[#FFD66B] bg-white/10 border border-white/10 active:opacity-80 disabled:opacity-60"
+              >
+                Không đồng ý
+              </button>
+              <button
+                type="button"
+                onClick={agreeDepositAndGoPay}
+                disabled={depositSending}
+                className={
+                  "rounded-full px-6 py-3 font-extrabold text-white active:opacity-80 disabled:opacity-60 " +
+                  (depositSending ? "bg-white/10" : "bg-[#FF3B30]")
+                }
+              >
+                {depositSending ? "Đang xử lý..." : "Đồng ý"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       <section className="mt-4 rounded-2xl border border-white/10 bg-white/5 backdrop-blur px-4 py-4">
         <div className="text-white font-semibold">Thông tin nhận hàng</div>
 
@@ -319,7 +426,6 @@ export default function CheckoutClient() {
         </div>
       </section>
 
-      {/* BOX 3: SKU list (giữ nguyên logic) */}
       <section className="mt-4 rounded-2xl border border-white/10 bg-white/5 backdrop-blur px-4 py-4">
         <div className="text-white font-semibold">Sản phẩm (SKU)</div>
 
@@ -392,7 +498,6 @@ export default function CheckoutClient() {
         )}
       </section>
 
-      {/* BOX 4: Voucher */}
       <section className="mt-4 rounded-2xl border border-white/10 bg-white/5 backdrop-blur px-4 py-4">
         <div className="text-white font-semibold">Shop voucher</div>
 
@@ -418,7 +523,6 @@ export default function CheckoutClient() {
         </div>
       </section>
 
-      {/* BOX 5: Payment */}
       <section className="mt-4 rounded-2xl border border-white/10 bg-white/5 backdrop-blur px-4 py-4">
         <div className="text-white font-semibold">Phương thức thanh toán</div>
 
@@ -453,7 +557,6 @@ export default function CheckoutClient() {
         </div>
       </section>
 
-      {/* Bottom floating bar (giữ căn số thẳng hàng + vàng) */}
       <div className="fixed left-0 right-0 bottom-0 z-50">
         <div className="max-w-4xl mx-auto px-6 pb-5">
           <div className="rounded-3xl border border-white/10 bg-black/40 backdrop-blur px-5 py-4 flex items-center justify-between gap-4">
@@ -488,3 +591,5 @@ export default function CheckoutClient() {
     </main>
   )
 }
+
+// end code

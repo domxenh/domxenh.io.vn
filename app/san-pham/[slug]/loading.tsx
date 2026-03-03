@@ -1,4 +1,4 @@
-// app/san-pham/[slug]/loading.tsx
+// /app/san-pham/[slug]/loading.tsx
 export default function LoadingProductDetail() {
   return (
     <main className="max-w-7xl mx-auto px-6 pt-32 pb-16 animate-pulse">

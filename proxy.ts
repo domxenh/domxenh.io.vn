@@ -1,18 +1,22 @@
-// middleware.ts
+// proxy.ts
 import { NextResponse, type NextRequest } from "next/server"
 
 function getCountry(req: NextRequest) {
   // Vercel header (ổn định nhất khi deploy)
-  const c = req.headers.get("x-vercel-ip-country") || req.headers.get("x-country") || ""
+  const c =
+    req.headers.get("x-vercel-ip-country") ||
+    req.headers.get("x-country") ||
+    ""
   return c.toUpperCase()
 }
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const pathname = req.nextUrl.pathname
 
   // chỉ chặn api nhạy cảm
   const isProtected =
-    pathname.startsWith("/api/confirm-transfer") || pathname.startsWith("/api/gsheet")
+    pathname.startsWith("/api/confirm-transfer") ||
+    pathname.startsWith("/api/gsheet")
 
   if (!isProtected) return NextResponse.next()
 

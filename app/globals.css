@@ -108,12 +108,22 @@ body {
   color: white;
   padding: 12px 26px;
   border-radius: 999px;
+
+  /* ✅ CHỈNH: khôi phục “khung” nút Chi Tiết như bản cũ (viền + chiều sâu) */
+  border: 1px solid rgba(255, 214, 107, 0.35);
+  box-shadow:
+    0 10px 22px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+
   transition: all 0.3s ease;
 }
 
 .btn-brand:hover {
   opacity: 0.9;
   transform: translateY(-2px);
+
+  /* ✅ CHỈNH: hover rõ khung hơn */
+  border-color: rgba(255, 214, 107, 0.55);
 }
 
 /* ===== BADGE HOT ===== */
@@ -227,3 +237,55 @@ html { -webkit-text-size-adjust: 100%; }
     scroll-margin-top: 78px; /* mobile */
   }
 }
+
+/* ===== Fade-in (CSS + IntersectionObserver) ===== */
+.dx-fadein{
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  transition: opacity .45s ease, transform .55s cubic-bezier(.2,.8,.2,1);
+  will-change: opacity, transform;
+}
+.dx-fadein.is-in{
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* ===== Hero CSS animations (thay framer-motion) ===== */
+.dx-hero-fade{ animation: dxHeroFade .6s ease both; }
+
+.dx-anim-up{
+  opacity: 0;
+  transform: translate3d(0, 22px, 0);
+  animation: dxUp .9s cubic-bezier(.2,.8,.2,1) both;
+}
+
+.dx-cta{
+  animation: dxUp .9s cubic-bezier(.2,.8,.2,1) both, dxPulse 1.6s ease-in-out 1.4s infinite;
+}
+.dx-cta:hover{ transform: translate3d(0,0,0) scale(1.08); }
+.dx-cta:active{ transform: translate3d(0,0,0) scale(.96); }
+
+.dx-cta::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.22) 45%, transparent 80%);
+  transform: translateX(-120%);
+  animation: dxShine 3.6s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes dxHeroFade{ from{opacity:0} to{opacity:1} }
+@keyframes dxUp{ from{ opacity:0; transform: translate3d(0, 22px, 0);} to{ opacity:1; transform: translate3d(0, 0, 0);} }
+@keyframes dxPulse{ 0%,100%{ transform: translate3d(0,0,0) scale(1);} 50%{ transform: translate3d(0,0,0) scale(1.06);} }
+@keyframes dxShine{ from{ transform: translateX(-120%);} to{ transform: translateX(120%);} }
+
+/* Mobile: giảm/loại blur để mượt hơn */
+@media (max-width: 768px){
+  .apple-folder,
+  .folder-wrap{
+    backdrop-filter: none;
+  }
+}
+
+/* // end code */

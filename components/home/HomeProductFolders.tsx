@@ -49,7 +49,7 @@ export default async function HomeProductFolders({
                 rounded-[32px]
                 border border-white/10
                 bg-gradient-to-b from-white/10 to-white/5
-                backdrop-blur-md md:backdrop-blur-2xl
+                backdrop-blur-0 md:backdrop-blur-md
                 shadow-[0_25px_80px_rgba(0,0,0,0.55)] md:shadow-[0_40px_120px_rgba(0,0,0,0.65)]
                 p-6 md:p-8
               "
@@ -58,7 +58,6 @@ export default async function HomeProductFolders({
 
               <div className="relative flex flex-col items-center text-center gap-3">
                 <div>
-                  {/* ✅ Title nổi bật hơn nhưng không lạc tone */}
                   <h2
                     className="
                       text-2xl md:text-3xl font-semibold
@@ -126,5 +125,3 @@ export default async function HomeProductFolders({
     </section>
   )
 }
-
-// end code

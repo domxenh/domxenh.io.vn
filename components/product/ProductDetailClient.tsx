@@ -20,9 +20,9 @@ export default function ProductDetailClient({
   mobileCompact?: boolean
 }) {
   const images: ImgItem[] = useMemo(() => {
+    // ✅ Không nhồi cho đủ 8 (tránh tải/giải mã ảnh dư). Chỉ lấy tối đa 8 ảnh thật.
     const base = [defaultImage, ...(extraImages ?? [])]
-    while (base.length < 8) base.push(defaultImage)
-    const normalized = base.slice(0, 8)
+    const normalized = base.filter(Boolean).slice(0, 8)
     return normalized.map((src, i) => ({
       src,
       alt: `${name} - ${i + 1}`,
@@ -75,7 +75,6 @@ export default function ProductDetailClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [images.length])
 
-  // ✅ Mobile: ảnh vuông + thumb dọc bên phải (crop phần đáy)
   if (mobileCompact) {
     return (
       <div className="lg:col-span-7">
@@ -87,16 +86,15 @@ export default function ProductDetailClient({
                 alt={name}
                 fill
                 sizes="(max-width: 1024px) 78vw, 60vw"
-                // ✅ crop lên trên để hết phần thừa đáy
                 className="object-cover object-top"
-                priority
+                priority={index === 0}
               />
 
               <button
                 type="button"
                 aria-label="Prev image"
                 onClick={() => go(-1)}
-                className="absolute left-2 top-1/2 -translate-y-1/2 z-10 rounded-full border border-white/12 bg-black/35 backdrop-blur px-3 py-2 text-white/90 hover:text-white hover:bg-black/55 transition"
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-10 rounded-full border border-white/12 bg-black/40 md:backdrop-blur-sm px-3 py-2 text-white/90 hover:text-white hover:bg-black/55 transition"
               >
                 ‹
               </button>
@@ -104,7 +102,7 @@ export default function ProductDetailClient({
                 type="button"
                 aria-label="Next image"
                 onClick={() => go(1)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 z-10 rounded-full border border-white/12 bg-black/35 backdrop-blur px-3 py-2 text-white/90 hover:text-white hover:bg-black/55 transition"
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-10 rounded-full border border-white/12 bg-black/40 md:backdrop-blur-sm px-3 py-2 text-white/90 hover:text-white hover:bg-black/55 transition"
               >
                 ›
               </button>
@@ -136,7 +134,14 @@ export default function ProductDetailClient({
                     ].join(" ")}
                     aria-label={`Thumb ${i + 1}`}
                   >
-                    <Image src={img.src} alt={img.alt} fill sizes="64px" className="object-cover" />
+                    <Image
+                      src={img.src}
+                      alt={img.alt}
+                      fill
+                      sizes="64px"
+                      className="object-cover"
+                      loading="lazy"
+                    />
                     {active ? <span className="absolute inset-0 ring-2 ring-[#FFD66B]/45" /> : null}
                   </button>
                 )
@@ -148,7 +153,6 @@ export default function ProductDetailClient({
     )
   }
 
-  // Desktop giữ nguyên
   return (
     <div className="lg:col-span-7">
       <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-[0_20px_70px_rgba(0,0,0,0.55)]">
@@ -159,14 +163,14 @@ export default function ProductDetailClient({
             fill
             sizes="(max-width: 1024px) 100vw, 60vw"
             className="object-cover"
-            priority
+            priority={index === 0}
           />
 
           <button
             type="button"
             aria-label="Prev image"
             onClick={() => go(-1)}
-            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 rounded-full border border-white/12 bg-black/35 backdrop-blur px-3 py-2 text-white/90 hover:text-white hover:bg-black/55 transition"
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 rounded-full border border-white/12 bg-black/40 md:backdrop-blur-sm px-3 py-2 text-white/90 hover:text-white hover:bg-black/55 transition"
           >
             ‹
           </button>
@@ -174,7 +178,7 @@ export default function ProductDetailClient({
             type="button"
             aria-label="Next image"
             onClick={() => go(1)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 rounded-full border border-white/12 bg-black/35 backdrop-blur px-3 py-2 text-white/90 hover:text-white hover:bg-black/55 transition"
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 rounded-full border border-white/12 bg-black/40 md:backdrop-blur-sm px-3 py-2 text-white/90 hover:text-white hover:bg-black/55 transition"
           >
             ›
           </button>
@@ -197,7 +201,14 @@ export default function ProductDetailClient({
               ].join(" ")}
               aria-label={`Thumb ${i + 1}`}
             >
-              <Image src={img.src} alt={img.alt} fill sizes="64px" className="object-cover" />
+              <Image
+                src={img.src}
+                alt={img.alt}
+                fill
+                sizes="64px"
+                className="object-cover"
+                loading="lazy"
+              />
               {active ? <span className="absolute inset-0 ring-2 ring-[#FFD66B]/45" /> : null}
             </button>
           )

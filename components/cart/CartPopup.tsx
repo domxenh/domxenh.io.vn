@@ -9,27 +9,42 @@ function fmtVnd(n: number) {
   return n.toLocaleString("vi-VN") + " đ"
 }
 
+type CartChangedDetail = {
+  items?: CartItem[]
+  total?: number
+}
+
 export default function CartPopup() {
   const [open, setOpen] = useState(false)
   const [items, setItems] = useState<CartItem[]>([])
 
-  const refresh = () => setItems(getCart())
-
   useEffect(() => {
-    refresh()
-    const onChanged = () => refresh()
+    // init 1 lần
+    setItems(getCart())
+
+    const onChanged = (e: Event) => {
+      const ce = e as CustomEvent<CartChangedDetail>
+      if (ce.detail?.items) {
+        setItems(ce.detail.items)
+      } else {
+        setItems(getCart())
+      }
+    }
+
     const onOpen = () => {
-      refresh()
+      // mở là refresh 1 lần (nhẹ)
+      setItems(getCart())
       setOpen(true)
     }
+
     const onClose = () => setOpen(false)
 
-    window.addEventListener("cart:changed", onChanged)
+    window.addEventListener("cart:changed", onChanged as EventListener)
     window.addEventListener("cart:open", onOpen)
     window.addEventListener("cart:close", onClose)
 
     return () => {
-      window.removeEventListener("cart:changed", onChanged)
+      window.removeEventListener("cart:changed", onChanged as EventListener)
       window.removeEventListener("cart:open", onOpen)
       window.removeEventListener("cart:close", onClose)
     }
@@ -50,7 +65,7 @@ export default function CartPopup() {
         }}
       />
 
-      <div className="absolute right-0 top-0 h-full w-full sm:w-[420px] bg-[#0B1417]/95 border-l border-white/10 backdrop-blur-2xl shadow-[0_40px_120px_rgba(0,0,0,0.75)] p-4 sm:p-5 overflow-y-auto">
+      <div className="absolute right-0 top-0 h-full w-full sm:w-[420px] bg-[#0B1417]/95 border-l border-white/10 backdrop-blur-0 md:backdrop-blur-md shadow-[0_40px_120px_rgba(0,0,0,0.75)] p-4 sm:p-5 overflow-y-auto">
         <div className="flex items-center justify-between gap-3">
           <div className="text-white font-semibold text-lg">Giỏ hàng</div>
           <button
@@ -85,9 +100,19 @@ export default function CartPopup() {
                     <div className="mt-3 flex items-center gap-2">
                       <div className="text-white/55 text-sm">Số lượng</div>
                       <div className="flex items-center rounded-full border border-white/12 bg-black/20 overflow-hidden">
-                        <button className="h-9 w-10 text-white/90 hover:bg-white/5 transition" onClick={() => updateQty(it.key, it.qty - 1)}>−</button>
+                        <button
+                          className="h-9 w-10 text-white/90 hover:bg-white/5 transition"
+                          onClick={() => updateQty(it.key, it.qty - 1)}
+                        >
+                          −
+                        </button>
                         <div className="h-9 w-12 grid place-items-center text-white font-semibold">{it.qty}</div>
-                        <button className="h-9 w-10 text-white/90 hover:bg-white/5 transition" onClick={() => updateQty(it.key, it.qty + 1)}>+</button>
+                        <button
+                          className="h-9 w-10 text-white/90 hover:bg-white/5 transition"
+                          onClick={() => updateQty(it.key, it.qty + 1)}
+                        >
+                          +
+                        </button>
                       </div>
                     </div>
                   </div>

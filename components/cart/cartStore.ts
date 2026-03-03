@@ -13,6 +13,18 @@ export type CartItem = {
 
 const LS_KEY = "domxenh_cart_v1"
 
+const EVT_CHANGED = "cart:changed"
+const EVT_OPEN = "cart:open"
+const EVT_CLOSE = "cart:close"
+
+let _cache: CartItem[] | null = null
+let _lastSerialized: string | null = null
+let _writeTimer: number | null = null
+
+function isBrowser() {
+  return typeof window !== "undefined"
+}
+
 function safeParse<T>(raw: string | null): T | null {
   if (!raw) return null
   try {
@@ -22,55 +34,134 @@ function safeParse<T>(raw: string | null): T | null {
   }
 }
 
-export function getCart(): CartItem[] {
-  if (typeof window === "undefined") return []
-  const data = safeParse<CartItem[]>(localStorage.getItem(LS_KEY))
-  return Array.isArray(data) ? data : []
+function clampQty(qty: number) {
+  return Math.max(1, Math.min(99, qty))
 }
 
-export function setCart(items: CartItem[]) {
-  if (typeof window === "undefined") return
-  localStorage.setItem(LS_KEY, JSON.stringify(items))
-  window.dispatchEvent(new CustomEvent("cart:changed"))
-}
-
-export function addToCart(item: CartItem) {
-  const items = getCart()
-  const idx = items.findIndex((x) => x.key === item.key)
-  if (idx >= 0) {
-    items[idx] = { ...items[idx], qty: Math.min(99, items[idx].qty + item.qty) }
-  } else {
-    items.push({ ...item, qty: Math.max(1, Math.min(99, item.qty)) })
-  }
-  setCart(items)
-}
-
-export function updateQty(key: string, qty: number) {
-  const items = getCart()
-  const idx = items.findIndex((x) => x.key === key)
-  if (idx < 0) return
-  items[idx] = { ...items[idx], qty: Math.max(1, Math.min(99, qty)) }
-  setCart(items)
-}
-
-export function removeFromCart(key: string) {
-  setCart(getCart().filter((x) => x.key !== key))
-}
-
-export function clearCart() {
-  setCart([])
+function normalize(items: CartItem[]) {
+  return (items || [])
+    .filter(Boolean)
+    .map((it) => ({
+      ...it,
+      qty: clampQty(Number(it.qty) || 1),
+      price: Number(it.price) || 0,
+      oldPrice: it.oldPrice ?? null,
+    }))
+    .filter((it) => it.key && it.productSlug && it.skuCode)
 }
 
 export function cartTotal(items: CartItem[]) {
-  return items.reduce((sum, it) => sum + it.price * it.qty, 0)
+  return (items || []).reduce(
+    (sum, it) => sum + (Number(it.price) || 0) * (Number(it.qty) || 0),
+    0
+  )
+}
+
+function loadCache(): CartItem[] {
+  if (!isBrowser()) return []
+  if (_cache) return _cache
+
+  const data = safeParse<CartItem[]>(localStorage.getItem(LS_KEY))
+  _cache = Array.isArray(data) ? normalize(data) : []
+  _lastSerialized = JSON.stringify(_cache)
+  return _cache
+}
+
+function scheduleWrite(nextItems: CartItem[]) {
+  if (!isBrowser()) return
+
+  if (_writeTimer) window.clearTimeout(_writeTimer)
+
+  _writeTimer = window.setTimeout(() => {
+    _writeTimer = null
+    const serialized = JSON.stringify(nextItems)
+
+    if (_lastSerialized === serialized) return
+
+    _lastSerialized = serialized
+    localStorage.setItem(LS_KEY, serialized)
+
+    window.dispatchEvent(
+      new CustomEvent(EVT_CHANGED, {
+        detail: {
+          items: nextItems,
+          total: cartTotal(nextItems),
+        },
+      })
+    )
+  }, 60)
+}
+
+export function getCart(): CartItem[] {
+  return loadCache()
+}
+
+export function setCart(items: CartItem[]) {
+  if (!isBrowser()) return
+  const next = normalize(items)
+  _cache = next
+  scheduleWrite(next)
+}
+
+export function addToCart(item: CartItem) {
+  if (!isBrowser()) return
+  const items = loadCache()
+  const next = items.slice()
+  const idx = next.findIndex((x) => x.key === item.key)
+
+  const qty = clampQty(Number(item.qty) || 1)
+  if (idx >= 0) {
+    const cur = next[idx]
+    const newQty = clampQty(cur.qty + qty)
+    if (newQty === cur.qty) return
+    next[idx] = { ...cur, qty: newQty }
+  } else {
+    next.push({ ...item, qty })
+  }
+
+  _cache = next
+  scheduleWrite(next)
+}
+
+export function updateQty(key: string, qty: number) {
+  if (!isBrowser()) return
+  const items = loadCache()
+  const idx = items.findIndex((x) => x.key === key)
+  if (idx < 0) return
+
+  const nextQty = clampQty(Number(qty) || 1)
+  if (items[idx].qty === nextQty) return
+
+  const next = items.slice()
+  next[idx] = { ...next[idx], qty: nextQty }
+  _cache = next
+  scheduleWrite(next)
+}
+
+export function removeFromCart(key: string) {
+  if (!isBrowser()) return
+  const items = loadCache()
+  const next = items.filter((x) => x.key !== key)
+  if (next.length === items.length) return
+
+  _cache = next
+  scheduleWrite(next)
+}
+
+export function clearCart() {
+  if (!isBrowser()) return
+  const items = loadCache()
+  if (items.length === 0) return
+  _cache = []
+  scheduleWrite([])
 }
 
 export function openCart() {
-  if (typeof window === "undefined") return
-  window.dispatchEvent(new CustomEvent("cart:open"))
+  if (!isBrowser()) return
+  window.dispatchEvent(new CustomEvent(EVT_OPEN))
 }
 
 export function closeCart() {
-  if (typeof window === "undefined") return
-  window.dispatchEvent(new CustomEvent("cart:close"))
+  if (!isBrowser()) return
+  window.dispatchEvent(new CustomEvent(EVT_CLOSE))
 }

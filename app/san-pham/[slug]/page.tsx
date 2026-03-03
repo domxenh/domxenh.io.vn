@@ -5,7 +5,7 @@ import ProductCard from "@/components/ProductCard"
 import ProductDetailClient from "@/components/product/ProductDetailClient"
 import ProductPricingClient from "@/components/product/ProductPricingClient"
 import SkuSelector, { type EdisonSku } from "@/components/product/SkuSelector"
-import StickyBuyBar from "@/components/product/StickyBuyBar"
+import StickyBuyBarClient from "../../../components/product/StickyBuyBarClient"
 import { getProductBySlug, getRelatedProductsByCategory } from "@/lib/products"
 
 export const revalidate = 120
@@ -53,7 +53,6 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
   const isEdison = product.slug === "bo-day-den-edison"
   const base = "/images/edison/"
 
-  // ✅ 8 ảnh thumb theo đường dẫn bạn đưa
   const edisonThumbBase = "/images/edison/thumb/edison/"
   const edisonThumbs = [
     `${edisonThumbBase}1.webp`,
@@ -66,75 +65,20 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
     `${edisonThumbBase}8.webp`,
   ]
 
-  // ✅ Default ảnh + extraImages cho Edison để thumb hiển thị đúng 8 ảnh này
   const edisonDefaultImage = edisonThumbs[0]
   const edisonExtraImages = edisonThumbs.slice(1)
 
   const edisonSkus: EdisonSku[] = isEdison
     ? [
-        {
-          label: "Edison COMBO 20m30",
-          skuCode: "edison 10m15+10m15",
-          image: `${base}edison-10m15+10m15.webp`,
-          price: 404000,
-          oldPrice: calcOldPrice(404000, "edison 10m15+10m15"),
-        },
-        {
-          label: "Edison COMBO 15m30",
-          skuCode: "edison 10m20+5m10",
-          image: `${base}edison-10m20+5m10.webp`,
-          price: 389000,
-          oldPrice: calcOldPrice(389000, "edison 10m20+5m10"),
-        },
-        {
-          label: "10 Mét Dây + 15 Bóng",
-          skuCode: "edison 10m15",
-          image: `${base}edison-10m15.webp`,
-          price: 230000,
-          oldPrice: calcOldPrice(230000, "edison 10m15"),
-        },
-        {
-          label: "5 Mét Dây + 10 Bóng",
-          skuCode: "edison 5m10",
-          image: `${base}edison-5m10.webp`,
-          price: 180000,
-          oldPrice: calcOldPrice(180000, "edison 5m10"),
-        },
-        {
-          label: "10 Mét Dây + 20 Bóng",
-          skuCode: "edison 10m20",
-          image: `${base}edison-10m20.webp`,
-          price: 272000,
-          oldPrice: calcOldPrice(272000, "edison 10m20"),
-        },
-        {
-          label: "7,5 Mét Dây + 12 Bóng",
-          skuCode: "edison 7,5m12",
-          image: `${base}edison-7,5m12.webp`,
-          price: 199000,
-          oldPrice: calcOldPrice(199000, "edison 7,5m12"),
-        },
-        {
-          label: "15 Mét Dây + 10 Bóng",
-          skuCode: "edison 15m10",
-          image: `${base}edison-15m10.webp`,
-          price: 213000,
-          oldPrice: calcOldPrice(213000, "edison 15m10"),
-        },
-        {
-          label: "15 Mét Dây + 15 Bóng",
-          skuCode: "edison 15m15",
-          image: `${base}edison-15m15.webp`,
-          price: 276000,
-          oldPrice: calcOldPrice(276000, "edison 15m15"),
-        },
-        {
-          label: "15 Mét Dây + 24 Bóng",
-          skuCode: "edison 15m24",
-          image: `${base}edison-15m24.webp`,
-          price: 322000,
-          oldPrice: calcOldPrice(322000, "edison 15m24"),
-        },
+        { label: "Edison COMBO 20m30", skuCode: "edison 10m15+10m15", image: `${base}edison-10m15+10m15.webp`, price: 404000, oldPrice: calcOldPrice(404000, "edison 10m15+10m15") },
+        { label: "Edison COMBO 15m30", skuCode: "edison 10m20+5m10", image: `${base}edison-10m20+5m10.webp`, price: 389000, oldPrice: calcOldPrice(389000, "edison 10m20+5m10") },
+        { label: "10 Mét Dây + 15 Bóng", skuCode: "edison 10m15", image: `${base}edison-10m15.webp`, price: 230000, oldPrice: calcOldPrice(230000, "edison 10m15") },
+        { label: "5 Mét Dây + 10 Bóng", skuCode: "edison 5m10", image: `${base}edison-5m10.webp`, price: 180000, oldPrice: calcOldPrice(180000, "edison 5m10") },
+        { label: "10 Mét Dây + 20 Bóng", skuCode: "edison 10m20", image: `${base}edison-10m20.webp`, price: 272000, oldPrice: calcOldPrice(272000, "edison 10m20") },
+        { label: "7,5 Mét Dây + 12 Bóng", skuCode: "edison 7,5m12", image: `${base}edison-7,5m12.webp`, price: 199000, oldPrice: calcOldPrice(199000, "edison 7,5m12") },
+        { label: "15 Mét Dây + 10 Bóng", skuCode: "edison 15m10", image: `${base}edison-15m10.webp`, price: 213000, oldPrice: calcOldPrice(213000, "edison 15m10") },
+        { label: "15 Mét Dây + 15 Bóng", skuCode: "edison 15m15", image: `${base}edison-15m15.webp`, price: 276000, oldPrice: calcOldPrice(276000, "edison 15m15") },
+        { label: "15 Mét Dây + 24 Bóng", skuCode: "edison 15m24", image: `${base}edison-15m24.webp`, price: 322000, oldPrice: calcOldPrice(322000, "edison 15m24") },
       ]
     : []
 
@@ -146,9 +90,8 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
   const initialOldPrice = defaultSku ? defaultSku.oldPrice : product.oldPrice
   const initialSkuLabel = defaultSku ? defaultSku.label : product.name
   const initialSkuCode = defaultSku?.skuCode ?? product.slug
-  const initialImage = defaultSku ? defaultSku.image : (isEdison ? edisonDefaultImage : product.image)
+  const initialImage = defaultSku ? defaultSku.image : product.image
 
-  // ✅ Thumb: Edison dùng 8 ảnh thumb; sản phẩm khác giữ nguyên (hoặc rỗng)
   const defaultImageForGallery = isEdison ? edisonDefaultImage : product.image
   const extraImages = isEdison ? edisonExtraImages : []
 
@@ -186,7 +129,7 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
         ) : null}
 
         <div className="hidden lg:block lg:col-span-5">
-          <div className="rounded-[32px] border border-white/10 bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-2xl shadow-[0_40px_120px_rgba(0,0,0,0.65)] p-6 md:p-7">
+          <div className="rounded-[32px] border border-white/10 bg-gradient-to-b from-white/10 to-white/5 md:backdrop-blur-md shadow-[0_40px_120px_rgba(0,0,0,0.65)] p-6 md:p-7">
             <div className="text-white/60 text-sm">
               Danh mục:{" "}
               <span className="text-[#FFD66B] drop-shadow-[0_0_18px_rgba(255,214,107,0.35)]">{product.category.name}</span>
@@ -196,16 +139,29 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
               {product.name}
             </h1>
 
-            <ProductPricingClient name={product.name} inStock={inStock} initialPrice={initialPrice} initialOldPrice={initialOldPrice} />
+            <ProductPricingClient
+              name={product.name}
+              inStock={inStock}
+              initialPrice={initialPrice}
+              initialOldPrice={initialOldPrice}
+            />
 
             <div className="mt-4 text-white/70">
               Tình trạng:{" "}
-              {inStock ? <span className="text-white/90 font-semibold">Còn hàng ({product.stock})</span> : <span className="text-white/50 font-semibold">Hết hàng</span>}
+              {inStock ? (
+                <span className="text-white/90 font-semibold">Còn hàng ({product.stock})</span>
+              ) : (
+                <span className="text-white/50 font-semibold">Hết hàng</span>
+              )}
             </div>
 
             {isEdison ? (
               <div className="mt-3">
-                <SkuSelector slug={product.slug} defaultImage={defaultImageForGallery} skus={edisonSkus} />
+                <SkuSelector
+                  slug={product.slug}
+                  defaultImage={defaultImageForGallery}
+                  skus={edisonSkus}
+                />
               </div>
             ) : null}
 
@@ -213,7 +169,9 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
 
             <div className="mt-6">
               <div className="text-white font-semibold text-lg">Mô tả</div>
-              <p className="mt-3 text-white/75 leading-relaxed whitespace-pre-line">{product.description}</p>
+              <p className="mt-3 text-white/75 leading-relaxed whitespace-pre-line">
+                {product.description}
+              </p>
             </div>
           </div>
         </div>
@@ -223,12 +181,14 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
         <section className="hidden lg:block mt-14">
           <div className="text-white text-2xl font-semibold">Gợi ý cùng danh mục</div>
           <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-            {related.map((pp) => <ProductCard key={pp.id} product={pp} variant="compact" />)}
+            {related.map((pp) => (
+              <ProductCard key={pp.id} product={pp} variant="compact" />
+            ))}
           </div>
         </section>
       ) : null}
 
-      <StickyBuyBar
+      <StickyBuyBarClient
         productSlug={product.slug}
         productName={product.name}
         initialSkuLabel={initialSkuLabel}

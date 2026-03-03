@@ -1,32 +1,104 @@
 // app/api/confirm-transfer/route.ts
+/**
+ * TÓM TẮT (VN):
+ * - API nhận dữ liệu đơn hàng và gửi sang Google Apps Script (Google Sheet) qua webhook.
+ * - CHỈNH FIX: Upstash REST dùng /pipeline (chuẩn) thay vì gọi /incr, /expire, /set (gây lỗi 400).
+ * - Có:
+ *   + Rate limit 2 lần / 60s / IP
+ *   + Chống trùng theo (orderId + eventType) bằng SET NX EX
+ * - Hỗ trợ eventType/paymentMethod/totalAmount.
+ *
+ * NƠI CHỈNH:
+ * - Toàn bộ file.
+ */
+
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
 
 type UpstashCfg = { url: string; token: string }
 
-function getIp(req: Request) {
-  return (req.headers.get("x-forwarded-for") || "").split(",")[0]?.trim() || "unknown"
-}
-
 function bad(status: number, msg: string) {
   return new Response(msg, { status })
 }
 
-function getUpstash(): UpstashCfg | null {
-  const url = process.env.UPSTASH_REDIS_REST_URL
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN
+function stripQuotes(s: string) {
+  const t = (s || "").trim()
+  if ((t.startsWith('"') && t.endsWith('"')) || (t.startsWith("'") && t.endsWith("'"))) {
+    return t.slice(1, -1).trim()
+  }
+  return t
+}
+
+function isValidUrl(u: string) {
+  try {
+    new URL(u)
+    return true
+  } catch {
+    return false
+  }
+}
+
+function pickWebhook() {
+  const v1 = stripQuotes(process.env.GOOGLE_SHEETS_WEBHOOK_URL || "")
+  const v2 = stripQuotes(process.env.GOOGLE_SHEETS_WEBHOOK || "")
+  return (v1 || v2 || "").trim()
+}
+
+function getIp(req: Request) {
+  return (req.headers.get("x-forwarded-for") || "").split(",")[0]?.trim() || "unknown"
+}
+
+function normalizeItemsText(s: string) {
+  const t = (s || "").trim()
+  if (!t) return ""
+  return t.length > 800 ? t.slice(0, 800) : t
+}
+
+function normalizeEventType(raw: string) {
+  const t = (raw || "").trim()
+  if (!t) return "order"
+  if (t === "deposit_request") return "deposit_request"
+  if (t === "deposit_confirm") return "deposit_confirm"
+  if (t === "bank_confirm") return "bank_confirm"
+  return "order"
+}
+
+function normalizePaymentMethod(raw: string) {
+  const t = (raw || "").trim()
+  if (t === "cod_deposit") return "cod_deposit"
+  return "bank_transfer"
+}
+
+/** ===== Upstash (REST pipeline chuẩn) ===== */
+
+function getUpstashCfg(): UpstashCfg | null {
+  const url = stripQuotes(process.env.UPSTASH_REDIS_REST_URL || "")
+  const token = stripQuotes(process.env.UPSTASH_REDIS_REST_TOKEN || "")
   if (!url || !token) return null
+  if (!isValidUrl(url)) return null
   return { url, token }
 }
 
-async function upstashFetch(cfg: UpstashCfg, path: string) {
-  const res = await fetch(`${cfg.url}${path}`, {
+type PipelineCmd = (string | number)[]
+
+async function upstashPipeline(cfg: UpstashCfg, commands: PipelineCmd[]) {
+  const endpoint = `${cfg.url}/pipeline`
+  const res = await fetch(endpoint, {
     method: "POST",
-    headers: { Authorization: `Bearer ${cfg.token}` },
+    headers: {
+      Authorization: `Bearer ${cfg.token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(commands),
     cache: "no-store",
   })
-  if (!res.ok) throw new Error(`Upstash error: ${res.status}`)
-  return res.json() as Promise<any>
+
+  if (!res.ok) {
+    const t = await res.text().catch(() => "")
+    throw new Error(`Upstash error: ${res.status}${t ? ` - ${t}` : ""}`)
+  }
+
+  return (await res.json()) as Array<{ result?: any; error?: string }>
 }
 
 /**
@@ -37,49 +109,59 @@ const MAX_PER_WINDOW = 2
 
 async function rateLimit(cfg: UpstashCfg, ip: string) {
   const key = `rl:cf:${ip}`
-  const r1 = await upstashFetch(cfg, `/incr/${encodeURIComponent(key)}`)
-  const count = Number(r1?.result || 0)
 
-  // set expire chỉ khi lần đầu trong window
-  if (count === 1) {
-    await upstashFetch(cfg, `/expire/${encodeURIComponent(key)}/${WINDOW_SEC}`)
+  // INCR key; nếu =1 thì EXPIRE key WINDOW_SEC
+  const out = await upstashPipeline(cfg, [
+    ["INCR", key],
+    ["TTL", key],
+  ])
+
+  const count = Number(out?.[0]?.result || 0)
+  const ttl = Number(out?.[1]?.result || -1)
+
+  // TTL -1: chưa set expire -> set
+  if (count === 1 || ttl < 0) {
+    await upstashPipeline(cfg, [["EXPIRE", key, WINDOW_SEC]])
   }
 
   return count <= MAX_PER_WINDOW
 }
 
-// Idempotency: mỗi orderId chỉ ghi 1 lần (TTL 1 ngày)
-async function claimOrder(cfg: UpstashCfg, orderId: string) {
-  const key = `order:${orderId}`
-  const r = await upstashFetch(cfg, `/set/${encodeURIComponent(key)}/1?nx=true&ex=86400`)
-  return Boolean(r?.result)
-}
+/**
+ * ✅ Chống trùng theo (orderId + eventType): SET key 1 NX EX 86400
+ */
+async function claimEvent(cfg: UpstashCfg, orderId: string, eventType: string) {
+  const key = `order:${orderId}:${eventType}`
 
-function normalizeItemsText(s: string) {
-  const t = (s || "").trim()
-  if (!t) return ""
-  return t.length > 400 ? t.slice(0, 400) : t
+  const out = await upstashPipeline(cfg, [
+    ["SET", key, "1", "NX", "EX", 86400],
+  ])
+
+  // SET NX -> trả "OK" nếu set được, null nếu đã tồn tại
+  const r = out?.[0]?.result
+  return r === "OK"
 }
 
 export async function POST(req: Request) {
-  const webhook = process.env.GOOGLE_SHEETS_WEBHOOK_URL
-  if (!webhook) return bad(500, "Missing GOOGLE_SHEETS_WEBHOOK_URL")
-
-  const upstash = getUpstash()
-  if (!upstash) return bad(500, "Missing Upstash env")
+  const webhook = pickWebhook()
+  if (!webhook) return bad(500, "Thiếu GOOGLE_SHEETS_WEBHOOK_URL trong .env.local hoặc Vercel Env.")
+  if (!isValidUrl(webhook)) return bad(500, "GOOGLE_SHEETS_WEBHOOK_URL không hợp lệ.")
 
   const raw = await req.text()
-  if (raw.length > 20_000) return bad(413, "Payload too large")
+  if (raw.length > 20_000) return bad(413, "Dữ liệu gửi lên quá lớn.")
 
   let body: any
   try {
     body = JSON.parse(raw)
   } catch {
-    return bad(400, "Invalid JSON")
+    return bad(400, "Dữ liệu không hợp lệ (JSON lỗi).")
   }
 
   const orderId = String(body?.orderId || "").trim()
   const amount = Number(body?.amount || 0)
+  const totalAmount = Number(body?.totalAmount || 0)
+  const eventType = normalizeEventType(String(body?.eventType || ""))
+  const paymentMethod = normalizePaymentMethod(String(body?.paymentMethod || ""))
 
   const shipping = body?.shipping || {}
   const receiverName = String(shipping?.receiverName || "").trim()
@@ -89,24 +171,37 @@ export async function POST(req: Request) {
 
   const itemsText = normalizeItemsText(String(body?.itemsText || ""))
 
-  if (!orderId || orderId.length < 8) return bad(400, "Missing orderId")
-  if (!Number.isFinite(amount) || amount <= 0 || amount > 200_000_000) return bad(400, "Bad amount")
-  if (!itemsText) return bad(400, "Missing itemsText")
-  if (!receiverName || !phone || !region || !street) return bad(400, "Missing shipping info")
+  if (!orderId || orderId.length < 8) return bad(400, "Thiếu mã đơn (orderId).")
+  if (!Number.isFinite(amount) || amount <= 0) return bad(400, "Số tiền không hợp lệ.")
+  if (Number.isFinite(totalAmount) && totalAmount > 200_000_000) return bad(400, "Tổng tiền không hợp lệ.")
+  if (!itemsText) return bad(400, "Thiếu danh sách SKU (itemsText).")
+  if (!receiverName || !phone || !region || !street) return bad(400, "Thiếu thông tin nhận hàng.")
 
-  // ✅ Rate limit theo IP: tối đa 2 lần/phút
-  const ip = getIp(req)
-  const okRl = await rateLimit(upstash, ip)
-  if (!okRl) return bad(429, "Too many requests")
+  // ✅ Upstash chống spam + chống trùng
+  const upstash = getUpstashCfg()
+  if (upstash) {
+    try {
+      const ip = getIp(req)
+      const okRl = await rateLimit(upstash, ip)
+      if (!okRl) return bad(429, "Bạn thao tác quá nhanh. Vui lòng thử lại sau 1 phút.")
 
-  // ✅ Chống trùng order
-  const okOrder = await claimOrder(upstash, orderId)
-  if (!okOrder) return bad(409, "Duplicate order")
+      const okEvent = await claimEvent(upstash, orderId, eventType)
+      if (!okEvent) return bad(409, "Sự kiện này đã được ghi nhận trước đó.")
+    } catch (e: any) {
+      // ✅ Nếu Upstash lỗi, không làm chết flow: vẫn cho gửi sheet
+      // (Bạn muốn chặt hơn thì đổi thành return bad(500, ...))
+      // Ở đây ưu tiên không chặn khách mua.
+      // eslint-disable-next-line no-console
+      console.error("[upstash]", e?.message || e)
+    }
+  }
 
   const payload = {
     createdAt: new Date().toISOString(),
-    paymentMethod: "bank_transfer",
+    eventType,
+    paymentMethod,
     amount,
+    totalAmount: Number.isFinite(totalAmount) && totalAmount > 0 ? totalAmount : undefined,
     shipping: { receiverName, phone, region, street },
     itemsText,
     orderId,
@@ -120,10 +215,12 @@ export async function POST(req: Request) {
   })
 
   const text = await res.text().catch(() => "")
-  if (!res.ok) return bad(res.status, text || "Webhook error")
+  if (!res.ok) return bad(res.status, text || "Không gửi được sang Google Sheet.")
 
   return new Response(JSON.stringify({ ok: true }), {
     status: 200,
     headers: { "Content-Type": "application/json" },
   })
 }
+
+// end code

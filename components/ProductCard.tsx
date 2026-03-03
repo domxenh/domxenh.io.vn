@@ -2,7 +2,6 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { motion } from "framer-motion"
 
 type ProductLike = {
   id?: string
@@ -39,7 +38,7 @@ export default function ProductCard({
   const badgeClass =
     "rounded-full px-3 py-1.5 text-[12px] font-extrabold tracking-wide " +
     "bg-black/55 border border-[#FF3B30]/55 text-[#FF3B30] " +
-    "shadow-[0_0_18px_rgba(255,59,48,0.30)] backdrop-blur"
+    "shadow-[0_0_18px_rgba(255,59,48,0.30)] md:backdrop-blur-sm"
 
   const Card = (
     <Link href={`/san-pham/${product.slug}`} className="block">
@@ -129,11 +128,6 @@ export default function ProductCard({
 
   if (disableMotion) return Card
 
-  return (
-    <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.3 }}>
-      {Card}
-    </motion.div>
-  )
+  // ✅ thay framer-motion bằng CSS transform (nhẹ hơn nhiều)
+  return <div className="transition-transform duration-300 hover:scale-[1.02]">{Card}</div>
 }
-
-// end code

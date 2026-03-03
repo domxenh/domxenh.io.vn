@@ -112,7 +112,7 @@ export default function StickyBuyBar({
         >
           <div className="relative rounded-2xl min-w-[280px] max-w-[96vw]">
             <div className="pointer-events-none absolute inset-0 rounded-2xl border border-white/10" />
-            <div className="relative rounded-2xl bg-black/55 backdrop-blur-2xl shadow-[0_20px_70px_rgba(0,0,0,0.75)] px-4 py-3">
+            <div className="relative rounded-2xl bg-black/60 md:backdrop-blur-md shadow-[0_20px_70px_rgba(0,0,0,0.75)] px-4 py-3">
               <div className="flex items-center gap-3 flex-wrap">
                 {/* ✅ căn giữa tên SKU + giá */}
                 <div className="min-w-0 flex-1 text-center">

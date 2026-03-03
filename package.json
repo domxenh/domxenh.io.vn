@@ -1,6 +1,6 @@
 {
   "name": "domxenh.io.vn",
-  "version": "1.3.2",
+  "version": "1.4.3",
   "private": true,
   "scripts": {
     "convert:webp": "node scripts/convert-public-webp.mjs",

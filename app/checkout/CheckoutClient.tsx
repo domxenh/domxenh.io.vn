@@ -7,6 +7,7 @@ import VietQR from "@/components/VietQR"
 import { getCart } from "@/components/cart/cartStore"
 
 const SHIPPING_KEY = "domxenh_checkout_shipping_v1"
+const LAST_SENT_KEY = "domxenh_last_confirm_v1"
 
 function toInt(v: string | null) {
   if (!v) return 0
@@ -25,33 +26,46 @@ function safeJsonParse<T>(raw: string | null): T | null {
 
 function buildItemsText() {
   const cart = getCart()
-  // gộp theo skuCode để chắc chắn không bị trùng key
   const map = new Map<string, number>()
   for (const it of cart) {
     const sku = (it.skuCode || "").trim()
     if (!sku) continue
     map.set(sku, (map.get(sku) || 0) + (it.qty || 1))
   }
-  if (map.size === 0) return ""
-
   return Array.from(map.entries())
     .map(([sku, qty]) => `${sku} x${qty}`)
     .join(" | ")
 }
 
+function getOrCreateOrderId() {
+  const k = "domxenh_orderid_v1"
+  const old = localStorage.getItem(k)
+  if (old) return old
+  const id = (crypto?.randomUUID?.() || `oid_${Date.now()}_${Math.random().toString(16).slice(2)}`)
+  localStorage.setItem(k, id)
+  return id
+}
+
 export default function CheckoutClient() {
   const sp = useSearchParams()
   const router = useRouter()
-
   const amount = useMemo(() => toInt(sp.get("amount")), [sp])
 
   const [isSending, setIsSending] = useState(false)
   const [showThanks, setShowThanks] = useState(false)
   const [sendError, setSendError] = useState<string>("")
 
-  async function sendToGoogleSheet() {
+  async function confirmTransfer() {
     setSendError("")
-    setIsSending(true)
+
+    // Chặn spam ở client: 1 phút gửi 1 lần
+    const now = Date.now()
+    const last = Number(localStorage.getItem(LAST_SENT_KEY) || 0)
+    if (now - last < 60_000) {
+      alert("Bạn vừa gửi xác nhận. Vui lòng thử lại sau 1 phút.")
+      return
+    }
+    localStorage.setItem(LAST_SENT_KEY, String(now))
 
     const shipping =
       safeJsonParse<{
@@ -62,10 +76,10 @@ export default function CheckoutClient() {
       }>(localStorage.getItem(SHIPPING_KEY)) || {}
 
     const itemsText = buildItemsText()
+    const orderId = getOrCreateOrderId()
 
     const payload = {
-      createdAt: new Date().toISOString(),
-      paymentMethod: "bank_transfer",
+      orderId,
       amount,
       shipping: {
         receiverName: shipping.receiverName || "",
@@ -73,21 +87,23 @@ export default function CheckoutClient() {
         region: shipping.region || "",
         street: shipping.street || "",
       },
-      itemsText, // ✅ chuỗi dễ đọc
+      itemsText,
     }
 
+    setIsSending(true)
     try {
-      const res = await fetch("/api/gsheet", {
+      const res = await fetch("/api/confirm-transfer", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })
 
       if (!res.ok) {
-        const txt = await res.text().catch(() => "")
-        throw new Error(txt || "Gửi dữ liệu thất bại")
+        const t = await res.text().catch(() => "")
+        throw new Error(t || `Lỗi gửi dữ liệu (${res.status})`)
       }
 
+      // thành công => hiện modal
       setShowThanks(true)
     } catch (e: any) {
       setSendError(e?.message || "Gửi dữ liệu thất bại")
@@ -119,7 +135,7 @@ export default function CheckoutClient() {
       <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 backdrop-blur px-6 py-6 grid place-items-center text-center gap-3">
         <button
           type="button"
-          onClick={sendToGoogleSheet}
+          onClick={confirmTransfer}
           disabled={isSending}
           className={
             "rounded-full px-10 py-4 font-extrabold text-[18px] text-white " +
@@ -133,9 +149,12 @@ export default function CheckoutClient() {
           * Nếu bạn chưa chuyển khoản, vui lòng quét QR và chuyển đúng số tiền.
         </div>
 
-        {sendError ? <div className="text-[#FF6B5E] text-sm font-semibold">Lỗi: {sendError}</div> : null}
+        {sendError ? (
+          <div className="text-[#FF6B5E] text-sm font-semibold">Lỗi: {sendError}</div>
+        ) : null}
       </div>
 
+      {/* Apple-style Thanks Modal */}
       {showThanks ? (
         <div className="fixed inset-0 z-[80] bg-black/50 backdrop-blur-sm grid place-items-center px-4">
           <div className="w-full max-w-[420px] rounded-[28px] border border-white/10 bg-[#0b0f12]/90 shadow-[0_30px_90px_rgba(0,0,0,0.6)] px-6 py-6 text-center">

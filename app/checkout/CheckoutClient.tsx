@@ -23,6 +23,22 @@ function safeJsonParse<T>(raw: string | null): T | null {
   }
 }
 
+function buildItemsText() {
+  const cart = getCart()
+  // gộp theo skuCode để chắc chắn không bị trùng key
+  const map = new Map<string, number>()
+  for (const it of cart) {
+    const sku = (it.skuCode || "").trim()
+    if (!sku) continue
+    map.set(sku, (map.get(sku) || 0) + (it.qty || 1))
+  }
+  if (map.size === 0) return ""
+
+  return Array.from(map.entries())
+    .map(([sku, qty]) => `${sku} x${qty}`)
+    .join(" | ")
+}
+
 export default function CheckoutClient() {
   const sp = useSearchParams()
   const router = useRouter()
@@ -45,12 +61,7 @@ export default function CheckoutClient() {
         street?: string
       }>(localStorage.getItem(SHIPPING_KEY)) || {}
 
-    // ✅ CHỈ GỬI SKU + SỐ LƯỢNG (gọn)
-    const items = getCart().map((it) => ({
-      sku: it.skuCode || "",
-      tenSku: it.skuLabel || "",
-      soLuong: it.qty || 1,
-    }))
+    const itemsText = buildItemsText()
 
     const payload = {
       createdAt: new Date().toISOString(),
@@ -62,7 +73,7 @@ export default function CheckoutClient() {
         region: shipping.region || "",
         street: shipping.street || "",
       },
-      items, // ✅ gọn
+      itemsText, // ✅ chuỗi dễ đọc
     }
 
     try {
@@ -129,9 +140,7 @@ export default function CheckoutClient() {
         <div className="fixed inset-0 z-[80] bg-black/50 backdrop-blur-sm grid place-items-center px-4">
           <div className="w-full max-w-[420px] rounded-[28px] border border-white/10 bg-[#0b0f12]/90 shadow-[0_30px_90px_rgba(0,0,0,0.6)] px-6 py-6 text-center">
             <div className="mx-auto h-12 w-12 rounded-full bg-[#34C759]/15 border border-[#34C759]/30 grid place-items-center">
-              <span aria-hidden className="text-[#34C759] text-2xl">
-                ✓
-              </span>
+              <span aria-hidden className="text-[#34C759] text-2xl">✓</span>
             </div>
 
             <div className="mt-4 text-[#FFD66B] text-[22px] font-extrabold">

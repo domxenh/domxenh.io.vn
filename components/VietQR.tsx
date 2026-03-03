@@ -25,7 +25,6 @@ export default function VietQR({ initialAmount = 0, memo = DEFAULT_MEMO, autoFoc
   const [amountInput, setAmountInput] = useState<string>("")
 
   useEffect(() => {
-    // Tự điền số tiền -> hiện QR ngay
     if (initialAmount > 0) setAmountInput(String(Math.round(initialAmount)))
     else setAmountInput("")
   }, [initialAmount])
@@ -41,9 +40,11 @@ export default function VietQR({ initialAmount = 0, memo = DEFAULT_MEMO, autoFoc
   }, [amount, memo])
 
   return (
-    <div className="grid gap-3 max-w-[380px]">
-      <label className="grid gap-2">
-        <span className="text-white/80 text-sm font-semibold">Số tiền (VND)</span>
+    <div className="grid gap-4 place-items-center text-center">
+      <label className="grid gap-2 w-full max-w-[520px] text-left">
+        <span className="text-[#FFD66B] font-semibold text-[15px] drop-shadow-[0_0_12px_rgba(255,214,107,0.35)]">
+          Số tiền (VND)
+        </span>
         <input
           autoFocus={autoFocus}
           inputMode="numeric"
@@ -54,7 +55,7 @@ export default function VietQR({ initialAmount = 0, memo = DEFAULT_MEMO, autoFoc
           value={amountInput}
           onChange={(e) => setAmountInput(e.target.value)}
           placeholder="VD: 50000"
-          className="px-4 py-3 rounded-2xl bg-black/30 border border-white/10 text-white outline-none"
+          className="w-full px-5 py-4 rounded-2xl bg-black/30 border border-white/10 text-white outline-none text-[18px] font-semibold tabular-nums"
         />
       </label>
 
@@ -64,27 +65,28 @@ export default function VietQR({ initialAmount = 0, memo = DEFAULT_MEMO, autoFoc
           <img
             src={qrUrl}
             alt="VietQR MB Bank"
-            className="w-full h-auto rounded-2xl border border-white/10"
+            className="w-full max-w-[520px] h-auto rounded-2xl border border-white/10 bg-white"
             loading="lazy"
             decoding="async"
           />
-          <div className="text-[13px] leading-5 text-white/75">
+
+          <div className="w-full max-w-[520px] text-[15px] leading-6 text-[#FFD66B] drop-shadow-[0_0_12px_rgba(255,214,107,0.25)] text-left">
             <div>
-              <b className="text-white">Ngân hàng:</b> MB Bank
+              <b className="text-[#FFE7A8]">Ngân hàng:</b> MB Bank
             </div>
             <div>
-              <b className="text-white">STK:</b> {ACCOUNT_NO}
+              <b className="text-[#FFE7A8]">STK:</b> {ACCOUNT_NO}
             </div>
             <div>
-              <b className="text-white">Tên:</b> {ACCOUNT_NAME}
+              <b className="text-[#FFE7A8]">Tên:</b> {ACCOUNT_NAME}
             </div>
             <div>
-              <b className="text-white">Nội dung:</b> {memo}
+              <b className="text-[#FFE7A8]">Nội dung:</b> {memo}
             </div>
           </div>
         </>
       ) : (
-        <div className="text-[13px] text-white/60">Nhập số tiền để hiện QR.</div>
+        <div className="text-[14px] text-[#FFD66B]/80">Nhập số tiền để hiện QR.</div>
       )}
     </div>
   )

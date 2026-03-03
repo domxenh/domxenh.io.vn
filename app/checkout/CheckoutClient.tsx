@@ -37,22 +37,19 @@ export default function CheckoutClient() {
     setSendError("")
     setIsSending(true)
 
-    // lấy info nhận hàng đã lưu từ /thanh-toan
-    const shipping = safeJsonParse<{
-      receiverName?: string
-      phone?: string
-      region?: string
-      street?: string
-    }>(localStorage.getItem(SHIPPING_KEY)) || {}
+    const shipping =
+      safeJsonParse<{
+        receiverName?: string
+        phone?: string
+        region?: string
+        street?: string
+      }>(localStorage.getItem(SHIPPING_KEY)) || {}
 
-    // lấy giỏ hàng hiện tại
+    // ✅ CHỈ GỬI SKU + SỐ LƯỢNG (gọn)
     const items = getCart().map((it) => ({
-      skuLabel: it.skuLabel,
-      skuCode: it.skuCode,
-      price: it.price,
-      qty: it.qty,
-      image: it.image || "",
-      productName: it.productName || "",
+      sku: it.skuCode || "",
+      tenSku: it.skuLabel || "",
+      soLuong: it.qty || 1,
     }))
 
     const payload = {
@@ -65,8 +62,7 @@ export default function CheckoutClient() {
         region: shipping.region || "",
         street: shipping.street || "",
       },
-      items,
-      userAgent: typeof navigator !== "undefined" ? navigator.userAgent : "",
+      items, // ✅ gọn
     }
 
     try {
@@ -91,7 +87,6 @@ export default function CheckoutClient() {
 
   return (
     <main className="max-w-4xl mx-auto px-6 pt-32 pb-28">
-      {/* Center header */}
       <div className="grid place-items-center text-center gap-3">
         <h1 className="text-[34px] font-extrabold text-[#FFD66B] drop-shadow-[0_0_14px_rgba(255,214,107,0.35)]">
           Thanh toán chuyển khoản (VietQR)
@@ -106,12 +101,10 @@ export default function CheckoutClient() {
         </button>
       </div>
 
-      {/* Center QR box */}
       <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 backdrop-blur px-6 py-6">
         <VietQR initialAmount={amount} />
       </div>
 
-      {/* Center confirm box */}
       <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 backdrop-blur px-6 py-6 grid place-items-center text-center gap-3">
         <button
           type="button"
@@ -129,26 +122,23 @@ export default function CheckoutClient() {
           * Nếu bạn chưa chuyển khoản, vui lòng quét QR và chuyển đúng số tiền.
         </div>
 
-        {sendError ? (
-          <div className="text-[#FF6B5E] text-sm font-semibold">
-            Lỗi: {sendError}
-          </div>
-        ) : null}
+        {sendError ? <div className="text-[#FF6B5E] text-sm font-semibold">Lỗi: {sendError}</div> : null}
       </div>
 
-      {/* Apple-style Thanks Modal */}
       {showThanks ? (
         <div className="fixed inset-0 z-[80] bg-black/50 backdrop-blur-sm grid place-items-center px-4">
           <div className="w-full max-w-[420px] rounded-[28px] border border-white/10 bg-[#0b0f12]/90 shadow-[0_30px_90px_rgba(0,0,0,0.6)] px-6 py-6 text-center">
             <div className="mx-auto h-12 w-12 rounded-full bg-[#34C759]/15 border border-[#34C759]/30 grid place-items-center">
-              <span aria-hidden className="text-[#34C759] text-2xl">✓</span>
+              <span aria-hidden className="text-[#34C759] text-2xl">
+                ✓
+              </span>
             </div>
 
-            <div className="mt-4 text-[#FFD66B] text-[22px] font-extrabold drop-shadow-[0_0_14px_rgba(255,214,107,0.25)]">
+            <div className="mt-4 text-[#FFD66B] text-[22px] font-extrabold">
               Cảm ơn bạn đã đặt hàng!
             </div>
             <div className="mt-2 text-white/70 text-[14px] leading-6">
-              Shop đã nhận thông tin xác nhận chuyển khoản của bạn.
+              Shop đã nhận xác nhận chuyển khoản của bạn.
               <br />
               Chúng tôi sẽ kiểm tra và liên hệ sớm nhất.
             </div>

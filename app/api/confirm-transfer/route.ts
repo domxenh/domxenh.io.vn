@@ -1,21 +1,22 @@
 // app/api/confirm-transfer/route.ts
 /**
  * TÓM TẮT (VN):
- * - API nhận dữ liệu đơn hàng và gửi sang Google Apps Script (Google Sheet) qua webhook.
- * - CHỈNH FIX: Upstash REST dùng /pipeline (chuẩn) thay vì gọi /incr, /expire, /set (gây lỗi 400).
- * - Có:
- *   + Rate limit 2 lần / 60s / IP
- *   + Chống trùng theo (orderId + eventType) bằng SET NX EX
- * - Hỗ trợ eventType/paymentMethod/totalAmount.
+ * - API nhận dữ liệu đơn hàng và gửi sang Google Apps Script (Google Sheet) qua GOOGLE_SHEETS_WEBHOOK_URL.
+ * - FIX “không thấy ghi sheet” do bị 409:
+ *   + Trước đây claimEvent (SET NX) trước webhook -> nếu webhook fail 1 lần thì các lần sau 409, không gửi sheet nữa.
+ *   + Nay đổi: rate-limit trước, webhook trước, webhook OK mới claimEvent (TTL 1 ngày).
+ * - Upstash REST dùng /pipeline chuẩn.
  *
  * NƠI CHỈNH:
- * - Toàn bộ file.
+ * - claimEvent được gọi SAU khi webhook thành công.
+ * - Giữ rate limit 2 lần/60s/IP.
  */
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
 
 type UpstashCfg = { url: string; token: string }
+type PipelineCmd = (string | number)[]
 
 function bad(status: number, msg: string) {
   return new Response(msg, { status })
@@ -69,7 +70,7 @@ function normalizePaymentMethod(raw: string) {
   return "bank_transfer"
 }
 
-/** ===== Upstash (REST pipeline chuẩn) ===== */
+/* ===== Upstash (REST pipeline chuẩn) ===== */
 
 function getUpstashCfg(): UpstashCfg | null {
   const url = stripQuotes(process.env.UPSTASH_REDIS_REST_URL || "")
@@ -78,8 +79,6 @@ function getUpstashCfg(): UpstashCfg | null {
   if (!isValidUrl(url)) return null
   return { url, token }
 }
-
-type PipelineCmd = (string | number)[]
 
 async function upstashPipeline(cfg: UpstashCfg, commands: PipelineCmd[]) {
   const endpoint = `${cfg.url}/pipeline`
@@ -110,7 +109,6 @@ const MAX_PER_WINDOW = 2
 async function rateLimit(cfg: UpstashCfg, ip: string) {
   const key = `rl:cf:${ip}`
 
-  // INCR key; nếu =1 thì EXPIRE key WINDOW_SEC
   const out = await upstashPipeline(cfg, [
     ["INCR", key],
     ["TTL", key],
@@ -119,7 +117,6 @@ async function rateLimit(cfg: UpstashCfg, ip: string) {
   const count = Number(out?.[0]?.result || 0)
   const ttl = Number(out?.[1]?.result || -1)
 
-  // TTL -1: chưa set expire -> set
   if (count === 1 || ttl < 0) {
     await upstashPipeline(cfg, [["EXPIRE", key, WINDOW_SEC]])
   }
@@ -129,15 +126,11 @@ async function rateLimit(cfg: UpstashCfg, ip: string) {
 
 /**
  * ✅ Chống trùng theo (orderId + eventType): SET key 1 NX EX 86400
+ * ⚠️ CHỈ GỌI SAU khi webhook ghi sheet thành công.
  */
 async function claimEvent(cfg: UpstashCfg, orderId: string, eventType: string) {
   const key = `order:${orderId}:${eventType}`
-
-  const out = await upstashPipeline(cfg, [
-    ["SET", key, "1", "NX", "EX", 86400],
-  ])
-
-  // SET NX -> trả "OK" nếu set được, null nếu đã tồn tại
+  const out = await upstashPipeline(cfg, [["SET", key, "1", "NX", "EX", 86400]])
   const r = out?.[0]?.result
   return r === "OK"
 }
@@ -177,25 +170,22 @@ export async function POST(req: Request) {
   if (!itemsText) return bad(400, "Thiếu danh sách SKU (itemsText).")
   if (!receiverName || !phone || !region || !street) return bad(400, "Thiếu thông tin nhận hàng.")
 
-  // ✅ Upstash chống spam + chống trùng
   const upstash = getUpstashCfg()
+
+  // ✅ Rate-limit trước (nếu có Upstash)
   if (upstash) {
     try {
       const ip = getIp(req)
       const okRl = await rateLimit(upstash, ip)
       if (!okRl) return bad(429, "Bạn thao tác quá nhanh. Vui lòng thử lại sau 1 phút.")
-
-      const okEvent = await claimEvent(upstash, orderId, eventType)
-      if (!okEvent) return bad(409, "Sự kiện này đã được ghi nhận trước đó.")
     } catch (e: any) {
-      // ✅ Nếu Upstash lỗi, không làm chết flow: vẫn cho gửi sheet
-      // (Bạn muốn chặt hơn thì đổi thành return bad(500, ...))
-      // Ở đây ưu tiên không chặn khách mua.
+      // Không làm chết flow mua hàng
       // eslint-disable-next-line no-console
-      console.error("[upstash]", e?.message || e)
+      console.error("[upstash rateLimit]", e?.message || e)
     }
   }
 
+  // ✅ Gửi sang Google Sheet trước
   const payload = {
     createdAt: new Date().toISOString(),
     eventType,
@@ -216,6 +206,20 @@ export async function POST(req: Request) {
 
   const text = await res.text().catch(() => "")
   if (!res.ok) return bad(res.status, text || "Không gửi được sang Google Sheet.")
+
+  // ✅ CHỈ SAU KHI webhook OK mới claimEvent (chống trùng)
+  if (upstash) {
+    try {
+      const ok = await claimEvent(upstash, orderId, eventType)
+      if (!ok) {
+        // Nếu đã tồn tại (trùng), vẫn coi là thành công vì sheet đã ghi
+        // (không trả 409 để tránh hiểu nhầm “không gửi”)
+      }
+    } catch (e: any) {
+      // eslint-disable-next-line no-console
+      console.error("[upstash claimEvent]", e?.message || e)
+    }
+  }
 
   return new Response(JSON.stringify({ ok: true }), {
     status: 200,

@@ -1,10 +1,14 @@
-/* Code 4 - app/globals.css
+/* app/globals.css
 TÓM TẮT (VN):
-- Giữ nguyên Dark Luxury palette + hover glow cũ.
-- Thêm:
-  + .apple-folder: khung danh mục kiểu folder iOS (glass blur, bo tròn, có chiều sâu).
-  + .badge-sale: banner SALE (đỏ/cam kiểu Apple).
-  + Tối ưu nhẹ .product-card khi nằm trong .apple-folder.
+- Giữ nền Dark Luxury + các class hiện có.
+- CHỈNH: Typography kiểu Apple, chữ Việt đẹp:
+  + Tạo font stack: ưu tiên SF Pro (iOS/macOS), fallback Inter/Be Vietnam Pro.
+  + Thêm .dx-title-apple dùng cho heading (giảm glow, tracking Apple, nét chữ rõ).
+  + Không phá layout/tính năng cũ.
+
+NƠI CHỈNH:
+- Khối :root --font-sans
+- Khối .dx-title-apple (dùng cho title VietQR)
 */
 
 /* stylelint-disable-next-line at-rule-no-unknown */
@@ -14,121 +18,88 @@ TÓM TẮT (VN):
 /* stylelint-disable-next-line at-rule-no-unknown */
 @tailwind utilities;
 
-/*
-====================================================
-CODE: DARK LUXURY – ĐÓM XÊNH OFFICIAL PALETTE
-====================================================
-*/
-
-/* ===== BACKGROUND CHÍNH ===== */
-
-/* HERO GLOW LIGHT EFFECT */
-.hero-glow {
-  background: radial-gradient(
-    circle at 50% 30%,
-    rgba(255, 214, 107, 0.08),
-    transparent 50%
-  );
+/* ===== FONT STACK (Apple-like + VN) ===== */
+/* ✅ CHỈNH: dùng biến font từ next/font (layout.tsx đã set --font-inter --font-bevn) */
+:root{
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "SF Pro Display","SF Pro Text",
+    var(--font-inter), var(--font-bevn),
+    "Segoe UI", Roboto, Helvetica, Arial,
+    "Apple Color Emoji","Segoe UI Emoji";
 }
 
-body {
-  background: radial-gradient(
-      circle at 20% 20%,
-      rgba(255, 214, 107, 0.05),
-      transparent 40%
-    ),
-    #0B1417;
+html{
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
 
+*{ box-sizing: border-box; }
+
+html, body{
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body{
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 214, 107, 0.05), transparent 40%),
+    #0B1417;
   color: #FFFFFF;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  font-family: var(--font-sans);
 }
 
 /* ===== SECTION XEN KẼ ===== */
-
-.section-dark {
+.section-dark{
   background: #0B1417;
   padding: 100px 0;
 }
-
-.section-alt {
+.section-alt{
   background: #0F1F23;
   padding: 100px 0;
 }
 
 /* ===== CARD SẢN PHẨM ===== */
-
-.product-card {
-  background: #13262B;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 20px;
-  padding: 28px;
-  transition: all 0.4s ease;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+.product-card{
+  position: relative;
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+  border: 1px solid rgba(255, 214, 107, 0.15);
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.35);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
-
-.product-card:hover {
-  box-shadow: 0 0 30px rgba(255, 214, 107, 0.25),
-    0 25px 60px rgba(0, 0, 0, 0.6);
-  transform: translateY(-6px);
-}
-
-/* ===== IMAGE GLOW ===== */
-
-.product-card img {
-  transition: all 0.4s ease;
-}
-
-.product-card img:hover {
-  filter: drop-shadow(0 0 15px rgba(255, 214, 107, 0.4));
-}
-
-/* ===== TEXT SYSTEM ===== */
-
-.heading {
-  color: #FFFFFF;
-}
-
-.text-sub {
-  color: #A8C0C4;
-}
-
-.text-muted {
-  color: #6E8B8D;
-}
-
-.price {
-  color: #FFD66B;
-  font-weight: 600;
-}
-
-/* ===== BUTTON BRAND ===== */
-
-.btn-brand {
-  background: linear-gradient(135deg, #0F5C63, #1B7F6A);
-  color: white;
-  padding: 12px 26px;
-  border-radius: 999px;
-
-  /* ✅ CHỈNH: khôi phục “khung” nút Chi Tiết như bản cũ (viền + chiều sâu) */
-  border: 1px solid rgba(255, 214, 107, 0.35);
-  box-shadow:
-    0 10px 22px rgba(0, 0, 0, 0.35),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-
-  transition: all 0.3s ease;
-}
-
-.btn-brand:hover {
-  opacity: 0.9;
+.product-card:hover{
   transform: translateY(-2px);
-
-  /* ✅ CHỈNH: hover rõ khung hơn */
-  border-color: rgba(255, 214, 107, 0.55);
+  border-color: rgba(255, 214, 107, 0.35);
+  box-shadow: 0 14px 36px rgba(0,0,0,0.48);
+}
+@media (prefers-reduced-motion: reduce){
+  .product-card, .product-card:hover{
+    transition: none;
+    transform: none;
+  }
 }
 
-/* ===== BADGE HOT ===== */
+/* ===== BADGE SALE / HOT ===== */
+.badge-sale{
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ff3b30, #ff9500);
+  color: #fff;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  box-shadow: 0 10px 18px rgba(0,0,0,0.35);
+  z-index: 2;
+}
 
-.badge-hot {
+.badge-hot{
   background: #F4C430;
   color: #0B1417;
   padding: 4px 10px;
@@ -136,156 +107,61 @@ body {
   border-radius: 999px;
 }
 
-/* ===== BADGE SALE (mới) ===== */
+/* ===== APPLE FOLDER ===== */
+.apple-folder{
+  position: relative;
+  border-radius: 26px;
+  border: 1px solid rgba(255, 214, 107, 0.18);
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 18px 45px rgba(0,0,0,0.35);
+  overflow: hidden;
+}
+@media (max-width: 768px){
+  .apple-folder{ backdrop-filter: none; }
+}
 
-.badge-sale {
-  background: linear-gradient(135deg, #FF3B30, #FF9500);
-  color: #FFFFFF;
-  padding: 4px 10px;
-  font-size: 12px;
+/* ===== BUTTON BRAND ===== */
+.btn-brand{
+  background: linear-gradient(135deg, #0F5C63, #1B7F6A);
+  color: white;
+  padding: 12px 26px;
   border-radius: 999px;
-  box-shadow: 0 0 18px rgba(255, 59, 48, 0.35);
+  border: 1px solid rgba(255, 214, 107, 0.35);
+  box-shadow:
+    0 10px 22px rgba(0,0,0,0.35),
+    inset 0 0 0 1px rgba(255,255,255,0.08);
+  transition: all 0.3s ease;
+}
+.btn-brand:hover{
+  opacity: 0.9;
+  transform: translateY(-2px);
+  border-color: rgba(255, 214, 107, 0.55);
 }
 
-/* ===== APPLE FOLDER CONTAINER (mới) =====
-   - Dùng cho 3 danh mục trên trang chủ
-   - Vibe giống folder iOS: bo tròn, glass blur, có chiều sâu
+/* ===== MISC ===== */
+a{ color: inherit; text-decoration: none; }
+img{ display:block; max-width:100%; height:auto; }
+html{ -webkit-text-size-adjust: 100%; }
+
+/* ===== APPLE TYPO (FIX title VietQR + chữ Việt đẹp) =====
+   ✅ CHỈNH: đúng vibe Apple:
+   - Ưu tiên Inter (Apple-like) + fallback BeVN
+   - Weight 700, tracking âm nhẹ, line-height gọn
+   - Bỏ glow nặng để chữ sắc và sang
 */
+.dx-title-apple{
+  font-family: var(--font-inter), var(--font-bevn),
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "SF Pro Display","SF Pro Text","Segoe UI", Roboto, Helvetica, Arial;
 
-.apple-folder {
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255, 214, 107, 0.12), transparent 55%),
-    rgba(255, 255, 255, 0.06);
-
-  backdrop-filter: blur(26px);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 44px;
-  padding: 32px;
-
-  box-shadow:
-    0 60px 160px rgba(0, 0, 0, 0.75),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-/* Nhẹ tay hơn cho card khi nằm trong folder để giống iOS grid */
-/* FIX: giảm khoảng trống đáy card trong folder */
-.apple-folder .product-card {
-  border-radius: 28px;
-
-  /* CHỈNH Ở ĐÂY:
-     - top/right/left giữ 22px
-     - bottom giảm còn 12px để không bị “độn” dưới nút
-  */
-  padding: 22px 22px 12px 22px;
-}
-
-/* End code 4 */
-/* Folder LỚN */
-.folder-wrap {
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255, 214, 107, 0.12), transparent 55%),
-    rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(22px);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 44px;
-  padding: 32px;
-  box-shadow:
-    0 60px 160px rgba(0, 0, 0, 0.75),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-.folder-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-  gap: 16px;
-  margin-bottom: 28px;
-}
-
-.folder-title {
-  font-size: 28px;
   font-weight: 700;
-  color: #fff;
-}
-
-.folder-sub {
-  margin-top: 6px;
-  color: #A8C0C4;
-}
-
-/* Badge SALE */
-/* (đã khai báo ở trên) */
-
-/* hide horizontal scrollbar for title scroller */
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-/* ===== Responsive text + Safe-area ===== */
-html { -webkit-text-size-adjust: 100%; }
-
-/* ==========================================
-   FIX SCROLL OFFSET FOR FIXED HEADER
-   Click menu (#products / #cat-*) sẽ trỏ đúng đầu section
-========================================== */
-.scroll-mt-header{
-  scroll-margin-top: 96px; /* desktop */
-}
-
-@media (max-width: 768px){
-  .scroll-mt-header{
-    scroll-margin-top: 78px; /* mobile */
-  }
-}
-
-/* ===== Fade-in (CSS + IntersectionObserver) ===== */
-.dx-fadein{
-  opacity: 0;
-  transform: translate3d(0, 18px, 0);
-  transition: opacity .45s ease, transform .55s cubic-bezier(.2,.8,.2,1);
-  will-change: opacity, transform;
-}
-.dx-fadein.is-in{
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
-}
-
-/* ===== Hero CSS animations (thay framer-motion) ===== */
-.dx-hero-fade{ animation: dxHeroFade .6s ease both; }
-
-.dx-anim-up{
-  opacity: 0;
-  transform: translate3d(0, 22px, 0);
-  animation: dxUp .9s cubic-bezier(.2,.8,.2,1) both;
-}
-
-.dx-cta{
-  animation: dxUp .9s cubic-bezier(.2,.8,.2,1) both, dxPulse 1.6s ease-in-out 1.4s infinite;
-}
-.dx-cta:hover{ transform: translate3d(0,0,0) scale(1.08); }
-.dx-cta:active{ transform: translate3d(0,0,0) scale(.96); }
-
-.dx-cta::after{
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.22) 45%, transparent 80%);
-  transform: translateX(-120%);
-  animation: dxShine 3.6s linear infinite;
-  pointer-events: none;
-}
-
-@keyframes dxHeroFade{ from{opacity:0} to{opacity:1} }
-@keyframes dxUp{ from{ opacity:0; transform: translate3d(0, 22px, 0);} to{ opacity:1; transform: translate3d(0, 0, 0);} }
-@keyframes dxPulse{ 0%,100%{ transform: translate3d(0,0,0) scale(1);} 50%{ transform: translate3d(0,0,0) scale(1.06);} }
-@keyframes dxShine{ from{ transform: translateX(-120%);} to{ transform: translateX(120%);} }
-
-/* Mobile: giảm/loại blur để mượt hơn */
-@media (max-width: 768px){
-  .apple-folder,
-  .folder-wrap{
-    backdrop-filter: none;
-  }
+  letter-spacing: -0.02em;
+  line-height: 1.12;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* // end code */

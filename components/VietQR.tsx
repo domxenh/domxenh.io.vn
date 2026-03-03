@@ -1,13 +1,41 @@
-// app/components/VietQR.tsx
+// components/VietQR.tsx
 "use client"
+
+/**
+ * TÓM TẮT (VN):
+ * - Nút "Quay lại" đặt cùng hàng với "Số tiền (VND)" ở góc phải.
+ * - "Nội dung chuyển tiền" mặc định = mã đơn hàng (orderId) dùng chung cho:
+ *   + Chuyển khoản
+ *   + Đặt cọc
+ *
+ * NƠI CHỈNH:
+ * - Props thêm onBack
+ * - Label đổi flex justify-between
+ * - memoFinal = memo || orderId
+ */
 
 import { useEffect, useMemo, useState } from "react"
 
-const BANK_BIN = "970422" // MB Bank
+const BANK_BIN = "970422"
 const ACCOUNT_NO = "19089599999999"
 const ACCOUNT_NAME = "Hoàng Minh Quang"
-const TEMPLATE = "compact2" // compact2/compact/qr_only/print
-const DEFAULT_MEMO = "Chuyển khoản qua QR"
+const TEMPLATE = "compact2"
+const DEFAULT_MEMO = ""
+
+function getOrCreateOrderId(): string {
+  const k = "domxenh_orderid_v1"
+  try {
+    const old = localStorage.getItem(k)
+    if (old && old.trim()) return old.trim()
+    const id =
+      (crypto?.randomUUID?.() ||
+        `oid_${Date.now()}_${Math.random().toString(16).slice(2)}`) as string
+    localStorage.setItem(k, id)
+    return id
+  } catch {
+    return `oid_${Date.now()}_${Math.random().toString(16).slice(2)}`
+  }
+}
 
 function buildVietQrImgUrl(amount: number, memo: string) {
   const addInfo = encodeURIComponent(memo)
@@ -19,32 +47,58 @@ type Props = {
   initialAmount?: number
   memo?: string
   autoFocus?: boolean
+  onBack?: () => void
 }
 
-export default function VietQR({ initialAmount = 0, memo = DEFAULT_MEMO, autoFocus }: Props) {
+export default function VietQR({ initialAmount = 0, memo = DEFAULT_MEMO, autoFocus, onBack }: Props) {
   const [amountInput, setAmountInput] = useState<string>("")
+  const [orderIdMemo, setOrderIdMemo] = useState<string>("")
 
   useEffect(() => {
     if (initialAmount > 0) setAmountInput(String(Math.round(initialAmount)))
     else setAmountInput("")
   }, [initialAmount])
 
+  useEffect(() => {
+    setOrderIdMemo((prev) => prev || getOrCreateOrderId())
+  }, [])
+
   const amount = useMemo(() => {
     const n = parseInt(amountInput || "0", 10)
     return Number.isFinite(n) ? Math.max(0, n) : 0
   }, [amountInput])
 
+  const memoFinal = useMemo(() => {
+    const m = (memo || "").trim()
+    if (m) return m
+    return (orderIdMemo || "").trim() || "DONHANG"
+  }, [memo, orderIdMemo])
+
   const qrUrl = useMemo(() => {
     if (amount <= 0) return ""
-    return buildVietQrImgUrl(amount, memo)
-  }, [amount, memo])
+    return buildVietQrImgUrl(amount, memoFinal)
+  }, [amount, memoFinal])
 
   return (
     <div className="grid gap-4 place-items-center text-center">
       <label className="grid gap-2 w-full max-w-[520px] text-left">
-        <span className="text-[#FFD66B] font-semibold text-[15px] drop-shadow-[0_0_12px_rgba(255,214,107,0.35)]">
-          Số tiền (VND)
-        </span>
+        {/* ✅ CHỈNH: cùng hàng + góc phải */}
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-[#FFD66B] font-semibold text-[15px]">
+            Số tiền (VND)
+          </span>
+
+          {onBack ? (
+            <button
+              type="button"
+              onClick={onBack}
+              className="rounded-full px-4 py-2 text-[13px] font-semibold text-[#FFD66B] bg-white/10 border border-white/10 hover:bg-white/15 active:opacity-80"
+            >
+              Quay lại
+            </button>
+          ) : null}
+        </div>
+
         <input
           autoFocus={autoFocus}
           inputMode="numeric"
@@ -70,7 +124,7 @@ export default function VietQR({ initialAmount = 0, memo = DEFAULT_MEMO, autoFoc
             decoding="async"
           />
 
-          <div className="w-full max-w-[520px] text-[15px] leading-6 text-[#FFD66B] drop-shadow-[0_0_12px_rgba(255,214,107,0.25)] text-left">
+          <div className="w-full max-w-[520px] text-[15px] leading-6 text-[#FFD66B] text-left">
             <div>
               <b className="text-[#FFE7A8]">Ngân hàng:</b> MB Bank
             </div>
@@ -81,7 +135,7 @@ export default function VietQR({ initialAmount = 0, memo = DEFAULT_MEMO, autoFoc
               <b className="text-[#FFE7A8]">Tên:</b> {ACCOUNT_NAME}
             </div>
             <div>
-              <b className="text-[#FFE7A8]">Nội dung:</b> {memo}
+              <b className="text-[#FFE7A8]">Nội dung:</b> {memoFinal}
             </div>
           </div>
         </>
@@ -91,3 +145,5 @@ export default function VietQR({ initialAmount = 0, memo = DEFAULT_MEMO, autoFoc
     </div>
   )
 }
+
+// end code

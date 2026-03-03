@@ -3,14 +3,13 @@
 
 /**
  * TÓM TẮT (VN):
- * - Trang VietQR nhận query ?amount=...
- * - CHỈNH:
- *   + Hỗ trợ ?mode=deposit để hiển thị đặt cọc 50k.
- *   + Thêm nút "Tôi đã chuyển cọc" => gửi eventType=deposit_confirm lên Sheet.
- *   + Vẫn giữ flow chuyển khoản toàn bộ (mode thường) có nút "Xác nhận đã chuyển khoản".
+ * - Title VietQR dùng font Apple-like (dx-title-apple) để chữ Việt đẹp, không lỗi dấu.
+ * - Nút "Quay lại" chuyển xuống cùng hàng với "Số tiền (VND)" (render trong VietQR).
+ * - Không thay logic thanh toán/confirm; chỉ chỉnh UI.
  *
  * NƠI CHỈNH:
- * - Thêm confirmDepositPaid() + UI Apple modal cảm ơn trong mode=deposit
+ * - <h1> đổi class sang dx-title-apple + bỏ glow nặng
+ * - <VietQR /> truyền onBack
  */
 
 import { useMemo, useState } from "react"
@@ -53,7 +52,9 @@ function getOrCreateOrderId() {
   const k = "domxenh_orderid_v1"
   const old = localStorage.getItem(k)
   if (old) return old
-  const id = (crypto?.randomUUID?.() || `oid_${Date.now()}_${Math.random().toString(16).slice(2)}`)
+  const id =
+    (crypto?.randomUUID?.() ||
+      `oid_${Date.now()}_${Math.random().toString(16).slice(2)}`) as string
   localStorage.setItem(k, id)
   return id
 }
@@ -65,22 +66,18 @@ export default function CheckoutClient() {
 
   const mode = useMemo(() => (sp.get("mode") || "").trim(), [sp])
   const isDeposit = mode === "deposit"
-
-  // (optional) totalAmount đính kèm nếu bạn muốn hiển thị/ghi sheet
   const totalAmount = useMemo(() => toInt(sp.get("total") || "0"), [sp])
+
+  const [depositConfirmSending, setDepositConfirmSending] = useState(false)
+  const [depositConfirmError, setDepositConfirmError] = useState("")
+  const [depositThanks, setDepositThanks] = useState(false)
 
   const [isSending, setIsSending] = useState(false)
   const [showThanks, setShowThanks] = useState(false)
   const [sendError, setSendError] = useState<string>("")
 
-  // ✅ CHỈNH: confirm cọc
-  const [depositConfirmSending, setDepositConfirmSending] = useState(false)
-  const [depositConfirmError, setDepositConfirmError] = useState("")
-  const [depositThanks, setDepositThanks] = useState(false)
-
   async function confirmTransfer() {
     setSendError("")
-
     const now = Date.now()
     const last = Number(localStorage.getItem(LAST_SENT_KEY) || 0)
     if (now - last < 60_000) {
@@ -121,12 +118,10 @@ export default function CheckoutClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })
-
       if (!res.ok) {
         const t = await res.text().catch(() => "")
         throw new Error(t || `Lỗi gửi dữ liệu (${res.status})`)
       }
-
       setShowThanks(true)
     } catch (e: any) {
       setSendError(e?.message || "Gửi dữ liệu thất bại")
@@ -135,10 +130,8 @@ export default function CheckoutClient() {
     }
   }
 
-  // ✅ CHỈNH: khách bấm "Tôi đã chuyển cọc" => gửi eventType=deposit_confirm
   async function confirmDepositPaid() {
     setDepositConfirmError("")
-
     const now = Date.now()
     const last = Number(localStorage.getItem(LAST_SENT_KEY) || 0)
     if (now - last < 60_000) {
@@ -160,7 +153,7 @@ export default function CheckoutClient() {
 
     const payload = {
       orderId,
-      eventType: "deposit_confirm", // ✅ CHỈNH
+      eventType: "deposit_confirm",
       paymentMethod: "cod_deposit",
       amount: 50000,
       totalAmount: totalAmount > 0 ? totalAmount : undefined,
@@ -180,12 +173,10 @@ export default function CheckoutClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })
-
       if (!res.ok && res.status !== 409) {
         const t = await res.text().catch(() => "")
         throw new Error(t || `Lỗi gửi dữ liệu (${res.status})`)
       }
-
       setDepositThanks(true)
     } catch (e: any) {
       setDepositConfirmError(e?.message || "Gửi xác nhận cọc thất bại")
@@ -195,23 +186,17 @@ export default function CheckoutClient() {
   }
 
   return (
-    <main className="max-w-4xl mx-auto px-6 pt-32 pb-28">
-      <div className="grid place-items-center text-center gap-3">
-        <h1 className="text-[34px] font-extrabold text-[#FFD66B] drop-shadow-[0_0_14px_rgba(255,214,107,0.35)]">
+    <main className="max-w-4xl mx-auto px-6 pt-28 pb-28">
+      <div className="grid place-items-center text-center gap-2">
+        {/* ✅ CHỈNH: đúng vibe Apple, chữ Việt nét */}
+        <h1 className="dx-title-apple text-[34px] text-[#FFD66B]">
           {isDeposit ? "Đặt cọc 50.000đ (VietQR)" : "Thanh toán chuyển khoản (VietQR)"}
         </h1>
-
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="rounded-full px-5 py-2 font-semibold text-[#FFD66B] bg-white/10 border border-white/10 active:opacity-80"
-        >
-          Quay lại
-        </button>
       </div>
 
       <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 backdrop-blur px-6 py-6">
-        <VietQR initialAmount={amount} />
+        {/* ✅ CHỈNH: nút Quay lại nằm cùng hàng với Số tiền (VND) */}
+        <VietQR initialAmount={amount} onBack={() => router.back()} />
       </div>
 
       {isDeposit ? (
@@ -235,7 +220,6 @@ export default function CheckoutClient() {
               Quay về Thanh toán
             </button>
 
-            {/* ✅ CHỈNH: nút xác nhận cọc */}
             <button
               type="button"
               onClick={confirmDepositPaid}
@@ -267,13 +251,10 @@ export default function CheckoutClient() {
             * Nếu bạn chưa chuyển khoản, vui lòng quét QR và chuyển đúng số tiền.
           </div>
 
-          {sendError ? (
-            <div className="text-[#FF6B5E] text-sm font-semibold">Lỗi: {sendError}</div>
-          ) : null}
+          {sendError ? <div className="text-[#FF6B5E] text-sm font-semibold">Lỗi: {sendError}</div> : null}
         </div>
       )}
 
-      {/* Apple modal thanks (bank) */}
       {showThanks ? (
         <div className="fixed inset-0 z-[80] bg-black/50 backdrop-blur-sm grid place-items-center px-4">
           <div className="w-full max-w-[420px] rounded-[28px] border border-white/10 bg-[#0b0f12]/90 shadow-[0_30px_90px_rgba(0,0,0,0.6)] px-6 py-6 text-center">
@@ -281,9 +262,7 @@ export default function CheckoutClient() {
               <span aria-hidden className="text-[#34C759] text-2xl">✓</span>
             </div>
 
-            <div className="mt-4 text-[#FFD66B] text-[22px] font-extrabold">
-              Cảm ơn bạn đã đặt hàng!
-            </div>
+            <div className="mt-4 text-[#FFD66B] text-[22px] font-extrabold">Cảm ơn bạn đã đặt hàng!</div>
             <div className="mt-2 text-white/70 text-[14px] leading-6">
               Shop đã nhận xác nhận chuyển khoản của bạn.
               <br />
@@ -313,7 +292,6 @@ export default function CheckoutClient() {
         </div>
       ) : null}
 
-      {/* ✅ CHỈNH: Apple modal thanks (deposit confirm) */}
       {depositThanks ? (
         <div className="fixed inset-0 z-[85] bg-black/50 backdrop-blur-sm grid place-items-center px-4">
           <div className="w-full max-w-[420px] rounded-[28px] border border-white/10 bg-[#0b0f12]/90 shadow-[0_30px_90px_rgba(0,0,0,0.6)] px-6 py-6 text-center">
@@ -321,9 +299,7 @@ export default function CheckoutClient() {
               <span aria-hidden className="text-[#34C759] text-2xl">✓</span>
             </div>
 
-            <div className="mt-4 text-[#FFD66B] text-[22px] font-extrabold">
-              Shop đã nhận xác nhận cọc!
-            </div>
+            <div className="mt-4 text-[#FFD66B] text-[22px] font-extrabold">Shop đã nhận xác nhận cọc!</div>
             <div className="mt-2 text-white/70 text-[14px] leading-6">
               Shop sẽ kiểm tra giao dịch và đi đơn sớm nhất.
               <br />

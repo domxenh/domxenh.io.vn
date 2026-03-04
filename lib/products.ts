@@ -30,6 +30,11 @@ export type ProductDetailDTO = {
   }
 }
 
+export type ProductSitemapDTO = {
+  slug: string
+  createdAt: Date
+}
+
 const selectCard = {
   id: true,
   slug: true,
@@ -55,7 +60,12 @@ const selectDetail = {
   },
 } as const
 
-// cache nhẹ
+const selectSitemap = {
+  slug: true,
+  createdAt: true,
+} as const
+
+// cache nhẹ (120s)
 const cachedProductBySlug = unstable_cache(
   async (slug: string) =>
     prisma.product.findUnique({ where: { slug }, select: selectDetail }),
@@ -75,6 +85,26 @@ const cachedRelatedByCategory = unstable_cache(
   { revalidate: 120 }
 )
 
+const cachedAllProducts = unstable_cache(
+  async () =>
+    prisma.product.findMany({
+      orderBy: { createdAt: "desc" },
+      select: selectCard,
+    }),
+  ["products:allCards"],
+  { revalidate: 120 }
+)
+
+const cachedProductsForSitemap = unstable_cache(
+  async () =>
+    prisma.product.findMany({
+      orderBy: { createdAt: "desc" },
+      select: selectSitemap,
+    }),
+  ["products:sitemap"],
+  { revalidate: 300 }
+)
+
 export async function getProductsByNames(names: string[]) {
   if (!names?.length) return [] as ProductCardDTO[]
   const products = await prisma.product.findMany({
@@ -85,10 +115,7 @@ export async function getProductsByNames(names: string[]) {
 }
 
 export async function getAllProducts() {
-  const products = await prisma.product.findMany({
-    orderBy: { createdAt: "desc" },
-    select: selectCard,
-  })
+  const products = await cachedAllProducts()
   return products as ProductCardDTO[]
 }
 
@@ -117,6 +144,14 @@ export async function getRelatedProductsByCategory(opts: {
   const take = Math.max(1, Math.min(opts.take ?? 8, 12))
   const items = await cachedRelatedByCategory(opts.categoryId, opts.excludeSlug, take)
   return items as ProductCardDTO[]
+}
+
+/**
+ * Dùng cho SEO sitemap (nhẹ & cache 300s).
+ */
+export async function getProductsForSitemap() {
+  const items = await cachedProductsForSitemap()
+  return items as ProductSitemapDTO[]
 }
 
 // end code

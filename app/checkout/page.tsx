@@ -1,13 +1,9 @@
 // app/checkout/page.tsx
-import { Suspense } from "react"
-import CheckoutClient from "./CheckoutClient"
+import { redirect } from "next/navigation"
 
 export const dynamic = "force-dynamic"
 
-export default function CheckoutPage() {
-  return (
-    <Suspense fallback={<div style={{ padding: 24 }}>Loading...</div>}>
-      <CheckoutClient />
-    </Suspense>
-  )
+// Giữ /checkout để không lỗi link cũ, nhưng chuyển về route chuẩn tiếng Việt.
+export default function CheckoutRedirectPage() {
+  redirect("/thanh-toan")
 }

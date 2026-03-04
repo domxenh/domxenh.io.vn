@@ -45,8 +45,8 @@ async function main() {
       {
         name: "Bộ dây đèn Edison 1 tóc",
         slug: "bo-day-den-edison-1-toc",
-        price: 790000,
-        oldPrice: 890000, // SALE
+        price: 184000,
+        oldPrice: 222000, // SALE
         isHot: false,
         description: "Phiên bản Edison 1 tóc.",
         image: "/images/den2.webp",
@@ -56,8 +56,8 @@ async function main() {
       {
         name: "Bộ dây đèn Edison 2 tóc",
         slug: "bo-day-den-edison-2-toc",
-        price: 890000,
-        oldPrice: 1090000, // SALE
+        price: 227000,
+        oldPrice: 286000, // SALE
         isHot: true, // HOT
         description: "Phiên bản Edison 2 tóc.",
         image: "/images/den3.webp",
@@ -69,8 +69,8 @@ async function main() {
       {
         name: "Bộ dây đèn bóng Tròn 3W",
         slug: "bo-day-den-bong-tron-3w",
-        price: 590000,
-        oldPrice: 690000, // SALE
+        price: 179000,
+        oldPrice: 226000, // SALE
         isHot: false,
         description: "Bộ dây bóng tròn 3W.",
         image: "/images/den4.webp",

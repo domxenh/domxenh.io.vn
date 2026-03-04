@@ -322,7 +322,7 @@ export default function SkuSelector({
           />
 
           {/* ✅ CHỈNH: KÉO MODAL LÊN TRÊN 1 TÍ Ở PC để tránh bị sticky bar che */}
-          <div className="absolute left-1/2 top-[46%] md:top-[44%] w-[92vw] max-w-[720px] -translate-x-1/2 -translate-y-1/2 rounded-3xl border border-white/10 bg-[#0B1417]/95 md:backdrop-blur-md shadow-[0_40px_140px_rgba(0,0,0,0.85)] overflow-hidden">
+          <div className="absolute left-1/2 top-[52%] md:top-[42%] w-[92vw] max-w-[720px] -translate-x-1/2 -translate-y-1/2 rounded-3xl border border-white/10 bg-[#0B1417]/95 md:backdrop-blur-md shadow-[0_40px_140px_rgba(0,0,0,0.85)] overflow-hidden">
             <div className="p-5 md:p-6 border-b border-white/10 flex items-center justify-between gap-3">
               <div>
                 <div className="text-white/60 text-sm">Thông số sản phẩm</div>

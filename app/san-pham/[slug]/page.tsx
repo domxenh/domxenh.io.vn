@@ -87,23 +87,18 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
 
   const inStock = product.stock > 0
 
-  // Edison family
   const isEdison = product.slug === "bo-day-den-edison"
   const isEdison1Toc = product.slug === "bo-day-den-edison-1-toc"
   const isEdison2Toc = product.slug === "bo-day-den-edison-2-toc"
   const isEdisonFamily = isEdison || isEdison1Toc || isEdison2Toc
 
-  // ✅ NEW: đèn tròn 3w
   const isDenTron3w = product.slug === "bo-day-den-bong-tron-3w"
 
-  // Base ảnh
   const edisonBase = "/images/edison/"
   const denTronBase = "/images/den-tron/"
 
-  // Thumbs
   const thumbFolder = isEdison ? "edison" : isEdison1Toc ? "1toc" : isEdison2Toc ? "2toc" : "edison"
   const edisonThumbBase = `/images/edison/thumb/${thumbFolder}/`
-
   const denTronThumbBase = "/images/den-tron/thumb/3w/"
 
   const thumbs = isDenTron3w
@@ -131,7 +126,6 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
   const defaultImageForGallery = (isEdisonFamily || isDenTron3w) ? thumbs[0] : product.image
   const extraImages = (isEdisonFamily || isDenTron3w) ? thumbs.slice(1) : []
 
-  // SKU Edison (giữ nguyên - bạn đã có ở code trước)
   const edisonSkus: EdisonSku[] = isEdison
     ? [
         { label: "Edison COMBO 20m30", skuCode: "edison 10m15+10m15", image: `${edisonBase}edison-10m15+10m15.webp`, price: 404000, oldPrice: calcOldPrice(404000, "edison 10m15+10m15") },
@@ -146,7 +140,6 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
       ]
     : []
 
-  // Edison 1 tóc (giữ nguyên)
   const edison1TocSkus: EdisonSku[] = isEdison1Toc
     ? [
         { label: "1 tóc 10 Mét Dây + 15 Bóng", skuCode: "1toc 10m15", image: `${edisonBase}1toc-10m15.webp`, price: 236000, oldPrice: calcOldPrice(236000, "1toc 10m15") },
@@ -160,7 +153,6 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
       ]
     : []
 
-  // Edison 2 tóc (giữ nguyên)
   const edison2TocSkus: EdisonSku[] = isEdison2Toc
     ? [
         { label: "2 tóc COMBO 15 Mét + 30 bóng", skuCode: "2toc 10m20+ 5m10", image: `${edisonBase}2toc-10m20+5m10.webp`, price: 565000, oldPrice: calcOldPrice(565000, "2toc 10m20+ 5m10") },
@@ -175,7 +167,6 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
       ]
     : []
 
-  // ✅ NEW: ĐÈN TRÒN 3W – 2 màu
   const tronTrang3wSkus: EdisonSku[] = isDenTron3w
     ? [
         { label: "Tròn Trắng 3W -  10 Mét 15 Bóng", skuCode: "Trang3w-10m15b", image: `${denTronBase}Trang3w-10m15b.webp`, price: 221000, oldPrice: calcOldPrice(221000, "Trang3w-10m15b") },
@@ -200,12 +191,8 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
       ]
     : []
 
-  // activeSkus cho Edison family (không đổi)
   const activeEdisonSkus: EdisonSku[] = isEdison ? edisonSkus : isEdison1Toc ? edison1TocSkus : isEdison2Toc ? edison2TocSkus : []
 
-  // initial mặc định:
-  // - Edison family: min price của list đó
-  // - Đèn tròn 3w: lấy min price của TRẮNG (mặc định tone=white)
   const initialDefaultSku =
     isDenTron3w && tronTrang3wSkus.length
       ? tronTrang3wSkus.reduce((m, s) => (s.price < m.price ? s : m), tronTrang3wSkus[0])
@@ -242,11 +229,7 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-28 lg:pt-32 pb-8 lg:pb-16">
-      <script
-        type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       <nav className="flex mb-4 lg:mb-6 text-[12px] lg:text-sm text-white/70 flex-wrap items-center gap-2">
         <Link href="/" className="hover:text-white">Trang chủ</Link>
@@ -257,15 +240,8 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
       </nav>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
-        <ProductDetailClient
-          slug={product.slug}
-          name={product.name}
-          defaultImage={defaultImageForGallery}
-          extraImages={extraImages}
-          mobileCompact
-        />
+        <ProductDetailClient slug={product.slug} name={product.name} defaultImage={defaultImageForGallery} extraImages={extraImages} mobileCompact />
 
-        {/* MOBILE: Edison / Đèn tròn 3w */}
         {(isEdisonFamily || isDenTron3w) ? (
           <div className="lg:hidden -mt-1">
             {isDenTron3w ? (
@@ -282,15 +258,7 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
                 yellowButtonText="Bóng màu Vàng"
               />
             ) : (
-              <SkuSelector
-                slug={product.slug}
-                defaultImage={defaultImageForGallery}
-                skus={activeEdisonSkus}
-                compact
-                maxHeightVh={34}
-                title="Chọn độ dài dây"
-                resetText="Xem ảnh sản phẩm"
-              />
+              <SkuSelector slug={product.slug} defaultImage={defaultImageForGallery} skus={activeEdisonSkus} compact maxHeightVh={34} title="Chọn độ dài dây" resetText="Xem ảnh sản phẩm" />
             )}
           </div>
         ) : null}
@@ -308,23 +276,13 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
               {product.name}
             </h1>
 
-            <ProductPricingClient
-              name={product.name}
-              inStock={inStock}
-              initialPrice={initialPrice}
-              initialOldPrice={initialOldPrice}
-            />
+            <ProductPricingClient name={product.name} inStock={inStock} initialPrice={initialPrice} initialOldPrice={initialOldPrice} />
 
             <div className="mt-4 text-white/70">
               Tình trạng:{" "}
-              {inStock ? (
-                <span className="text-white/90 font-semibold">Còn hàng ({product.stock})</span>
-              ) : (
-                <span className="text-white/50 font-semibold">Hết hàng</span>
-              )}
+              {inStock ? <span className="text-white/90 font-semibold">Còn hàng ({product.stock})</span> : <span className="text-white/50 font-semibold">Hết hàng</span>}
             </div>
 
-            {/* PC: Edison / Đèn tròn 3w */}
             {(isEdisonFamily || isDenTron3w) ? (
               <div className="mt-3">
                 {isDenTron3w ? (
@@ -339,25 +297,12 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
                     yellowButtonText="Bóng màu Vàng"
                   />
                 ) : (
-                  <SkuSelector
-                    slug={product.slug}
-                    defaultImage={defaultImageForGallery}
-                    skus={activeEdisonSkus}
-                    title="Chọn độ dài dây"
-                    resetText="Xem ảnh sản phẩm"
-                  />
+                  <SkuSelector slug={product.slug} defaultImage={defaultImageForGallery} skus={activeEdisonSkus} title="Chọn độ dài dây" resetText="Xem ảnh sản phẩm" />
                 )}
               </div>
             ) : null}
 
-            <div className="mt-6 h-px bg-white/10" />
 
-            <div className="mt-6">
-              <div className="text-white font-semibold text-lg">Mô tả</div>
-              <p className="mt-3 text-white/75 leading-relaxed whitespace-pre-line">
-                {product.description}
-              </p>
-            </div>
           </div>
         </div>
       </div>

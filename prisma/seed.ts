@@ -1,5 +1,5 @@
 // prisma/seed.ts
-// TÓM TẮT (ver 1.3):
+// TÓM TẮT (ver 1.4):
 // - Giữ đúng 3 danh mục + đúng số sản phẩm theo yêu cầu
 // - Thêm isHot=true cho một vài sản phẩm để hiện badge HOT
 // - oldPrice > price sẽ tự hiện SALE theo ProductCard hiện tại

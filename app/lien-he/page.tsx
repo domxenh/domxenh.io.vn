@@ -14,7 +14,13 @@ export const metadata = {
 
 export default function LienHePage() {
   return (
-    <main className="min-h-screen pt-36 pb-24 px-6 md:px-10">
+    <main className="relative min-h-screen pt-36 pb-24 px-6 md:px-10">
+      {/* Background: hero-outdoor.webp */}
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute inset-0 bg-[url('/images/hero-outdoor.webp')] bg-cover bg-center opacity-35" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/55 to-[#071014]/95" />
+      </div>
+
       <div className="mx-auto max-w-4xl">
         <FadeInSection>
           <h1 className="text-4xl md:text-5xl font-semibold text-white drop-shadow-[0_0_18px_rgba(255,214,107,0.55)]">

@@ -104,7 +104,8 @@ export default function StickyBuyBar({
   return (
     <>
       <div className="fixed left-0 right-0 bottom-0 z-[90] pointer-events-none">
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/60 to-transparent" />
+        {/* Mobile: làm mờ/đậm nền mạnh hơn để chữ luôn đọc rõ */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
 
         <div
           className="pointer-events-auto w-fit mx-auto px-3"
@@ -112,9 +113,8 @@ export default function StickyBuyBar({
         >
           <div className="relative rounded-2xl min-w-[280px] max-w-[96vw]">
             <div className="pointer-events-none absolute inset-0 rounded-2xl border border-white/10" />
-            <div className="relative rounded-2xl bg-black/60 md:backdrop-blur-md shadow-[0_20px_70px_rgba(0,0,0,0.75)] px-4 py-3">
+            <div className="relative rounded-2xl bg-black/80 backdrop-blur-xl shadow-[0_20px_70px_rgba(0,0,0,0.75)] px-4 py-3">
               <div className="flex items-center gap-3 flex-wrap">
-                {/* ✅ căn giữa tên SKU + giá */}
                 <div className="min-w-0 flex-1 text-center">
                   <div className="font-semibold text-[#FFD66B] drop-shadow-[0_0_18px_rgba(255,214,107,0.35)] leading-snug">
                     {label}

@@ -1,4 +1,3 @@
-// components/product/ProductDetailClient.tsx
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
@@ -20,13 +19,9 @@ export default function ProductDetailClient({
   mobileCompact?: boolean
 }) {
   const images: ImgItem[] = useMemo(() => {
-    // ✅ Không nhồi cho đủ 8 (tránh tải/giải mã ảnh dư). Chỉ lấy tối đa 8 ảnh thật.
     const base = [defaultImage, ...(extraImages ?? [])]
     const normalized = base.filter(Boolean).slice(0, 8)
-    return normalized.map((src, i) => ({
-      src,
-      alt: `${name} - ${i + 1}`,
-    }))
+    return normalized.map((src, i) => ({ src, alt: `${name} - ${i + 1}` }))
   }, [defaultImage, extraImages, name])
 
   const [index, setIndex] = useState(0)
@@ -61,19 +56,9 @@ export default function ProductDetailClient({
       if (!ce.detail?.image) return
       setActiveSrc(ce.detail.image)
     }
-    const onReset = () => {
-      pick(0)
-      if (mobileCompact) setTimeout(() => scrollThumbIntoView(0), 0)
-    }
-
     window.addEventListener("edison-image-change", onImg as EventListener)
-    window.addEventListener("edison-sku-reset", onReset as EventListener)
-    return () => {
-      window.removeEventListener("edison-image-change", onImg as EventListener)
-      window.removeEventListener("edison-sku-reset", onReset as EventListener)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [images.length])
+    return () => window.removeEventListener("edison-image-change", onImg as EventListener)
+  }, [])
 
   if (mobileCompact) {
     return (
@@ -134,14 +119,7 @@ export default function ProductDetailClient({
                     ].join(" ")}
                     aria-label={`Thumb ${i + 1}`}
                   >
-                    <Image
-                      src={img.src}
-                      alt={img.alt}
-                      fill
-                      sizes="64px"
-                      className="object-cover"
-                      loading="lazy"
-                    />
+                    <Image src={img.src} alt={img.alt} fill sizes="64px" className="object-cover" loading="lazy" />
                     {active ? <span className="absolute inset-0 ring-2 ring-[#FFD66B]/45" /> : null}
                   </button>
                 )
@@ -185,7 +163,7 @@ export default function ProductDetailClient({
         </div>
       </div>
 
-      <div className="mt-3 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="mt-1 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {images.map((img, i) => {
           const active = i === index
           return (
@@ -201,14 +179,7 @@ export default function ProductDetailClient({
               ].join(" ")}
               aria-label={`Thumb ${i + 1}`}
             >
-              <Image
-                src={img.src}
-                alt={img.alt}
-                fill
-                sizes="64px"
-                className="object-cover"
-                loading="lazy"
-              />
+              <Image src={img.src} alt={img.alt} fill sizes="64px" className="object-cover" loading="lazy" />
               {active ? <span className="absolute inset-0 ring-2 ring-[#FFD66B]/45" /> : null}
             </button>
           )

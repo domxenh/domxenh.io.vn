@@ -37,12 +37,13 @@ const beVN = Be_Vietnam_Pro({
 })
 
 export const metadata = {
-  metadataBase: new URL("https://domxenh.io.vn"),
+  metadataBase: new URL("https://www.domxenh.io.vn"),
   title: "ĐÓM XÊNH | Đèn trang trí ngoài trời",
   description: "Đèn trang trí ngoài trời – vibe ấm, bền đẹp, dễ lắp đặt.",
+
   openGraph: {
     type: "website",
-    url: "/",
+    url: "https://www.domxenh.io.vn/",
     siteName: "ĐÓM XÊNH",
     title: "ĐÓM XÊNH | Đèn trang trí ngoài trời",
     description: "Đèn trang trí ngoài trời – vibe ấm, bền đẹp, dễ lắp đặt.",
@@ -56,6 +57,7 @@ export const metadata = {
     ],
     locale: "vi_VN",
   },
+
   twitter: {
     card: "summary_large_image",
     title: "ĐÓM XÊNH | Đèn trang trí ngoài trời",

@@ -13,14 +13,14 @@ function getCountry(req: NextRequest) {
 export function proxy(req: NextRequest) {
   const pathname = req.nextUrl.pathname
 
-  // chỉ chặn api nhạy cảm
+  // Chỉ chặn API nhạy cảm
   const isProtected =
     pathname.startsWith("/api/confirm-transfer") ||
     pathname.startsWith("/api/gsheet")
 
   if (!isProtected) return NextResponse.next()
 
-  // dev/local cho qua
+  // Dev/local cho qua
   const host = req.headers.get("host") || ""
   if (host.includes("localhost") || host.includes("127.0.0.1")) {
     return NextResponse.next()
@@ -28,12 +28,12 @@ export function proxy(req: NextRequest) {
 
   const country = getCountry(req)
 
-  // nếu detect được country và không phải VN -> chặn
+  // Nếu detect được country và không phải VN -> chặn
   if (country && country !== "VN") {
     return new NextResponse("Forbidden (VN only)", { status: 403 })
   }
 
-  // nếu không detect được country (hiếm) -> cho qua để tránh chặn nhầm
+  // Nếu không detect được country -> cho qua để tránh chặn nhầm
   return NextResponse.next()
 }
 

@@ -17,21 +17,23 @@ export default function BaoHanhPage() {
     <main className="min-h-screen pt-36 pb-24 px-6 md:px-10">
       <div className="mx-auto max-w-5xl">
         <FadeInSection>
-          <div className="flex items-center gap-2 text-white/70 text-sm">
-            <Link href="/" className="hover:text-white">
-              Trang chủ
-            </Link>
-            <span className="text-white/35">/</span>
-            <span className="text-[#FFD66B] drop-shadow-[0_0_14px_rgba(255,214,107,0.35)]">Bảo hành</span>
+            <div className="flex items-center gap-2 text-white/70 text-sm">
+              <Link href="/" className="hover:text-white">
+                Trang chủ
+              </Link>
+              <span className="text-white/35">/</span>
+              <span className="text-[#FFD66B] drop-shadow-[0_0_14px_rgba(255,214,107,0.35)]">Bảo hành</span>
+            </div>
+            
+          <div className="text-center">
+            <h1 className="mt-4 text-4xl md:text-5xl font-semibold text-[#FFD66B] drop-shadow-[0_0_18px_rgba(255,214,107,0.55)]">
+              Chính sách bảo hành
+            </h1>
+
+            <p className="mt-3 text-white/75 leading-relaxed max-w-3xl mx-auto">
+              Đóm Xênh ưu tiên hỗ trợ nhanh – rõ ràng – minh bạch để bạn yên tâm sử dụng sản phẩm ngoài trời lâu dài.
+            </p>
           </div>
-
-          <h1 className="mt-4 text-4xl md:text-5xl font-semibold text-white drop-shadow-[0_0_18px_rgba(255,214,107,0.55)]">
-            Chính sách bảo hành
-          </h1>
-
-          <p className="mt-3 text-white/75 leading-relaxed max-w-3xl">
-            Đóm Xênh ưu tiên hỗ trợ nhanh – rõ ràng – minh bạch để bạn yên tâm sử dụng sản phẩm ngoài trời lâu dài.
-          </p>
         </FadeInSection>
 
         {/* Highlight */}
@@ -72,7 +74,7 @@ export default function BaoHanhPage() {
               <div className="mt-6 space-y-6">
                 {/* 1. khái niệm */}
                 <div>
-                  <h3 className="text-white font-semibold text-lg">1) Một số khái niệm</h3>
+                  <h3 className="text-[#FFD66B] font-semibold text-lg">1) Một số khái niệm</h3>
                   <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
                       <div className="text-white font-semibold">Bảo hành sửa chữa</div>
@@ -99,7 +101,7 @@ export default function BaoHanhPage() {
 
                 {/* 2. được bảo hành */}
                 <div>
-                  <h3 className="text-white font-semibold text-lg">2) Trường hợp được bảo hành</h3>
+                  <h3 className="text-[#FFD66B] font-semibold text-lg">2) Trường hợp được bảo hành</h3>
                   <ul className="mt-3 space-y-2 text-white/75 list-disc pl-5 leading-relaxed">
                     <li>Sản phẩm hỏng hóc do lỗi kỹ thuật của bản thân sản phẩm.</li>
                     <li>Sản phẩm được bảo hành miễn phí nếu còn trong thời hạn bảo hành.</li>
@@ -111,7 +113,7 @@ export default function BaoHanhPage() {
 
                 {/* 3. không được bảo hành */}
                 <div>
-                  <h3 className="text-white font-semibold text-lg">3) Những trường hợp không được bảo hành</h3>
+                  <h3 className="text-[#FFD66B] font-semibold text-lg">3) Những trường hợp không được bảo hành</h3>
                   <ul className="mt-3 space-y-2 text-white/75 list-disc pl-5 leading-relaxed">
                     <li>
                       Hết thời hạn bảo hành; tem bảo hành bị rách/dán đè; mất phiếu bảo hành hoặc tem bị sửa đổi.
@@ -146,7 +148,7 @@ export default function BaoHanhPage() {
                 </p>
               </div>
 
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="mt-6 flex flex-wrap justify-center gap-3">
                 <Link
                   href="/lien-he"
                   className="rounded-full px-5 py-2.5 bg-[#FFD66B]/15 border border-[#FFD66B]/30 text-white

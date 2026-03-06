@@ -1,28 +1,16 @@
 // app/layout.tsx
-/**
- * TÓM TẮT (VN):
- * - Tối ưu font theo phong cách Apple cho tiếng Việt: ưu tiên SF Pro (system font trên iOS/macOS),
- *   fallback Inter + Be Vietnam Pro (ổn định trên Windows/Android) bằng next/font để preload nhẹ và nhanh.
- * - Không thay đổi cấu trúc layout hiện có (Header/Fireflies/CartHost/Footer giữ nguyên).
- *
- * NƠI CHỈNH:
- * - Thêm next/font/google + cấu hình font (Inter, Be_Vietnam_Pro)
- * - Gắn className vào <html> để kích hoạt biến CSS font
- */
 import "./globals.css"
 import type { ReactNode } from "react"
 import { Suspense } from "react"
+import type { Metadata } from "next"
+
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
 import Fireflies from "@/components/Fireflies"
 
-// ✅ CHỈNH: thêm font tối ưu (Apple-like + hỗ trợ tiếng Việt tốt)
 import { Inter, Be_Vietnam_Pro } from "next/font/google"
-
-// ✅ dùng relative để chắc chắn không lỗi alias
 import CartHost from "../components/cart/CartHost"
 
-// ✅ CHỈNH: cấu hình font (nhẹ, preload tự động, display=swap)
 const inter = Inter({
   subsets: ["latin", "vietnamese"],
   variable: "--font-inter",
@@ -36,39 +24,54 @@ const beVN = Be_Vietnam_Pro({
   display: "swap",
 })
 
-export const metadata = {
-  metadataBase: new URL("https://www.domxenh.io.vn"),
+const SITE = {
+  base: "https://www.domxenh.io.vn",
   title: "ĐÓM XÊNH | Đèn trang trí ngoài trời",
-  description: "Đèn trang trí ngoài trời – vibe ấm, bền đẹp, dễ lắp đặt.",
+  description: "Không những Sáng mà còn phải Xênh.",
+  ogDescription: "Đèn trang trí ngoài trời – vibe ấm, bền đẹp, dễ lắp đặt.",
+  ogImage: "/og/og-home.png",
+}
+
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE.base),
+  title: SITE.title,
+  description: SITE.description,
+
+  alternates: { canonical: "/" },
 
   openGraph: {
     type: "website",
-    url: "https://www.domxenh.io.vn/",
+    url: SITE.base,
     siteName: "ĐÓM XÊNH",
-    title: "ĐÓM XÊNH | Đèn trang trí ngoài trời",
-    description: "Đèn trang trí ngoài trời – vibe ấm, bền đẹp, dễ lắp đặt.",
-    images: [
-      {
-        url: "/og/og-home.png",
-        width: 1200,
-        height: 630,
-        alt: "ĐÓM XÊNH",
-      },
-    ],
+    title: SITE.title,
+    description: SITE.ogDescription,
     locale: "vi_VN",
+    images: [
+      { url: SITE.ogImage, width: 1200, height: 630, alt: "ĐÓM XÊNH" },
+    ],
   },
 
   twitter: {
     card: "summary_large_image",
-    title: "ĐÓM XÊNH | Đèn trang trí ngoài trời",
-    description: "Đèn trang trí ngoài trời – vibe ấm, bền đẹp, dễ lắp đặt.",
-    images: ["/og/og-home.png"],
+    title: SITE.title,
+    description: SITE.ogDescription,
+    images: [SITE.ogImage],
+  },
+
+  // ✅ FAVICON (Google lấy logo ở đây)
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/favicon-32x32.webp", sizes: "32x32", type: "image/webp" },
+      { url: "/favicon-16x16.webp", sizes: "16x16", type: "image/webp" },
+    ],
+    apple: [{ url: "/apple-touch-icon.webp", sizes: "180x180", type: "image/webp" }],
+    shortcut: ["/favicon.ico"],
   },
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    // ✅ CHỈNH: gắn biến font lên <html> (không ảnh hưởng layout cũ)
     <html lang="vi" className={`${inter.variable} ${beVN.variable}`}>
       <body>
         <Suspense fallback={<div aria-hidden style={{ height: "92px" }} />}>
@@ -79,7 +82,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
         {children}
 
-        {/* ✅ icon giỏ nổi + popup giỏ hàng */}
         <CartHost />
 
         <Footer />
@@ -87,5 +89,3 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     </html>
   )
 }
-
-// end code

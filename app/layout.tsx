@@ -6,8 +6,8 @@
  * - Không thay đổi cấu trúc layout hiện có (Header/Fireflies/CartHost/Footer giữ nguyên).
  *
  * NƠI CHỈNH:
- * - openGraph/twitter: dùng ảnh OG mới: /og/og-home.png
- * - thêm title/description để preview share đẹp hơn
+ * - Thêm next/font/google + cấu hình font (Inter, Be_Vietnam_Pro)
+ * - Gắn className vào <html> để kích hoạt biến CSS font
  */
 import "./globals.css"
 import type { ReactNode } from "react"
@@ -40,7 +40,6 @@ export const metadata = {
   metadataBase: new URL("https://domxenh.io.vn"),
   title: "ĐÓM XÊNH | Đèn trang trí ngoài trời",
   description: "Đèn trang trí ngoài trời – vibe ấm, bền đẹp, dễ lắp đặt.",
-
   openGraph: {
     type: "website",
     url: "/",
@@ -57,7 +56,6 @@ export const metadata = {
     ],
     locale: "vi_VN",
   },
-
   twitter: {
     card: "summary_large_image",
     title: "ĐÓM XÊNH | Đèn trang trí ngoài trời",

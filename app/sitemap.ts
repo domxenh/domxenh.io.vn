@@ -1,22 +1,36 @@
 // app/sitemap.ts
 import type { MetadataRoute } from "next"
+import { getProductsForSitemap } from "@/lib/products"
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const base = "https://domxenh.io.vn"
-  const now = new Date()
+function siteUrl() {
+  return (process.env.NEXT_PUBLIC_SITE_URL || "https://domxenh.io.vn").replace(/\/$/, "")
+}
 
-  // Các trang quan trọng (bạn có thể thêm/bớt)
-  const routes = [
-    "/",
-    "/san-pham-full",
-    "/lien-he",
-    "/bao-hanh",
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const base = siteUrl()
+
+  const staticRoutes: MetadataRoute.Sitemap = [
+    { url: `${base}`, changeFrequency: "daily", priority: 1 },
+    { url: `${base}/san-pham-full`, changeFrequency: "daily", priority: 0.9 },
+    { url: `${base}/lien-he`, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${base}/bao-hanh`, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${base}/thanh-toan`, changeFrequency: "yearly", priority: 0.3 },
   ]
 
-  return routes.map((path) => ({
-    url: `${base}${path}`,
-    lastModified: now,
+  // Không để sitemap fail nếu DB/env tạm thời lỗi (Google sẽ báo "Không thể tìm nạp")
+  let products: Awaited<ReturnType<typeof getProductsForSitemap>> = []
+  try {
+    products = await getProductsForSitemap()
+  } catch {
+    products = []
+  }
+
+  const productRoutes: MetadataRoute.Sitemap = products.map((p) => ({
+    url: `${base}/san-pham/${p.slug}`,
+    lastModified: p.createdAt,
     changeFrequency: "weekly",
-    priority: path === "/" ? 1 : 0.8,
+    priority: 0.8,
   }))
+
+  return [...staticRoutes, ...productRoutes]
 }

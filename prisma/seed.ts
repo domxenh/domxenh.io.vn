@@ -115,8 +115,8 @@ async function main() {
       {
         name: "Dây lẻ",
         slug: "day-le",
-        price: 59000,
-        oldPrice: 79000, // SALE
+        price: 148000,
+        oldPrice: 186000, // SALE
         isHot: false,
         description: "Dây lẻ để nối dài / thay thế.",
         image: "/images/den8.webp",

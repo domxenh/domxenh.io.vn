@@ -1,4 +1,3 @@
-// components/product/StickyBuyBar.tsx
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
@@ -104,7 +103,6 @@ export default function StickyBuyBar({
   return (
     <>
       <div className="fixed left-0 right-0 bottom-0 z-[90] pointer-events-none">
-        {/* Mobile: làm mờ/đậm nền mạnh hơn để chữ luôn đọc rõ */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
 
         <div
@@ -156,7 +154,7 @@ export default function StickyBuyBar({
         </div>
       </div>
 
-      <div style={{ height: "98px" }} aria-hidden />
+      <div className="h-3 sm:h-4 lg:h-5" aria-hidden />
     </>
   )
 }

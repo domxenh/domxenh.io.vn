@@ -25,6 +25,7 @@ function stablePercent20to30(key: string) {
   }
   return 20 + (Math.abs(h) % 11)
 }
+
 function calcOldPrice(price: number, key: string) {
   const pct = stablePercent20to30(key)
   return Math.round(price * (1 + pct / 100))
@@ -93,13 +94,16 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
   const isEdisonFamily = isEdison || isEdison1Toc || isEdison2Toc
 
   const isDenTron3w = product.slug === "bo-day-den-bong-tron-3w"
+  const isDayLe = product.slug === "day-le"
 
   const edisonBase = "/images/edison/"
   const denTronBase = "/images/den-tron/"
+  const dayLeBase = "/images/dayle-bongle/"
 
   const thumbFolder = isEdison ? "edison" : isEdison1Toc ? "1toc" : isEdison2Toc ? "2toc" : "edison"
   const edisonThumbBase = `/images/edison/thumb/${thumbFolder}/`
   const denTronThumbBase = "/images/den-tron/thumb/3w/"
+  const dayLeThumbBase = "/images/dayle-bongle/thumb/dayle/"
 
   const thumbs = isDenTron3w
     ? [
@@ -112,92 +116,406 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
         `${denTronThumbBase}7.webp`,
         `${denTronThumbBase}8.webp`,
       ]
-    : [
-        `${edisonThumbBase}1.webp`,
-        `${edisonThumbBase}2.webp`,
-        `${edisonThumbBase}3.webp`,
-        `${edisonThumbBase}4.webp`,
-        `${edisonThumbBase}5.webp`,
-        `${edisonThumbBase}6.webp`,
-        `${edisonThumbBase}7.webp`,
-        `${edisonThumbBase}8.webp`,
-      ]
+    : isDayLe
+      ? [
+          `${dayLeThumbBase}1.webp`,
+          `${dayLeThumbBase}2.webp`,
+          `${dayLeThumbBase}3.webp`,
+          `${dayLeThumbBase}4.webp`,
+          `${dayLeThumbBase}5.webp`,
+          `${dayLeThumbBase}6.webp`,
+          `${dayLeThumbBase}7.webp`,
+          `${dayLeThumbBase}8.webp`,
+        ]
+      : [
+          `${edisonThumbBase}1.webp`,
+          `${edisonThumbBase}2.webp`,
+          `${edisonThumbBase}3.webp`,
+          `${edisonThumbBase}4.webp`,
+          `${edisonThumbBase}5.webp`,
+          `${edisonThumbBase}6.webp`,
+          `${edisonThumbBase}7.webp`,
+          `${edisonThumbBase}8.webp`,
+        ]
 
-  const defaultImageForGallery = (isEdisonFamily || isDenTron3w) ? thumbs[0] : product.image
-  const extraImages = (isEdisonFamily || isDenTron3w) ? thumbs.slice(1) : []
+  const hasThumbGallery = isEdisonFamily || isDenTron3w || isDayLe
+  const defaultImageForGallery = hasThumbGallery ? thumbs[0] : product.image
+  const extraImages = hasThumbGallery ? thumbs.slice(1) : []
 
   const edisonSkus: EdisonSku[] = isEdison
     ? [
-        { label: "Edison COMBO 20m30", skuCode: "edison 10m15+10m15", image: `${edisonBase}edison-10m15+10m15.webp`, price: 404000, oldPrice: calcOldPrice(404000, "edison 10m15+10m15") },
-        { label: "Edison COMBO 15m30", skuCode: "edison 10m20+5m10", image: `${edisonBase}edison-10m20+5m10.webp`, price: 389000, oldPrice: calcOldPrice(389000, "edison 10m20+5m10") },
-        { label: "10 Mét Dây + 15 Bóng", skuCode: "edison 10m15", image: `${edisonBase}edison-10m15.webp`, price: 230000, oldPrice: calcOldPrice(230000, "edison 10m15") },
-        { label: "5 Mét Dây + 10 Bóng", skuCode: "edison 5m10", image: `${edisonBase}edison-5m10.webp`, price: 180000, oldPrice: calcOldPrice(180000, "edison 5m10") },
-        { label: "10 Mét Dây + 20 Bóng", skuCode: "edison 10m20", image: `${edisonBase}edison-10m20.webp`, price: 272000, oldPrice: calcOldPrice(272000, "edison 10m20") },
-        { label: "7,5 Mét Dây + 12 Bóng", skuCode: "edison 7,5m12", image: `${edisonBase}edison-7,5m12.webp`, price: 199000, oldPrice: calcOldPrice(199000, "edison 7,5m12") },
-        { label: "15 Mét Dây + 10 Bóng", skuCode: "edison 15m10", image: `${edisonBase}edison-15m10.webp`, price: 213000, oldPrice: calcOldPrice(213000, "edison 15m10") },
-        { label: "15 Mét Dây + 15 Bóng", skuCode: "edison 15m15", image: `${edisonBase}edison-15m15.webp`, price: 276000, oldPrice: calcOldPrice(276000, "edison 15m15") },
-        { label: "15 Mét Dây + 24 Bóng", skuCode: "edison 15m24", image: `${edisonBase}edison-15m24.webp`, price: 322000, oldPrice: calcOldPrice(322000, "edison 15m24") },
+        {
+          label: "Edison COMBO 20m30",
+          skuCode: "edison 10m15+10m15",
+          image: `${edisonBase}edison-10m15+10m15.webp`,
+          price: 404000,
+          oldPrice: calcOldPrice(404000, "edison 10m15+10m15"),
+        },
+        {
+          label: "Edison COMBO 15m30",
+          skuCode: "edison 10m20+5m10",
+          image: `${edisonBase}edison-10m20+5m10.webp`,
+          price: 389000,
+          oldPrice: calcOldPrice(389000, "edison 10m20+5m10"),
+        },
+        {
+          label: "10 Mét Dây + 15 Bóng",
+          skuCode: "edison 10m15",
+          image: `${edisonBase}edison-10m15.webp`,
+          price: 230000,
+          oldPrice: calcOldPrice(230000, "edison 10m15"),
+        },
+        {
+          label: "5 Mét Dây + 10 Bóng",
+          skuCode: "edison 5m10",
+          image: `${edisonBase}edison-5m10.webp`,
+          price: 180000,
+          oldPrice: calcOldPrice(180000, "edison 5m10"),
+        },
+        {
+          label: "10 Mét Dây + 20 Bóng",
+          skuCode: "edison 10m20",
+          image: `${edisonBase}edison-10m20.webp`,
+          price: 272000,
+          oldPrice: calcOldPrice(272000, "edison 10m20"),
+        },
+        {
+          label: "7,5 Mét Dây + 12 Bóng",
+          skuCode: "edison 7,5m12",
+          image: `${edisonBase}edison-7,5m12.webp`,
+          price: 199000,
+          oldPrice: calcOldPrice(199000, "edison 7,5m12"),
+        },
+        {
+          label: "15 Mét Dây + 10 Bóng",
+          skuCode: "edison 15m10",
+          image: `${edisonBase}edison-15m10.webp`,
+          price: 213000,
+          oldPrice: calcOldPrice(213000, "edison 15m10"),
+        },
+        {
+          label: "15 Mét Dây + 15 Bóng",
+          skuCode: "edison 15m15",
+          image: `${edisonBase}edison-15m15.webp`,
+          price: 276000,
+          oldPrice: calcOldPrice(276000, "edison 15m15"),
+        },
+        {
+          label: "15 Mét Dây + 24 Bóng",
+          skuCode: "edison 15m24",
+          image: `${edisonBase}edison-15m24.webp`,
+          price: 322000,
+          oldPrice: calcOldPrice(322000, "edison 15m24"),
+        },
       ]
     : []
 
   const edison1TocSkus: EdisonSku[] = isEdison1Toc
     ? [
-        { label: "1 tóc 10 Mét Dây + 15 Bóng", skuCode: "1toc 10m15", image: `${edisonBase}1toc-10m15.webp`, price: 236000, oldPrice: calcOldPrice(236000, "1toc 10m15") },
-        { label: "1 tóc 5 Mét + 10 Bóng", skuCode: "1toc 5m10", image: `${edisonBase}1toc-5m10.webp`, price: 184000, oldPrice: calcOldPrice(184000, "1toc 5m10") },
-        { label: "1 tóc 10 Mét + 20 Bóng", skuCode: "1toc 10m20", image: `${edisonBase}1toc-10m20.webp`, price: 282000, oldPrice: calcOldPrice(282000, "1toc 10m20") },
-        { label: "1 tóc COMBO 15 Mét + 30 bóng", skuCode: "1toc 10m20+ 5m10", image: `${edisonBase}1toc-10m20+5m10.webp`, price: 404000, oldPrice: calcOldPrice(404000, "1toc 10m20+ 5m10") },
-        { label: "1 tóc 7,5 Mét + 12 Bóng", skuCode: "1toc 7,5m12", image: `${edisonBase}1toc-7,5m12.webp`, price: 205000, oldPrice: calcOldPrice(205000, "1toc 7,5m12") },
-        { label: "1 tóc 15 Mét Dây + 10 Bóng", skuCode: "1toc 15m10", image: `${edisonBase}1toc-15m10.webp`, price: 217000, oldPrice: calcOldPrice(217000, "1toc 15m10") },
-        { label: "1 tóc 15 Mét Dây + 15 Bóng", skuCode: "1toc 15m15", image: `${edisonBase}1toc-15m15.webp`, price: 283000, oldPrice: calcOldPrice(283000, "1toc 15m15") },
-        { label: "1 tóc 15 Mét Dây + 24 Bóng", skuCode: "1toc 15m24", image: `${edisonBase}1toc-15m24.webp`, price: 290000, oldPrice: calcOldPrice(290000, "1toc 15m24") },
+        {
+          label: "1 tóc 10 Mét Dây + 15 Bóng",
+          skuCode: "1toc 10m15",
+          image: `${edisonBase}1toc-10m15.webp`,
+          price: 236000,
+          oldPrice: calcOldPrice(236000, "1toc 10m15"),
+        },
+        {
+          label: "1 tóc 5 Mét + 10 Bóng",
+          skuCode: "1toc 5m10",
+          image: `${edisonBase}1toc-5m10.webp`,
+          price: 184000,
+          oldPrice: calcOldPrice(184000, "1toc 5m10"),
+        },
+        {
+          label: "1 tóc 10 Mét + 20 Bóng",
+          skuCode: "1toc 10m20",
+          image: `${edisonBase}1toc-10m20.webp`,
+          price: 282000,
+          oldPrice: calcOldPrice(282000, "1toc 10m20"),
+        },
+        {
+          label: "1 tóc COMBO 15 Mét + 30 bóng",
+          skuCode: "1toc 10m20+ 5m10",
+          image: `${edisonBase}1toc-10m20+5m10.webp`,
+          price: 404000,
+          oldPrice: calcOldPrice(404000, "1toc 10m20+ 5m10"),
+        },
+        {
+          label: "1 tóc 7,5 Mét + 12 Bóng",
+          skuCode: "1toc 7,5m12",
+          image: `${edisonBase}1toc-7,5m12.webp`,
+          price: 205000,
+          oldPrice: calcOldPrice(205000, "1toc 7,5m12"),
+        },
+        {
+          label: "1 tóc 15 Mét Dây + 10 Bóng",
+          skuCode: "1toc 15m10",
+          image: `${edisonBase}1toc-15m10.webp`,
+          price: 217000,
+          oldPrice: calcOldPrice(217000, "1toc 15m10"),
+        },
+        {
+          label: "1 tóc 15 Mét Dây + 15 Bóng",
+          skuCode: "1toc 15m15",
+          image: `${edisonBase}1toc-15m15.webp`,
+          price: 283000,
+          oldPrice: calcOldPrice(283000, "1toc 15m15"),
+        },
+        {
+          label: "1 tóc 15 Mét Dây + 24 Bóng",
+          skuCode: "1toc 15m24",
+          image: `${edisonBase}1toc-15m24.webp`,
+          price: 290000,
+          oldPrice: calcOldPrice(290000, "1toc 15m24"),
+        },
       ]
     : []
 
   const edison2TocSkus: EdisonSku[] = isEdison2Toc
     ? [
-        { label: "2 tóc COMBO 15 Mét + 30 bóng", skuCode: "2toc 10m20+ 5m10", image: `${edisonBase}2toc-10m20+5m10.webp`, price: 565000, oldPrice: calcOldPrice(565000, "2toc 10m20+ 5m10") },
-        { label: "2 tóc COMBO 20 Mét + 30 bóng", skuCode: "2toc 10m15+ 10m15", image: `${edisonBase}2toc-10m15+10m15.webp`, price: 580000, oldPrice: calcOldPrice(580000, "2toc 10m15+ 10m15") },
-        { label: "2 tóc 10 Mét Dây + 15 Bóng", skuCode: "2toc 10m15", image: `${edisonBase}2toc-10m15.webp`, price: 313000, oldPrice: calcOldPrice(313000, "2toc 10m15") },
-        { label: "2 tóc 5 Mét Dây + 10 Bóng", skuCode: "2toc 5m10", image: `${edisonBase}2toc-5m10.webp`, price: 227000, oldPrice: calcOldPrice(227000, "2toc 5m10") },
-        { label: "2 tóc 10 Mét Dây + 20 Bóng", skuCode: "2toc 10m20", image: `${edisonBase}2toc-10m20.webp`, price: 389000, oldPrice: calcOldPrice(389000, "2toc 10m20") },
-        { label: "2 tóc 7,5 Mét Dây + 12 Bóng", skuCode: "2toc 7,5m12", image: `${edisonBase}2toc-7,5m12.webp`, price: 257000, oldPrice: calcOldPrice(257000, "2toc 7,5m12") },
-        { label: "2 tóc 15 Mét Dây + 10 Bóng", skuCode: "2toc 15m10", image: `${edisonBase}2toc-15m10.webp`, price: 262000, oldPrice: calcOldPrice(262000, "2toc 15m10") },
-        { label: "2 tóc 15 Mét Dây + 15 Bóng", skuCode: "2toc 15m15", image: `${edisonBase}2toc-15m15.webp`, price: 364000, oldPrice: calcOldPrice(364000, "2toc 15m15") },
-        { label: "2 tóc 15 Mét Dây + 24 Bóng", skuCode: "2toc 15m24", image: `${edisonBase}2toc-15m24.webp`, price: 462000, oldPrice: calcOldPrice(462000, "2toc 15m24") },
+        {
+          label: "2 tóc COMBO 15 Mét + 30 bóng",
+          skuCode: "2toc 10m20+ 5m10",
+          image: `${edisonBase}2toc-10m20+5m10.webp`,
+          price: 565000,
+          oldPrice: calcOldPrice(565000, "2toc 10m20+ 5m10"),
+        },
+        {
+          label: "2 tóc COMBO 20 Mét + 30 bóng",
+          skuCode: "2toc 10m15+ 10m15",
+          image: `${edisonBase}2toc-10m15+10m15.webp`,
+          price: 580000,
+          oldPrice: calcOldPrice(580000, "2toc 10m15+ 10m15"),
+        },
+        {
+          label: "2 tóc 10 Mét Dây + 15 Bóng",
+          skuCode: "2toc 10m15",
+          image: `${edisonBase}2toc-10m15.webp`,
+          price: 313000,
+          oldPrice: calcOldPrice(313000, "2toc 10m15"),
+        },
+        {
+          label: "2 tóc 5 Mét Dây + 10 Bóng",
+          skuCode: "2toc 5m10",
+          image: `${edisonBase}2toc-5m10.webp`,
+          price: 227000,
+          oldPrice: calcOldPrice(227000, "2toc 5m10"),
+        },
+        {
+          label: "2 tóc 10 Mét Dây + 20 Bóng",
+          skuCode: "2toc 10m20",
+          image: `${edisonBase}2toc-10m20.webp`,
+          price: 389000,
+          oldPrice: calcOldPrice(389000, "2toc 10m20"),
+        },
+        {
+          label: "2 tóc 7,5 Mét Dây + 12 Bóng",
+          skuCode: "2toc 7,5m12",
+          image: `${edisonBase}2toc-7,5m12.webp`,
+          price: 257000,
+          oldPrice: calcOldPrice(257000, "2toc 7,5m12"),
+        },
+        {
+          label: "2 tóc 15 Mét Dây + 10 Bóng",
+          skuCode: "2toc 15m10",
+          image: `${edisonBase}2toc-15m10.webp`,
+          price: 262000,
+          oldPrice: calcOldPrice(262000, "2toc 15m10"),
+        },
+        {
+          label: "2 tóc 15 Mét Dây + 15 Bóng",
+          skuCode: "2toc 15m15",
+          image: `${edisonBase}2toc-15m15.webp`,
+          price: 364000,
+          oldPrice: calcOldPrice(364000, "2toc 15m15"),
+        },
+        {
+          label: "2 tóc 15 Mét Dây + 24 Bóng",
+          skuCode: "2toc 15m24",
+          image: `${edisonBase}2toc-15m24.webp`,
+          price: 462000,
+          oldPrice: calcOldPrice(462000, "2toc 15m24"),
+        },
       ]
     : []
 
   const tronTrang3wSkus: EdisonSku[] = isDenTron3w
     ? [
-        { label: "Tròn Trắng 3W -  10 Mét 15 Bóng", skuCode: "Trang3w-10m15b", image: `${denTronBase}Trang3w-10m15b.webp`, price: 221000, oldPrice: calcOldPrice(221000, "Trang3w-10m15b") },
-        { label: "Tròn Trắng 3W -  5 Mét 10 Bóng", skuCode: "Trang3w-5m10b", image: `${denTronBase}Trang3w-5m10b.webp`, price: 179000, oldPrice: calcOldPrice(179000, "Trang3w-5m10b") },
-        { label: "Tròn Trắng 3W -  10 Mét 20 Bóng", skuCode: "Trang3w-10m20b", image: `${denTronBase}Trang3w-10m20b.webp`, price: 249000, oldPrice: calcOldPrice(249000, "Trang3w-10m20b") },
-        { label: "Tròn Trắng 3W -  15 Mét 10 Bóng", skuCode: "Trang3w-15m10b", image: `${denTronBase}Trang3w-15m10b.webp`, price: 207000, oldPrice: calcOldPrice(207000, "Trang3w-15m10b") },
-        { label: "Tròn Trắng 3W -  15 Mét 15 Bóng", skuCode: "Trang3w-15m15b", image: `${denTronBase}Trang3w-15m15b.webp`, price: 264000, oldPrice: calcOldPrice(264000, "Trang3w-15m15b") },
-        { label: "Tròn Trắng 3W -  15 Mét 24 Bóng", skuCode: "Trang3w-15m24b", image: `${denTronBase}Trang3w-15m24b.webp`, price: 304000, oldPrice: calcOldPrice(304000, "Trang3w-15m24b") },
-        { label: "Tròn Trắng 3W -  7,5 Mét 12 Bóng", skuCode: "Trang3w-7,5m12b", image: `${denTronBase}Trang3w-7,5m12b.webp`, price: 192000, oldPrice: calcOldPrice(192000, "Trang3w-7,5m12b") },
+        {
+          label: "Tròn Trắng 3W -  10 Mét 15 Bóng",
+          skuCode: "Trang3w-10m15b",
+          image: `${denTronBase}Trang3w-10m15b.webp`,
+          price: 221000,
+          oldPrice: calcOldPrice(221000, "Trang3w-10m15b"),
+        },
+        {
+          label: "Tròn Trắng 3W -  5 Mét 10 Bóng",
+          skuCode: "Trang3w-5m10b",
+          image: `${denTronBase}Trang3w-5m10b.webp`,
+          price: 179000,
+          oldPrice: calcOldPrice(179000, "Trang3w-5m10b"),
+        },
+        {
+          label: "Tròn Trắng 3W -  10 Mét 20 Bóng",
+          skuCode: "Trang3w-10m20b",
+          image: `${denTronBase}Trang3w-10m20b.webp`,
+          price: 249000,
+          oldPrice: calcOldPrice(249000, "Trang3w-10m20b"),
+        },
+        {
+          label: "Tròn Trắng 3W -  15 Mét 10 Bóng",
+          skuCode: "Trang3w-15m10b",
+          image: `${denTronBase}Trang3w-15m10b.webp`,
+          price: 207000,
+          oldPrice: calcOldPrice(207000, "Trang3w-15m10b"),
+        },
+        {
+          label: "Tròn Trắng 3W -  15 Mét 15 Bóng",
+          skuCode: "Trang3w-15m15b",
+          image: `${denTronBase}Trang3w-15m15b.webp`,
+          price: 264000,
+          oldPrice: calcOldPrice(264000, "Trang3w-15m15b"),
+        },
+        {
+          label: "Tròn Trắng 3W -  15 Mét 24 Bóng",
+          skuCode: "Trang3w-15m24b",
+          image: `${denTronBase}Trang3w-15m24b.webp`,
+          price: 304000,
+          oldPrice: calcOldPrice(304000, "Trang3w-15m24b"),
+        },
+        {
+          label: "Tròn Trắng 3W -  7,5 Mét 12 Bóng",
+          skuCode: "Trang3w-7,5m12b",
+          image: `${denTronBase}Trang3w-7,5m12b.webp`,
+          price: 192000,
+          oldPrice: calcOldPrice(192000, "Trang3w-7,5m12b"),
+        },
       ]
     : []
 
   const tronVang3wSkus: EdisonSku[] = isDenTron3w
     ? [
-        { label: "Tròn Vàng 3W -  10 Mét 15 Bóng", skuCode: "Vang3w-10m15b", image: `${denTronBase}Vang3w-10m15b.webp`, price: 221000, oldPrice: calcOldPrice(221000, "Vang3w-10m15b") },
-        { label: "Tròn Vàng 3W -  5 Mét 10 Bóng", skuCode: "Vang3w-5m10b", image: `${denTronBase}Vang3w-5m10b.webp`, price: 179000, oldPrice: calcOldPrice(179000, "Vang3w-5m10b") },
-        { label: "Tròn Vàng 3W -  10 Mét 20 Bóng", skuCode: "Vang3w-10m20b", image: `${denTronBase}Vang3w-10m20b.webp`, price: 249000, oldPrice: calcOldPrice(249000, "Vang3w-10m20b") },
-        { label: "Tròn Vàng 3W -  15 Mét 10 Bóng", skuCode: "Vang3w-15m10b", image: `${denTronBase}Vang3w-15m10b.webp`, price: 207000, oldPrice: calcOldPrice(207000, "Vang3w-15m10b") },
-        { label: "Tròn Vàng 3W -  15 Mét 15 Bóng", skuCode: "Vang3w-15m15b", image: `${denTronBase}Vang3w-15m15b.webp`, price: 264000, oldPrice: calcOldPrice(264000, "Vang3w-15m15b") },
-        { label: "Tròn Vàng 3W -  15 Mét 24 Bóng", skuCode: "Vang3w-15m24b", image: `${denTronBase}Vang3w-15m24b.webp`, price: 304000, oldPrice: calcOldPrice(304000, "Vang3w-15m24b") },
-        { label: "Tròn Vàng 3W -  7,5 Mét 12 Bóng", skuCode: "Vang3w-7,5m12b", image: `${denTronBase}Vang3w-7,5m12b.webp`, price: 192000, oldPrice: calcOldPrice(192000, "Vang3w-7,5m12b") },
+        {
+          label: "Tròn Vàng 3W -  10 Mét 15 Bóng",
+          skuCode: "Vang3w-10m15b",
+          image: `${denTronBase}Vang3w-10m15b.webp`,
+          price: 221000,
+          oldPrice: calcOldPrice(221000, "Vang3w-10m15b"),
+        },
+        {
+          label: "Tròn Vàng 3W -  5 Mét 10 Bóng",
+          skuCode: "Vang3w-5m10b",
+          image: `${denTronBase}Vang3w-5m10b.webp`,
+          price: 179000,
+          oldPrice: calcOldPrice(179000, "Vang3w-5m10b"),
+        },
+        {
+          label: "Tròn Vàng 3W -  10 Mét 20 Bóng",
+          skuCode: "Vang3w-10m20b",
+          image: `${denTronBase}Vang3w-10m20b.webp`,
+          price: 249000,
+          oldPrice: calcOldPrice(249000, "Vang3w-10m20b"),
+        },
+        {
+          label: "Tròn Vàng 3W -  15 Mét 10 Bóng",
+          skuCode: "Vang3w-15m10b",
+          image: `${denTronBase}Vang3w-15m10b.webp`,
+          price: 207000,
+          oldPrice: calcOldPrice(207000, "Vang3w-15m10b"),
+        },
+        {
+          label: "Tròn Vàng 3W -  15 Mét 15 Bóng",
+          skuCode: "Vang3w-15m15b",
+          image: `${denTronBase}Vang3w-15m15b.webp`,
+          price: 264000,
+          oldPrice: calcOldPrice(264000, "Vang3w-15m15b"),
+        },
+        {
+          label: "Tròn Vàng 3W -  15 Mét 24 Bóng",
+          skuCode: "Vang3w-15m24b",
+          image: `${denTronBase}Vang3w-15m24b.webp`,
+          price: 304000,
+          oldPrice: calcOldPrice(304000, "Vang3w-15m24b"),
+        },
+        {
+          label: "Tròn Vàng 3W -  7,5 Mét 12 Bóng",
+          skuCode: "Vang3w-7,5m12b",
+          image: `${denTronBase}Vang3w-7,5m12b.webp`,
+          price: 192000,
+          oldPrice: calcOldPrice(192000, "Vang3w-7,5m12b"),
+        },
       ]
     : []
 
-  const activeEdisonSkus: EdisonSku[] = isEdison ? edisonSkus : isEdison1Toc ? edison1TocSkus : isEdison2Toc ? edison2TocSkus : []
+  const dayLeSkus: EdisonSku[] = isDayLe
+    ? [
+        {
+          label: "Dây 10m15",
+          skuCode: "day-10m15",
+          image: `${dayLeBase}day-10m15.webp`,
+          price: 180000,
+          oldPrice: calcOldPrice(180000, "day-10m15"),
+        },
+        {
+          label: "Dây 5m10 Bóng",
+          skuCode: "day-5m10",
+          image: `${dayLeBase}day-5m10.webp`,
+          price: 148000,
+          oldPrice: calcOldPrice(148000, "day-5m10"),
+        },
+        {
+          label: "Dây 10m20 Bóng",
+          skuCode: "day-10m20",
+          image: `${dayLeBase}day-10m20.webp`,
+          price: 200000,
+          oldPrice: calcOldPrice(200000, "day-10m20"),
+        },
+        {
+          label: "Dây 7,5m12 Bóng",
+          skuCode: "day-7,5m12",
+          image: `${dayLeBase}day-7,5m12.webp`,
+          price: 160000,
+          oldPrice: calcOldPrice(160000, "day-7,5m12"),
+        },
+        {
+          label: "Dây 15m10 Bóng",
+          skuCode: "day-15m10",
+          image: `${dayLeBase}day-15m10.webp`,
+          price: 180000,
+          oldPrice: calcOldPrice(180000, "day-15m10"),
+        },
+        {
+          label: "Dây 15m15 Bóng",
+          skuCode: "day-15m15",
+          image: `${dayLeBase}day-15m15.webp`,
+          price: 220000,
+          oldPrice: calcOldPrice(220000, "day-15m15"),
+        },
+        {
+          label: "Dây 15m24 Bóng",
+          skuCode: "day-15m24",
+          image: `${dayLeBase}day-15m24.webp`,
+          price: 225000,
+          oldPrice: calcOldPrice(225000, "day-15m24"),
+        },
+      ]
+    : []
+
+  const activeSkuSet: EdisonSku[] = isEdison
+    ? edisonSkus
+    : isEdison1Toc
+      ? edison1TocSkus
+      : isEdison2Toc
+        ? edison2TocSkus
+        : isDayLe
+          ? dayLeSkus
+          : []
 
   const initialDefaultSku =
     isDenTron3w && tronTrang3wSkus.length
       ? tronTrang3wSkus.reduce((m, s) => (s.price < m.price ? s : m), tronTrang3wSkus[0])
-      : (isEdisonFamily && activeEdisonSkus.length)
-        ? activeEdisonSkus.reduce((m, s) => (s.price < m.price ? s : m), activeEdisonSkus[0])
+      : ((isEdisonFamily || isDayLe) && activeSkuSet.length)
+        ? activeSkuSet.reduce((m, s) => (s.price < m.price ? s : m), activeSkuSet[0])
         : null
 
   const initialPrice = initialDefaultSku ? initialDefaultSku.price : product.price
@@ -240,9 +558,15 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
       </nav>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
-        <ProductDetailClient slug={product.slug} name={product.name} defaultImage={defaultImageForGallery} extraImages={extraImages} mobileCompact />
+        <ProductDetailClient
+          slug={product.slug}
+          name={product.name}
+          defaultImage={defaultImageForGallery}
+          extraImages={extraImages}
+          mobileCompact
+        />
 
-        {(isEdisonFamily || isDenTron3w) ? (
+        {(isEdisonFamily || isDenTron3w || isDayLe) ? (
           <div className="lg:hidden -mt-1">
             {isDenTron3w ? (
               <ColorSkuSelectorClient
@@ -258,7 +582,15 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
                 yellowButtonText="Bóng màu Vàng"
               />
             ) : (
-              <SkuSelector slug={product.slug} defaultImage={defaultImageForGallery} skus={activeEdisonSkus} compact maxHeightVh={34} title="Chọn độ dài dây" resetText="Xem ảnh sản phẩm" />
+              <SkuSelector
+                slug={product.slug}
+                defaultImage={defaultImageForGallery}
+                skus={activeSkuSet}
+                compact
+                maxHeightVh={34}
+                title="Chọn độ dài dây"
+                resetText="Xem ảnh sản phẩm"
+              />
             )}
           </div>
         ) : null}
@@ -276,14 +608,23 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
               {product.name}
             </h1>
 
-            <ProductPricingClient name={product.name} inStock={inStock} initialPrice={initialPrice} initialOldPrice={initialOldPrice} />
+            <ProductPricingClient
+              name={product.name}
+              inStock={inStock}
+              initialPrice={initialPrice}
+              initialOldPrice={initialOldPrice}
+            />
 
             <div className="mt-4 text-white/70">
               Tình trạng:{" "}
-              {inStock ? <span className="text-white/90 font-semibold">Còn hàng ({product.stock})</span> : <span className="text-white/50 font-semibold">Hết hàng</span>}
+              {inStock ? (
+                <span className="text-white/90 font-semibold">Còn hàng ({product.stock})</span>
+              ) : (
+                <span className="text-white/50 font-semibold">Hết hàng</span>
+              )}
             </div>
 
-            {(isEdisonFamily || isDenTron3w) ? (
+            {(isEdisonFamily || isDenTron3w || isDayLe) ? (
               <div className="mt-3">
                 {isDenTron3w ? (
                   <ColorSkuSelectorClient
@@ -297,12 +638,16 @@ export default async function ProductDetailPage({ params }: { params: ParamsLike
                     yellowButtonText="Bóng màu Vàng"
                   />
                 ) : (
-                  <SkuSelector slug={product.slug} defaultImage={defaultImageForGallery} skus={activeEdisonSkus} title="Chọn độ dài dây" resetText="Xem ảnh sản phẩm" />
+                  <SkuSelector
+                    slug={product.slug}
+                    defaultImage={defaultImageForGallery}
+                    skus={activeSkuSet}
+                    title="Chọn độ dài dây"
+                    resetText="Xem ảnh sản phẩm"
+                  />
                 )}
               </div>
             ) : null}
-
-
           </div>
         </div>
       </div>

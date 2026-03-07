@@ -1,6 +1,7 @@
 export default function Footer() {
   const hotlineDisplay = "0352.595.444"
   const hotlineTel = "0352595444"
+  const mapLink = "https://maps.app.goo.gl/pvDcTcH9FWwCDQaGA"
 
   const zaloLink = `https://zalo.me/${hotlineTel}`
   const messengerLink = "https://m.me/301095173088222"
@@ -9,18 +10,17 @@ export default function Footer() {
     "group inline-flex items-center gap-3 rounded-full border border-[#FFD66B]/25 bg-black/25 px-4 py-2.5 shadow-[0_12px_34px_rgba(0,0,0,0.4)] transition hover:brightness-110 hover:border-[#FFD66B]/55 active:scale-[0.98]"
 
   const iconWrapClass =
-    "grid h-10 w-10 place-items-center rounded-full border border-white/12 bg-white/5 text-[#FFD66B] transition group-hover:bg-white/10"
+    "grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/12 bg-white/5 text-[#FFD66B] transition group-hover:bg-white/10"
 
   const labelTopClass =
     "block text-[12.5px] sm:text-[13px] font-extrabold tracking-[0.12em] text-[#FFD66B] drop-shadow-[0_0_16px_rgba(255,214,107,0.75)]"
 
-  // ✅ FIX: tách 2 hàng chữ ra (mt-1) + bỏ -mt
   const labelBottomClass =
     "block mt-1 text-[13px] sm:text-[14px] font-semibold text-white/85"
 
   return (
-    <footer className="mt-16 border-t border-white/10 bg-[#071014]">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10">
+    <footer className="mt-0 border-t border-white/10 bg-[#071014]">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 pt-8 sm:pt-10 pb-[132px] sm:pb-[132px] lg:pb-[132px]">
         <div className="flex flex-col items-center gap-6">
           <div className="flex flex-wrap items-center justify-center gap-3">
             <a href={`tel:${hotlineTel}`} className={btnClass} aria-label="Gọi Hotline">
@@ -37,6 +37,34 @@ export default function Footer() {
               <span className="leading-none">
                 <span className={labelTopClass}>HOTLINE</span>
                 <span className={labelBottomClass}>{hotlineDisplay}</span>
+              </span>
+            </a>
+
+            <a
+              href={mapLink}
+              target="_blank"
+              rel="noreferrer"
+              className={btnClass}
+              aria-label="Mở Google Maps"
+            >
+              <span className={iconWrapClass}>
+                <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" aria-hidden="true">
+                  <path
+                    d="M12 21s7-6.1 7-12.1A7 7 0 0 0 5 8.9C5 14.9 12 21 12 21Z"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M12 11.2a2.3 2.3 0 1 0 0-4.6 2.3 2.3 0 0 0 0 4.6Z"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                  />
+                </svg>
+              </span>
+              <span className="leading-none text-left">
+                <span className={labelTopClass}>GOOGLE MAPS</span>
+                <span className={labelBottomClass}>Đề Thám, Thái Bình, Việt Nam</span>
               </span>
             </a>
 
@@ -94,7 +122,6 @@ export default function Footer() {
               </span>
             </a>
           </div>
-
         </div>
       </div>
     </footer>
